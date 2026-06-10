@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Neon Pulse - Cyberpunk Stream Suite | SimplyOver</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed": "#f0dbff",
+                        "secondary-fixed": "#acedff",
+                        "surface-container": "#1f1f26",
+                        "surface-dim": "#13131a",
+                        "on-primary-fixed-variant": "#5a00c6",
+                        "primary-fixed-dim": "#d2bbff",
+                        "tertiary": "#ddb7ff",
+                        "outline": "#958da1",
+                        "surface-container-highest": "#34343c",
+                        "tertiary-container": "#8d36db",
+                        "inverse-surface": "#e4e1ec",
+                        "error": "#ffb4ab",
+                        "on-secondary": "#003640",
+                        "surface-container-lowest": "#0e0e15",
+                        "secondary-fixed-dim": "#4cd7f6",
+                        "on-secondary-fixed": "#001f26",
+                        "surface-container-high": "#2a2931",
+                        "surface-variant": "#34343c",
+                        "surface-tint": "#d2bbff",
+                        "primary-container": "#7c3aed",
+                        "on-tertiary-fixed-variant": "#6900b3",
+                        "on-surface": "#e4e1ec",
+                        "on-secondary-container": "#00424e",
+                        "error-container": "#93000a",
+                        "secondary": "#4cd7f6",
+                        "surface-bright": "#393840",
+                        "secondary-container": "#03b5d3",
+                        "on-primary": "#3f008e",
+                        "primary": "#d2bbff",
+                        "surface": "#13131a",
+                        "on-background": "#e4e1ec",
+                        "primary-fixed": "#eaddff",
+                        "surface-container-low": "#1b1b22",
+                        "on-tertiary-fixed": "#2c0051",
+                        "on-surface-variant": "#ccc3d8",
+                        "on-tertiary": "#490080",
+                        "on-primary-container": "#ede0ff",
+                        "on-error": "#690005",
+                        "background": "#13131a",
+                        "on-tertiary-container": "#f2dfff",
+                        "on-primary-fixed": "#25005a",
+                        "inverse-primary": "#732ee4",
+                        "tertiary-fixed-dim": "#ddb7ff",
+                        "outline-variant": "#4a4455",
+                        "on-secondary-fixed-variant": "#004e5c",
+                        "inverse-on-surface": "#303038",
+                        "on-error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sidebar-width": "280px",
+                        "sidebar-collapsed-width": "80px",
+                        "gutter-mobile": "16px",
+                        "margin-mobile": "20px",
+                        "base-unit": "4px",
+                        "gutter-desktop": "24px",
+                        "margin-desktop": "48px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-xl": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #0D0D14;
+            color: #e4e1ec;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-panel-hover:hover {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(18px);
+            border-color: #7c3aed;
+        }
+        .gradient-button {
+            background: linear-gradient(45deg, #7c3aed, #8d36db);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .gradient-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);
+        }
+        .cyan-glow {
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #7c3aed;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background selection:bg-primary/30 selection:text-primary">
+<!-- TopNavBar -->
+<nav class="sticky top-0 w-full z-50 bg-surface/30 backdrop-blur-md border-b border-white/10 shadow-sm flex items-center justify-between px-gutter-desktop h-20">
+<div class="flex items-center gap-8">
+<span class="font-headline-md text-headline-md font-bold text-primary">SimplyOver</span>
+<div class="hidden md:flex gap-6 items-center">
+<a class="text-on-surface-variant font-label-md text-label-md hover:bg-white/5 transition-colors px-3 py-2 rounded-lg" href="#">All</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:bg-white/5 transition-colors px-3 py-2 rounded-lg" href="#">Anime</a>
+<a class="text-secondary font-bold border-b-2 border-secondary pb-1 font-label-md text-label-md" href="#">Gaming</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:bg-white/5 transition-colors px-3 py-2 rounded-lg" href="#">Neon</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:bg-white/5 transition-colors px-3 py-2 rounded-lg" href="#">Minimalist</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="hidden lg:block text-on-surface font-label-md text-label-md hover:bg-white/5 px-4 py-2 rounded-lg transition-colors">Login</button>
+<button class="gradient-button text-white font-label-md text-label-md px-6 py-2.5 rounded-full">Start Creating</button>
+</div>
+</nav>
+<main class="max-w-[1440px] mx-auto px-margin-desktop py-12">
+<!-- Breadcrumbs -->
+<nav class="flex items-center gap-2 mb-8 text-on-surface-variant font-label-sm text-label-sm">
+<a class="hover:text-primary transition-colors" href="#">Home</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Overlays</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Gaming</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-primary font-bold">Neon Pulse</span>
+</nav>
+<div class="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-gutter-desktop items-start">
+<!-- LEFT COLUMN -->
+<div class="space-y-12">
+<!-- Main Preview -->
+<section class="relative group aspect-video rounded-xl overflow-hidden glass-panel">
+<img alt="Neon Pulse Preview" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A high-end cinematic preview of an OBS stream overlay named Neon Pulse. The design features vibrant electric purple and glowing cyan neon frames against a deep midnight black background. Translucent glass panels with frosted edges host widgets for chat and alerts. The lighting is moody and futuristic, creating a professional cyberpunk gaming atmosphere with 4K resolution textures." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_Ap19D-FfLi4y6mlBgIP1qNrH6x5L75gue7weIrzEqp1Gt6EnE4rstF4E1XGSvvdIMvY9_oOt8n2goKzySj_BCwMNpw7qAghcs7lBY4qmOwz8u-v-xj05hqbr4ST8CU3EPBDNyS8OPCAz_W3qvsQGkm7gvLGIxgEnr9VRRU4EXori78H0ZnQcP0KlLZIvt4SQ1iZioILaEP4lWlVwaVygX-N7HmaIMje56WFfamIF5MMRBlJu5AYHW3LEdWydBPylyuqJQMFIEw4"/>
+<div class="absolute inset-0 bg-black/20 flex items-center justify-center">
+<button class="w-24 h-24 rounded-full glass-panel flex items-center justify-center text-primary group-hover:scale-110 transition-all duration-300">
+<span class="material-symbols-outlined text-5xl translate-x-1" data-weight="fill">play_arrow</span>
+</button>
+</div>
+</section>
+<!-- Thumbnail Carousel -->
+<section class="grid grid-cols-5 gap-4">
+<div class="aspect-video rounded-lg overflow-hidden glass-panel border-2 border-primary cursor-pointer">
+<img class="w-full h-full object-cover opacity-80" data-alt="A digital art workstation scene with purple and cyan neon lights, used as a starting soon screen for a Twitch stream. The aesthetic is high-tech cyberpunk with modular layout elements." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGPajpyLMcNQ3ZtSPWo48N1kyqrfQL6t0bwk3y4uOvFTSkB7rQkla6Z62yvK3XPKWlLON41ejvBoOHt0PQ52jc3FjmmqcKWfIX4ocOYwXWgkICGGovfZIxuqCVX3WVO6dHVvq_sQimHVfW_njg02qvMnplTEDh5ANl3QohPuCrHbOO7HQTWpYiwtf46G_7hiww9Aw3rhAOwPeNHdr2QOIPgdk6F7we_SABsXvoswxuRZJ5xehkCVHOm3lIHS2UX162NVTTBBrtiCQ"/>
+</div>
+<div class="aspect-video rounded-lg overflow-hidden glass-panel border border-white/10 hover:border-primary/50 transition-all cursor-pointer">
+<img class="w-full h-full object-cover opacity-60" data-alt="An intermission scene for a stream overlay featuring a central camera frame surrounded by glowing neon borders in shades of violet and cyan against a techno-sophisticate dark background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6h_wYq32h_PXXCmolLwbNZno76RPiQziskrtcoAUztbCgTd0eVEvdd2bbvhQ747PKZoXRVIQwkHovXSalCFgM5k5RlbFov77OzPC64MIh37sfEXOf3MxgHMMQkHxu5_I0C81sN2B9xF-YyE0TBCXXw4UpUljwbxR2LMAdvgJA3rw2X6B99BsqVYpK_9392FPoS_-kw6SDjQ9Mo3iEJq8KqARVGC9JKiItoRyL-nTL6QatZyCW35ZcLLG8miL96IJCio45ssCUPPw"/>
+</div>
+<div class="aspect-video rounded-lg overflow-hidden glass-panel border border-white/10 hover:border-primary/50 transition-all cursor-pointer">
+<img class="w-full h-full object-cover opacity-60" data-alt="A Be Right Back stream scene with stylized minimalist 4K graphics, featuring a slowly pulsing purple neon core and clean typography in a futuristic digital environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3WOA_3d-M20yoxMUkXz_dHBV9lDzJ0m4TGTQ6uqgm7BEhnDd0VcLpGiGhnLUXey3Rpe2teuJY9id2v16Iv4bCF5RAxP0Vr6h4jwWSJUHLQCK7bDpJE_xonfhl9zL3YL69DiuE63F4CzBuhXaG7KPF1NiPdjWx-85EZx3fZIY9hA5CrcnNb-M98kNoJ_aWr-g2rt_k4Jh-_s-oz3kUjDuVbXsWXuwJNb8u5XESG0VoPbuW9CBaHW35IIagLezT5GrWJBceehVA0aw"/>
+</div>
+<div class="aspect-video rounded-lg overflow-hidden glass-panel border border-white/10 hover:border-primary/50 transition-all cursor-pointer">
+<img class="w-full h-full object-cover opacity-60" data-alt="A high-definition stream overlay scene showing a desktop setup background with cyan glowing circuits and violet ambient lighting, designed for gaming content creators." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNB8JNET988DFdt-52Y4W6HQK4NXQdQ0r434qcTGylN71jdW_7HTEGDNYx0hhOSSTu8CmLiOw7Y3hn-HRmdWV_dXd48w4jyfCYJbrA02eImFAiL0dh8o85YuHDOiVgxdAiss5oyArp_2eXkDk5XPLBiZpWPfwqvP9lNtWy0CGgI63OcXTtpgBgzCCvak-LD2GY0tQ_1N8kvNtxAWw5IvoLT-dh9J9iQgd_1ckixbgi2xhFgR7siOyPKBFrN8gtMl_rgFCnoU2Lf4Q"/>
+</div>
+<div class="aspect-video rounded-lg overflow-hidden glass-panel border border-white/10 hover:border-primary/50 transition-all cursor-pointer">
+<img class="w-full h-full object-cover opacity-60" data-alt="Ending screen for a Twitch overlay with soft purple light trails and a clean 1px white inner border over a deep navy-black base, conveying a professional digital art gallery feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5zwYrCQoHQmRxyVf3TwJJcfyzlIAhu_5OWSzDJnpt1gqIUWNpolwzTnkzdXB-bxZipus5pZ-NyjOhoOdp1-68N9viHi2-MpHdsS1pzfVOXp6WVU7JMmnuu84E9_GMXuom70kuZLIsyQn2e7GyhOD8SZeVVkPUegUXyle_pvizUZWzm9kcMXKlIKKAYtUI7Zd4iyT8Ykf_Nmp29m1h_HaBdC5-5DwgH1-pmhE_sEjqhQe_PjcO6PG_9DSgRV5Xy4E2MoCyXFvhOhQ"/>
+</div>
+</section>
+<!-- Reviews Section -->
+<section class="space-y-8">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-md text-headline-md text-on-surface">Community Feedback</h2>
+<button class="bg-primary/10 border border-primary/20 text-primary px-6 py-2 rounded-full font-label-md text-label-md hover:bg-primary/20 transition-all">Write a Review</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Review Card 1 -->
+<div class="glass-panel p-6 rounded-xl space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center font-bold text-secondary">A</div>
+<div>
+<div class="font-label-md text-label-md">AlexStreamz</div>
+<div class="text-[10px] text-on-surface-variant uppercase tracking-wider">Verified Buyer</div>
+</div>
+</div>
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-[18px]" data-weight="fill">star</span>
+<span class="font-bold">10</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                                The animations are buttery smooth. Setting this up in OBS took less than 5 minutes thanks to the scene collection import. Best cyberpunk theme on the market!
+                            </p>
+</div>
+<!-- Review Card 2 -->
+<div class="glass-panel p-6 rounded-xl space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center font-bold text-primary">K</div>
+<div>
+<div class="font-label-md text-label-md">Kaelin_Vibe</div>
+<div class="text-[10px] text-on-surface-variant uppercase tracking-wider">Top Reviewer</div>
+</div>
+</div>
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-[18px]" data-weight="fill">star</span>
+<span class="font-bold">9</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                                Absolutely love the glassmorphism aesthetic. It doesn't distract from the gameplay but adds that premium 'Techno-Sophisticate' feel to the stream.
+                            </p>
+</div>
+</div>
+</section>
+</div>
+<!-- RIGHT COLUMN (Sticky) -->
+<aside class="lg:sticky lg:top-28 space-y-6">
+<!-- Creator Card -->
+<div class="glass-panel p-6 rounded-xl flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden border border-white/20">
+<img class="w-full h-full object-cover" data-alt="A portrait of a male digital artist in a modern studio environment, softly lit by neon purple lights. Professional profile photo for a content creator." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCm09E7yVTzW8sQrup4iQnolbmb9orUJAzCNIo0r6ATDjjFPRpLEbDMLXhkotL06yQPY1ZsUA2OBKXQaShVq4MYvfQAK_sabpxZz-ZlSUaUA6qMIDCZmFNp6VWbLZ15henSv6vQ1IdtutnUD8HpLqAKxVPMlPfe510E3Lx11vDUf4V6_7T_eIUe5MGmKkMrxtUjVau1vGZTYOX1klK-us1ZlmpKXTOJQdc1TnHTq9-jAQQ_3h0hXftAahRY7Xa2nl_oaNJRWB_mSIc"/>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Neon_Pulse</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">42 Active Listings</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center hover:bg-secondary/20 hover:text-secondary transition-all">
+<span class="material-symbols-outlined text-[18px]">movie</span>
+</button>
+<button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all">
+<span class="material-symbols-outlined text-[18px]">bolt</span>
+</button>
+</div>
+</div>
+<!-- Product Info -->
+<div class="space-y-4">
+<h1 class="font-headline-lg text-headline-lg text-on-surface leading-tight">Neon Pulse - Cyberpunk Stream Suite</h1>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-on-surface-variant font-label-sm text-label-sm">Anime</span>
+<span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-on-surface-variant font-label-sm text-label-sm">Purple</span>
+<span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-on-surface-variant font-label-sm text-label-sm">Minimal</span>
+<span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-on-surface-variant font-label-sm text-label-sm">4K</span>
+</div>
+<div class="pt-4">
+<div class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-widest mb-1">Price</div>
+<div class="text-4xl font-headline-xl text-on-surface">$24.99</div>
+</div>
+<div class="space-y-3 pt-4">
+<button class="w-full gradient-button text-white font-headline-md text-headline-md py-4 rounded-xl shadow-lg">Buy Now</button>
+<div class="grid grid-cols-2 gap-3">
+<button class="flex items-center justify-center gap-2 py-3 rounded-xl glass-panel glass-panel-hover transition-all text-on-surface font-label-md text-label-md">
+<span class="material-symbols-outlined text-[20px]">push_pin</span>
+                                Save to Board
+                            </button>
+<button class="flex items-center justify-center gap-2 py-3 rounded-xl glass-panel glass-panel-hover transition-all text-on-surface font-label-md text-label-md">
+<span class="material-symbols-outlined text-[20px]">favorite</span>
+                                Add to Favorites
+                            </button>
+</div>
+</div>
+</div>
+<!-- Technical Specs -->
+<div class="glass-panel p-6 rounded-xl space-y-4">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined">settings_input_component</span>
+<h3 class="font-label-md text-label-md uppercase tracking-wider">Technical Specs</h3>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between border-b border-white/5 pb-2">
+<span class="text-on-surface-variant font-body-md text-body-md">Resolution</span>
+<span class="text-on-surface font-label-md text-label-md">3840x2160</span>
+</div>
+<div class="flex justify-between border-b border-white/5 pb-2">
+<span class="text-on-surface-variant font-body-md text-body-md">Format</span>
+<span class="text-on-surface font-label-md text-label-md">OBS Scene Collection</span>
+</div>
+<div class="flex justify-between border-b border-white/5 pb-2">
+<span class="text-on-surface-variant font-body-md text-body-md">Size</span>
+<span class="text-on-surface font-label-md text-label-md">142MB</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant font-body-md text-body-md">Updated</span>
+<span class="text-on-surface font-label-md text-label-md">Oct 2023</span>
+</div>
+</div>
+</div>
+<!-- Description -->
+<div class="glass-panel p-6 rounded-xl space-y-4">
+<h3 class="font-label-md text-label-md uppercase tracking-wider text-on-surface">Description</h3>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                        Elevate your broadcast with the Neon Pulse suite. Designed for streamers who demand high-fidelity visuals, this package combines the precision of developer tools with the vibrant energy of cyberpunk art. Each scene is modular and fully customizable within OBS or Streamlabs.
+                    </p>
+</div>
+<!-- Share Row -->
+<div class="flex items-center justify-between pt-4">
+<div class="flex items-center gap-3">
+<button class="p-2 rounded-lg glass-panel hover:text-primary transition-all">
+<span class="material-symbols-outlined text-[20px]">content_copy</span>
+</button>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Copy Link</span>
+</div>
+<div class="flex gap-3">
+<a class="text-on-surface-variant hover:text-secondary" href="#"><span class="material-symbols-outlined">public</span></a>
+<a class="text-on-surface-variant hover:text-secondary" href="#"><span class="material-symbols-outlined">share</span></a>
+<a class="text-on-surface-variant hover:text-secondary" href="#"><span class="material-symbols-outlined">link</span></a>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full bg-surface-container-lowest border-t border-white/5 flex flex-col md:flex-row justify-between items-center py-12 px-margin-desktop mt-20">
+<div class="mb-8 md:mb-0">
+<span class="font-headline-md text-headline-md font-bold text-primary">SimplyOver</span>
+<p class="text-on-surface-variant font-body-md text-body-md mt-2">© 2024 SimplyOver Marketplace. All rights reserved.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-8">
+<a class="text-on-surface-variant font-label-sm text-label-sm hover:text-primary transition-colors" href="#">Terms</a>
+<a class="text-on-surface-variant font-label-sm text-label-sm hover:text-primary transition-colors" href="#">Privacy</a>
+<a class="text-on-surface-variant font-label-sm text-label-sm hover:text-primary transition-colors" href="#">Support</a>
+<a class="text-on-surface-variant font-label-sm text-label-sm hover:text-primary transition-colors" href="#">Artists</a>
+<a class="text-secondary font-label-sm text-label-sm hover:text-primary transition-colors" href="#">Sell Overlays</a>
+</div>
+</footer>
+<script>
+        // Micro-interaction: Play button pulse and hover scaling
+        const playBtn = document.querySelector('.glass-panel.flex.items-center.justify-center');
+        if(playBtn) {
+            playBtn.addEventListener('mouseenter', () => {
+                playBtn.style.boxShadow = '0 0 30px rgba(210, 187, 255, 0.3)';
+            });
+            playBtn.addEventListener('mouseleave', () => {
+                playBtn.style.boxShadow = 'none';
+            });
+        }
+
+        // Simple thumbnail switcher logic (visual only for mockup)
+        const thumbnails = document.querySelectorAll('.aspect-video.rounded-lg.cursor-pointer');
+        thumbnails.forEach(thumb => {
+            thumb.addEventListener('click', () => {
+                thumbnails.forEach(t => t.classList.remove('border-primary'));
+                thumbnails.forEach(t => t.classList.add('border-white/10'));
+                thumb.classList.remove('border-white/10');
+                thumb.classList.add('border-primary');
+            });
+        });
+    </script>
+</body></html>

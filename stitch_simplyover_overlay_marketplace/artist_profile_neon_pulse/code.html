@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SimplyOver - Neon Pulse Creator Profile</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #13131a; /* base background level 0 */
+      color: #e4e1ec;
+      margin: 0;
+      overflow-x: hidden;
+    }
+
+    .glass-surface {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .glass-surface-hover:hover {
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(210, 187, 255, 0.3); /* primary color border on hover */
+    }
+
+    .primary-gradient {
+      background: linear-gradient(45deg, #7c3aed 0%, #8d36db 100%);
+    }
+
+    .text-gradient {
+      background: linear-gradient(90deg, #d2bbff 0%, #4cd7f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .masonry-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      grid-auto-rows: 10px;
+      gap: 24px;
+    }
+
+    .masonry-item {
+      grid-row-end: span 30; /* Default span */
+    }
+
+    .masonry-item:nth-child(even) {
+      grid-row-end: span 38;
+    }
+
+    .masonry-item:nth-child(3n) {
+      grid-row-end: span 32;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .sidebar-rail {
+      width: 80px;
+      transition: width 0.3s ease;
+    }
+    
+    @media (min-width: 1024px) {
+      .sidebar-expanded {
+        width: 280px;
+      }
+    }
+
+    /* Micro-interactions */
+    .btn-scale:active {
+      transform: scale(0.95);
+    }
+  </style>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container": "#1f1f26",
+            "on-tertiary-container": "#f2dfff",
+            "on-primary-container": "#ede0ff",
+            "on-tertiary-fixed": "#2c0051",
+            "inverse-on-surface": "#303038",
+            "on-secondary-fixed": "#001f26",
+            "secondary-fixed": "#acedff",
+            "secondary-container": "#03b5d3",
+            "error": "#ffb4ab",
+            "on-error-container": "#ffdad6",
+            "primary-fixed": "#eaddff",
+            "surface-container-low": "#1b1b22",
+            "surface-container-highest": "#34343c",
+            "on-primary-fixed-variant": "#5a00c6",
+            "surface": "#13131a",
+            "surface-container-lowest": "#0e0e15",
+            "on-tertiary": "#490080",
+            "on-primary-fixed": "#25005a",
+            "primary-fixed-dim": "#d2bbff",
+            "tertiary-fixed": "#f0dbff",
+            "background": "#13131a",
+            "primary": "#d2bbff",
+            "on-secondary-fixed-variant": "#004e5c",
+            "on-surface": "#e4e1ec",
+            "secondary-fixed-dim": "#4cd7f6",
+            "primary-container": "#7c3aed",
+            "on-tertiary-fixed-variant": "#6900b3",
+            "on-secondary": "#003640",
+            "on-primary": "#3f008e",
+            "on-error": "#690005",
+            "outline-variant": "#4a4455",
+            "surface-bright": "#393840",
+            "surface-dim": "#13131a",
+            "inverse-primary": "#732ee4",
+            "error-container": "#93000a",
+            "outline": "#958da1",
+            "inverse-surface": "#e4e1ec",
+            "surface-variant": "#34343c",
+            "on-secondary-container": "#00424e",
+            "tertiary": "#ddb7ff",
+            "surface-tint": "#d2bbff",
+            "surface-container-high": "#2a2931",
+            "on-background": "#e4e1ec",
+            "tertiary-fixed-dim": "#ddb7ff",
+            "on-surface-variant": "#ccc3d8",
+            "secondary": "#4cd7f6",
+            "tertiary-container": "#8d36db"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter-mobile": "16px",
+            "margin-mobile": "20px",
+            "sidebar-width": "280px",
+            "margin-desktop": "48px",
+            "gutter-desktop": "24px",
+            "base-unit": "4px",
+            "sidebar-collapsed-width": "80px"
+          },
+          "fontFamily": {
+            "headline-lg-mobile": ["Inter"],
+            "body-lg": ["Inter"],
+            "headline-md": ["Inter"],
+            "headline-lg": ["Inter"],
+            "body-md": ["Inter"],
+            "label-sm": ["Inter"],
+            "label-md": ["Inter"],
+            "headline-xl": ["Inter"]
+          },
+          "fontSize": {
+            "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+            "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+            "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+            "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+            "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+            "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+            "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+            "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+          }
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-surface selection:bg-primary-container selection:text-on-primary-container">
+<!-- Top Navigation (Component Source: TopNavBar) -->
+<header class="sticky top-0 w-full z-50 bg-surface/30 backdrop-blur-md border-b border-white/10 shadow-sm flex items-center justify-between px-gutter-desktop h-20">
+<div class="flex items-center gap-8">
+<a class="font-headline-md text-headline-md font-bold text-primary" href="#">SimplyOver</a>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-on-surface-variant font-label-md text-label-md hover:bg-white/5 transition-colors px-3 py-2 rounded-lg" href="#">All</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:bg-white/5 transition-colors px-3 py-2 rounded-lg" href="#">Anime</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:bg-white/5 transition-colors px-3 py-2 rounded-lg" href="#">Esports</a>
+<a class="text-secondary font-bold border-b-2 border-secondary pb-1 font-label-md text-label-md" href="#">Neon</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:bg-white/5 transition-colors px-3 py-2 rounded-lg" href="#">Minimalist</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="hidden lg:flex items-center px-6 py-2.5 primary-gradient text-white font-label-md text-label-md rounded-full btn-scale">
+        Start Creating
+      </button>
+<button class="text-on-surface font-label-md text-label-md hover:bg-white/5 px-4 py-2 rounded-lg transition-colors">
+        Login
+      </button>
+</div>
+</header>
+<div class="flex min-h-screen">
+<!-- Side Filter Rail (Component Source: SideNavBar) -->
+<aside class="hidden md:flex flex-col py-8 fixed left-0 h-full w-sidebar-collapsed-width lg:w-sidebar-width bg-surface-container/40 backdrop-blur-xl border-r border-white/10 transition-all duration-300 z-40">
+<div class="px-6 mb-8 lg:block hidden">
+<h2 class="font-headline-md text-headline-md text-primary">Filters</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Refine your search</p>
+</div>
+<nav class="flex flex-col gap-2">
+<button class="flex items-center gap-4 px-6 py-4 border-l-4 border-primary bg-primary/10 text-primary transition-all duration-300">
+<span class="material-symbols-outlined" data-icon="category">category</span>
+<span class="font-label-md text-label-md lg:block hidden">Categories</span>
+</button>
+<button class="flex items-center gap-4 px-6 py-4 text-on-surface-variant hover:bg-white/5 transition-all duration-300">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-label-md text-label-md lg:block hidden">Price: Free</span>
+</button>
+<button class="flex items-center gap-4 px-6 py-4 text-on-surface-variant hover:bg-white/5 transition-all duration-300">
+<span class="material-symbols-outlined" data-icon="attach_money">attach_money</span>
+<span class="font-label-md text-label-md lg:block hidden">Price: Paid</span>
+</button>
+<button class="flex items-center gap-4 px-6 py-4 text-on-surface-variant hover:bg-white/5 transition-all duration-300">
+<span class="material-symbols-outlined" data-icon="star">star</span>
+<span class="font-label-md text-label-md lg:block hidden">Ratings</span>
+</button>
+<button class="flex items-center gap-4 px-6 py-4 text-on-surface-variant hover:bg-white/5 transition-all duration-300">
+<span class="material-symbols-outlined" data-icon="trending_up">trending_up</span>
+<span class="font-label-md text-label-md lg:block hidden">Trending</span>
+</button>
+</nav>
+<div class="mt-auto px-6 py-6 lg:block hidden">
+<button class="w-full py-3 glass-surface rounded-xl font-label-md text-label-md text-primary btn-scale">
+          Apply Filters
+        </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-sidebar-collapsed-width lg:ml-sidebar-width bg-surface relative">
+<!-- Profile Hero Banner -->
+<section class="relative w-full h-[300px] overflow-hidden">
+<img alt="Panoramic neon grid and cyberpunk landscape" class="w-full h-full object-cover brightness-75" src="https://lh3.googleusercontent.com/aida/AP1WRLv4I8ucRFfhK5bsuHjLuOmsjnXuR40rKcROfKcLAJ5qyPXaEvOBHk6aEebvtU1WZYMxN7nTT2xSQg1nudUj2VMOtGYKRero1CPXYhj0OKw2RDEWGT15iBWVFjPNEQDteUjd6B6QCRFWg3-gZRJM0BNszM186UdqPWJymeqb2sQ8KV_uLXy32m_gR20TpNblsyWJIY25-1Q91ZOvq2Xtm8ce7G4ciwuH1vw9COjgM4wi05-V-AjTDz_03iY"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent"></div>
+</section>
+<!-- Profile Header Content -->
+<section class="px-margin-desktop -mt-16 relative z-10">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div class="flex flex-col md:flex-row items-center md:items-end gap-6">
+<div class="w-32 h-32 rounded-full border-4 border-surface overflow-hidden shadow-2xl glass-surface">
+<img class="w-full h-full object-cover" data-alt="A stylized portrait of a digital artist with glowing cyan hair and a purple neon halo against a dark futuristic background. The style is hyper-detailed digital art with high contrast and vibrant lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYtktgigO5IKZh9ThL-c_qarIe10BPopkcEvRskLtz9wXMjXuUXCYb-8IPmbcMbOfg43fgYwQXXHk6g3MV66mivK9LCKwxgesogb1nXwyv7gqNv3d-IFRTgRmHIAklahgZzQ7i1Q143eQv_TIP41VaE_Igmn8FIKyVMHTgOMr6IDgtnlHvZEepb42QdyAEiBZiG8Brvxp_nvJYm7kpoTpa6YYfO1vfDU1C8u6zd8p0sOeI2nSDUViWzefDaumMMqqo0IFwqQ800a8"/>
+</div>
+<div class="text-center md:text-left mb-2">
+<h1 class="font-headline-xl text-headline-xl text-gradient">Neon Pulse Creator</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">@neonpulse</p>
+</div>
+</div>
+<div class="flex items-center gap-3 justify-center">
+<button class="px-8 py-3 primary-gradient text-white font-label-md text-label-md rounded-full shadow-lg shadow-primary/20 btn-scale">
+              Follow
+            </button>
+<button class="px-8 py-3 glass-surface text-on-surface font-label-md text-label-md rounded-full btn-scale">
+              Share Profile
+            </button>
+</div>
+</div>
+<div class="mt-8 max-w-2xl">
+<p class="font-body-lg text-body-lg text-on-surface leading-relaxed">
+            Specializing in high-performance cyberpunk and minimalist OBS overlays for professional streamers.
+          </p>
+</div>
+<!-- Social Row -->
+<div class="mt-6 flex flex-wrap gap-3">
+<button class="p-2.5 rounded-full bg-[#9146FF]/10 text-[#9146FF] border border-[#9146FF]/20 hover:bg-[#9146FF]/20 transition-all">
+<span class="material-symbols-outlined" data-icon="videocam">videocam</span>
+</button>
+<button class="p-2.5 rounded-full bg-[#53FC18]/10 text-[#53FC18] border border-[#53FC18]/20 hover:bg-[#53FC18]/20 transition-all">
+<span class="material-symbols-outlined" data-icon="bolt">bolt</span>
+</button>
+<button class="p-2.5 rounded-full bg-[#E4405F]/10 text-[#E4405F] border border-[#E4405F]/20 hover:bg-[#E4405F]/20 transition-all">
+<span class="material-symbols-outlined" data-icon="photo_camera">photo_camera</span>
+</button>
+<button class="p-2.5 rounded-full bg-[#ffffff]/5 text-white border border-white/10 hover:bg-white/10 transition-all">
+<span class="material-symbols-outlined" data-icon="music_note">music_note</span>
+</button>
+<button class="p-2.5 rounded-full bg-[#BD081C]/10 text-[#BD081C] border border-[#BD081C]/20 hover:bg-[#BD081C]/20 transition-all">
+<span class="material-symbols-outlined" data-icon="push_pin">push_pin</span>
+</button>
+<button class="p-2.5 rounded-full bg-[#4cd7f6]/10 text-[#4cd7f6] border border-[#4cd7f6]/20 hover:bg-[#4cd7f6]/20 transition-all">
+<span class="material-symbols-outlined" data-icon="language">language</span>
+</button>
+</div>
+<!-- Stats Bar -->
+<div class="mt-10 grid grid-cols-2 md:flex md:items-center gap-8 py-6 border-y border-white/5">
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-on-surface">42</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Overlays Created</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-on-surface">1.2k</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Favorites</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-on-surface">8</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Boards</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-on-surface">2022</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Member since</span>
+</div>
+</div>
+<!-- Navigation Tabs -->
+<div class="mt-8 flex items-center gap-10 border-b border-white/5 overflow-x-auto no-scrollbar">
+<button class="pb-4 text-secondary font-bold border-b-2 border-secondary font-label-md text-label-md whitespace-nowrap">
+            Designs
+          </button>
+<button class="pb-4 text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors whitespace-nowrap">
+            Boards
+          </button>
+<button class="pb-4 text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors whitespace-nowrap">
+            About
+          </button>
+</div>
+<!-- Masonry Grid (Designs Tab) -->
+<div class="mt-12 mb-20 masonry-grid">
+<!-- Card 1 -->
+<article class="masonry-item group glass-surface glass-surface-hover rounded-2xl overflow-hidden transition-all duration-300 relative flex flex-col">
+<div class="relative overflow-hidden aspect-video bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A high-end gaming setup with dual monitors showing a complex cyberpunk-themed OBS overlay. The overlay features glowing purple borders, animated status bars, and a semi-transparent chat box with cyan text. Cinematic low-light photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuByUDBorMdlBeWaRu8uTS0Wua8QdNPg0w7qR8tqx_0vBAk1AQns8HkLxGTLgg8B3iPbA_sKESxs7DzNTdSokmG2qbM-rt2e7liKKEpqwojminVnDqYt_cGfVt2vxlQqycb6i-uF-CoAEOpxkW9ExDcVsIUTqXLgH5fAmmFBf1jkrPwWjP104eGJLuLK8fPb6LaSdDz9npHkJqEQXLBhSWNB9RsJuKi9QSqOnyMBfIYaAQuy_Oft-yWheDAhsBp8nx-218-gexVp_h0"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<span class="absolute top-3 right-3 bg-secondary text-surface px-3 py-1 rounded-full font-label-sm text-label-sm">$24.99</span>
+</div>
+<div class="p-4 flex flex-col justify-between flex-grow">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">Ether Grid Overlay</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Cyberpunk / Full HUD</p>
+</div>
+<div class="mt-4 flex items-center justify-between">
+<span class="text-on-surface-variant font-label-sm text-label-sm">Creator @neonpulse</span>
+<button class="text-error hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="favorite" data-weight="fill">favorite</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Card 2 -->
+<article class="masonry-item group glass-surface glass-surface-hover rounded-2xl overflow-hidden transition-all duration-300 relative flex flex-col">
+<div class="relative overflow-hidden aspect-square bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="An abstract digital artwork representing a minimalist streaming overlay. Smooth gradients of violet and deep blue with floating geometric shapes that possess a glass-like texture. Clean, professional aesthetics with high depth." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJpHtdmzpKFzkGNmpJrbMeCA4wibis6JZEc0XPQasHZ_GAV3pnTc8E3yE5_tomMX-pNMFXXkg9ZYwGhgBHVv0ee8IJV7Lcf-TZP-f1xRCpIOLNhSn1X43YBZ4q1cM6DC0SDySEMv7SSScP41YuYcm2HoRzhADNnPy_u-XtghSLDhpwaadrUw5rzQfLAOv4jDBw7LlKfoXGLm68mVZ7cRiU_h_MmEqZcd3u6K-bHe7bWpZuebNzwp2IN9_y3LN1-5JEClJPyUHdeA8"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<span class="absolute top-3 right-3 bg-primary text-on-primary px-3 py-1 rounded-full font-label-sm text-label-sm">FREE</span>
+</div>
+<div class="p-4 flex flex-col justify-between flex-grow">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">Minimal Zenith</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Minimalist / Webcam</p>
+</div>
+<div class="mt-4 flex items-center justify-between">
+<span class="text-on-surface-variant font-label-sm text-label-sm">Creator @neonpulse</span>
+<button class="text-on-surface-variant hover:text-error transition-colors">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Card 3 -->
+<article class="masonry-item group glass-surface glass-surface-hover rounded-2xl overflow-hidden transition-all duration-300 relative flex flex-col">
+<div class="relative overflow-hidden aspect-[4/5] bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A detailed view of a professional esports streaming package. The design features sharp angular lines, metallic textures, and vibrant cyan neon accents. Displaying a scene transition animation with a 'Match Starting' text in a bold sans-serif font." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvWqfGnp-Vi5tXK0Lf2tpaJYfqE_RnQGx8so4tqrU-BDoJoZp57ieR-m2BqPsGbnGblBjpDe0aMOS5GfBViHvq2jRsDjJyZvY8pD6R7dvQwhQSUQ5YqqoNajlvBt8qqtyqbjZkelXt6ev4JMP4kypIhRTXpY9sy7vIizQNjn7quEl_01Krd5zOZsJoMOyLMEA20RDX8J0SVuEqGVDMtYiBy9u-7pLtZdnSZ_ixU6okZyhke5klhIaCcDvzjsbK2YO_4j8m9tQ43NI"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<span class="absolute top-3 right-3 bg-secondary text-surface px-3 py-1 rounded-full font-label-sm text-label-sm">$32.00</span>
+</div>
+<div class="p-4 flex flex-col justify-between flex-grow">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">Apex Voltage Pack</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Esports / Branding</p>
+</div>
+<div class="mt-4 flex items-center justify-between">
+<span class="text-on-surface-variant font-label-sm text-label-sm">Creator @neonpulse</span>
+<button class="text-on-surface-variant hover:text-error transition-colors">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Card 4 -->
+<article class="masonry-item group glass-surface glass-surface-hover rounded-2xl overflow-hidden transition-all duration-300 relative flex flex-col">
+<div class="relative overflow-hidden aspect-video bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Cyberpunk night city backdrop used as a streaming scene background. Rain streaks on the camera lens, glowing neon signage in pink and blue reflecting off wet pavement. High atmosphere and cinematic mood." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwMaZbcWK02NuHo7o8w6brlKjXOdgIoSFGt2VC5797JvW9BrraUZv8CoDXWNt4Rc2atcfhm88_BmLIWnUmBu4iOgVNFKYrQyrIITB7YnebkFYh2EfmbI3NrapGiusZTeYkYcGb7XNuEqQhQGjay0oT1JtunmdW2yEmsNjxu7rlfHaNNidTRAc1VreRCG8S2aHN91TqULUDG84TN5Y_wyqFhm1ZqinVx5vrhc-ohhaWnwWUMINNA4sp9J51_qSpk2-qshEMw2ik0cc"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<span class="absolute top-3 right-3 bg-secondary text-surface px-3 py-1 rounded-full font-label-sm text-label-sm">$19.99</span>
+</div>
+<div class="p-4 flex flex-col justify-between flex-grow">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">Neon Rain Scene</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Cyberpunk / Animated</p>
+</div>
+<div class="mt-4 flex items-center justify-between">
+<span class="text-on-surface-variant font-label-sm text-label-sm">Creator @neonpulse</span>
+<button class="text-error">
+<span class="material-symbols-outlined" data-icon="favorite" data-weight="fill">favorite</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Card 5 -->
+<article class="masonry-item group glass-surface glass-surface-hover rounded-2xl overflow-hidden transition-all duration-300 relative flex flex-col">
+<div class="relative overflow-hidden aspect-[3/4] bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A clean laptop setup displaying a minimalist web-based dashboard for streamers. The interface uses a dark mode color palette with soft primary violet glows behind circular progress bars. Sophisticated and high-tech feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfhi2Pg-6i-RpbcPUu19v2FF0oYR9XrFrjFDW2abGXI930OS2i61iSdJdzq8PNKwYuVXH1Mynu4DToMogu8BQnBZuAk6AuoVShXRpbqjdbskiOfmgjYIl8r4PNv1CGm38ECUIQITaDJQ5cd_9i9w_g9wBPKC9M0dEtxcRQRfE-Y6P-0zzadQGk-_UHrb8V2HwMmLto0v3p52j2ihAMAB9duKHm4SkRh4VioXdR0e9TRAjk8aZ8Q2vYguhEgua6xghvje5NFOagfIA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<span class="absolute top-3 right-3 bg-secondary text-surface px-3 py-1 rounded-full font-label-sm text-label-sm">$29.99</span>
+</div>
+<div class="p-4 flex flex-col justify-between flex-grow">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">Dashboard HUD</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Minimalist / UI Kit</p>
+</div>
+<div class="mt-4 flex items-center justify-between">
+<span class="text-on-surface-variant font-label-sm text-label-sm">Creator @neonpulse</span>
+<button class="text-on-surface-variant hover:text-error transition-colors">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+</button>
+</div>
+</div>
+</article>
+</div>
+</section>
+<!-- Footer (Component Source: Footer) -->
+<footer class="w-full border-t border-white/5 bg-surface-container-lowest flex flex-col md:flex-row justify-between items-center py-12 px-margin-desktop">
+<div class="flex flex-col gap-2 mb-8 md:mb-0">
+<span class="font-headline-md text-headline-md font-bold text-primary">SimplyOver</span>
+<p class="font-body-md text-body-md text-on-surface-variant">© 2024 SimplyOver Marketplace. All rights reserved.</p>
+</div>
+<nav class="flex flex-wrap justify-center gap-8">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Terms</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Support</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Artists</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Sell Overlays</a>
+</nav>
+</footer>
+</main>
+</div>
+<!-- Micro-interaction Scripts -->
+<script>
+    // Simple tab switching animation placeholder
+    document.querySelectorAll('button[role="tab"]').forEach(tab => {
+      tab.addEventListener('click', () => {
+        // Clear active classes
+        document.querySelectorAll('button[role="tab"]').forEach(t => {
+          t.classList.remove('text-secondary', 'border-secondary', 'font-bold');
+          t.classList.add('text-on-surface-variant');
+        });
+        // Set active
+        tab.classList.add('text-secondary', 'border-secondary', 'font-bold');
+        tab.classList.remove('text-on-surface-variant');
+      });
+    });
+
+    // Favorite toggle micro-interaction
+    document.querySelectorAll('.material-symbols-outlined[data-icon="favorite"]').forEach(icon => {
+      icon.parentElement.addEventListener('click', (e) => {
+        e.preventDefault();
+        const isFilled = icon.getAttribute('data-weight') === 'fill';
+        if (isFilled) {
+          icon.removeAttribute('data-weight');
+          icon.parentElement.classList.replace('text-error', 'text-on-surface-variant');
+          icon.style.fontVariationSettings = "'FILL' 0";
+        } else {
+          icon.setAttribute('data-weight', 'fill');
+          icon.parentElement.classList.replace('text-on-surface-variant', 'text-error');
+          icon.style.fontVariationSettings = "'FILL' 1";
+        }
+      });
+    });
+  </script>
+</body></html>
