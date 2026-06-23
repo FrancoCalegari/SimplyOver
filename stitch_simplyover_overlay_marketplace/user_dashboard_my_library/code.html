@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SimplyOver | My Library</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ffb4ab",
+                        "on-tertiary-fixed-variant": "#6900b3",
+                        "primary-fixed-dim": "#d2bbff",
+                        "on-tertiary-fixed": "#2c0051",
+                        "inverse-on-surface": "#303038",
+                        "tertiary": "#ddb7ff",
+                        "primary-container": "#7c3aed",
+                        "on-secondary-fixed-variant": "#004e5c",
+                        "secondary": "#4cd7f6",
+                        "on-tertiary-container": "#f2dfff",
+                        "surface": "#13131a",
+                        "on-tertiary": "#490080",
+                        "surface-container-high": "#2a2931",
+                        "on-primary-fixed-variant": "#5a00c6",
+                        "on-primary-container": "#ede0ff",
+                        "surface-container": "#1f1f26",
+                        "surface-variant": "#34343c",
+                        "inverse-surface": "#e4e1ec",
+                        "tertiary-fixed-dim": "#ddb7ff",
+                        "background": "#13131a",
+                        "surface-dim": "#13131a",
+                        "primary": "#d2bbff",
+                        "surface-bright": "#393840",
+                        "secondary-fixed": "#acedff",
+                        "on-surface": "#e4e1ec",
+                        "on-error": "#690005",
+                        "tertiary-container": "#8d36db",
+                        "on-primary": "#3f008e",
+                        "on-primary-fixed": "#25005a",
+                        "inverse-primary": "#732ee4",
+                        "on-secondary": "#003640",
+                        "outline-variant": "#4a4455",
+                        "surface-container-lowest": "#0e0e15",
+                        "error-container": "#93000a",
+                        "secondary-fixed-dim": "#4cd7f6",
+                        "on-surface-variant": "#ccc3d8",
+                        "on-background": "#e4e1ec",
+                        "on-secondary-fixed": "#001f26",
+                        "outline": "#958da1",
+                        "surface-tint": "#d2bbff",
+                        "primary-fixed": "#eaddff",
+                        "secondary-container": "#03b5d3",
+                        "on-secondary-container": "#00424e",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-fixed": "#f0dbff",
+                        "surface-container-low": "#1b1b22",
+                        "surface-container-highest": "#34343c"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter-desktop": "24px",
+                        "gutter-mobile": "16px",
+                        "sidebar-collapsed-width": "80px",
+                        "margin-desktop": "48px",
+                        "margin-mobile": "20px",
+                        "sidebar-width": "280px",
+                        "base-unit": "4px"
+                    },
+                    "fontFamily": {
+                        "headline-xl": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-lg-mobile": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-level-1 {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-level-2 {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        .primary-gradient {
+            background: linear-gradient(45deg, #7c3aed, #ddb7ff);
+        }
+        body {
+            background-color: #0D0D14;
+            color: #e4e1ec;
+            font-family: 'Inter', sans-serif;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+<!-- TopNavBar (Large) -->
+<nav class="sticky top-0 w-full z-50 bg-surface/30 backdrop-blur-md border-b border-white/10 shadow-sm flex items-center justify-between px-gutter-desktop h-20">
+<div class="flex items-center gap-8">
+<span class="font-headline-md text-headline-md font-bold text-primary">SimplyOver</span>
+<div class="hidden md:flex items-center gap-6">
+<a class="text-on-surface-variant font-label-md text-label-md hover:bg-white/5 transition-colors px-3 py-1 rounded-lg" href="#">All</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:bg-white/5 transition-colors px-3 py-1 rounded-lg" href="#">Anime</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:bg-white/5 transition-colors px-3 py-1 rounded-lg" href="#">Esports</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:bg-white/5 transition-colors px-3 py-1 rounded-lg" href="#">Neon</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:bg-white/5 transition-colors px-3 py-1 rounded-lg" href="#">Minimalist</a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:bg-white/5 transition-colors px-3 py-1 rounded-lg" href="#">Gaming</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="hidden sm:block text-on-surface-variant font-label-md text-label-md px-4 py-2 hover:bg-white/5 transition-colors rounded-lg">Login</button>
+<button class="primary-gradient text-white font-label-md text-label-md px-6 py-2.5 rounded-full shadow-lg shadow-primary-container/20 active:scale-95 transition-all">Start Creating</button>
+</div>
+</nav>
+<div class="flex min-h-[calc(100vh-80px)]">
+<!-- SideNavBar (Left) -->
+<aside class="fixed left-0 h-full w-sidebar-width bg-surface-container/40 backdrop-blur-xl border-r border-white/10 flex flex-col py-8 z-40 hidden md:flex">
+<div class="px-8 mb-10">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-12 h-12 rounded-full border-2 border-primary overflow-hidden">
+<img alt="Avatar" class="w-full h-full object-cover" data-alt="A futuristic stylized profile picture of a gamer with neon accents" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBeOc3lzebNG534uqNyyuebhVk4d4lpx8KgQbJxIHh0SQoqPjzHbYNNp54XddEIjtDjQhsBPs1LbIYJ7g5n3Ethfd77x8igz1aCS_tG4VwTv288cOj5DQ5Y-roJLqNiRGZD9LZWF4tA2rKH3zFMP_LI8MzH9A92O_5RoMTfLlAXu26aHoV8C_mx8rX-VAD1aMlqQDw8ygIjQiNSbjWz4RphaEg3_5v_Rj8zWirP6h7waIrfDX21pxtZvhPyrdc9eZi1ziOQ-JCLoOw"/>
+</div>
+<div>
+<p class="font-label-md text-label-md text-white">NeonOver</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Pro Designer</p>
+</div>
+</div>
+<h2 class="font-headline-md text-headline-md font-bold text-primary mb-1">Filters</h2>
+<p class="font-body-md text-body-md text-on-surface-variant opacity-70">Refine your search</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-4 px-8 py-4 border-l-4 border-primary bg-primary/10 text-primary transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="category">category</span>
+<span class="font-label-md text-label-md">Categories</span>
+</a>
+<a class="flex items-center gap-4 px-8 py-4 text-on-surface-variant hover:bg-white/5 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-label-md text-label-md">Price: Free</span>
+</a>
+<a class="flex items-center gap-4 px-8 py-4 text-on-surface-variant hover:bg-white/5 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="attach_money">attach_money</span>
+<span class="font-label-md text-label-md">Price: Paid</span>
+</a>
+<a class="flex items-center gap-4 px-8 py-4 text-on-surface-variant hover:bg-white/5 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="star">star</span>
+<span class="font-label-md text-label-md">Ratings</span>
+</a>
+<a class="flex items-center gap-4 px-8 py-4 text-on-surface-variant hover:bg-white/5 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="trending_up">trending_up</span>
+<span class="font-label-md text-label-md">Trending</span>
+</a>
+</nav>
+<div class="px-8 mt-auto">
+<button class="w-full py-3 glass-level-1 text-primary font-label-md text-label-md rounded-xl hover:bg-white/10 transition-colors">Apply Filters</button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-sidebar-width px-margin-mobile md:px-margin-desktop py-12">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-8">
+<div>
+<h1 class="font-headline-xl text-headline-xl text-white mb-2">My Library</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl">
+                        Access all your purchased overlays, digital assets, and customized streaming kits. Ready for your next broadcast.
+                    </p>
+</div>
+<div class="flex items-center gap-3">
+<div class="glass-level-1 flex items-center px-4 py-2.5 rounded-full">
+<span class="material-symbols-outlined text-secondary mr-2" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-label-md font-label-md w-48 placeholder:text-on-surface-variant/50" placeholder="Search my assets..." type="text"/>
+</div>
+<button class="glass-level-2 p-2.5 rounded-full text-on-surface-variant hover:text-white transition-colors">
+<span class="material-symbols-outlined" data-icon="sort">sort</span>
+</button>
+</div>
+</div>
+<!-- Library Content Grid (Masonry Logic) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-gutter-desktop">
+<!-- Card 1 -->
+<div class="glass-level-1 rounded-2xl overflow-hidden group hover:border-primary/50 transition-all duration-300 flex flex-col">
+<div class="relative overflow-hidden aspect-[16/10]">
+<img alt="Overlay 1" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="A dark cyberpunk OBS overlay with neon pink and cyan animated borders and high-tech UI elements" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCX5RjR0aF1A73qywyyEEkHi8zVCi0uVD5fck459lpAc4HIjdAB0SffrBZWUT0Hkd1DjsJCe-Bg3H3llEwV02U9qmCqEQatNAuvdvwwgcTGpFP2XLjwN5EawCTVD0J9i9OQM9Oy7QG6Zq3sBZUUTjPHF_VitFxOpOn8SbLb949-GFG4QyQUWFZf3OpRDZhf-QFzGIskYpy1eNtYA5XqVopYVKah76Kq1JGlvLvjaVJuXY_ACeiH0NXKB1es9272rrSBY4oTudbzmFU"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+<span class="text-white text-label-sm font-label-sm bg-primary/20 backdrop-blur-md px-2 py-1 rounded">V2.4 Updated</span>
+</div>
+<div class="absolute top-3 right-3 glass-level-2 p-2 rounded-full">
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="check_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<div class="p-5 flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-headline-md text-body-lg text-white mb-1">Cyber Drifter Kit</h3>
+<p class="text-on-surface-variant font-label-sm text-label-sm">By StudioX</p>
+</div>
+</div>
+<div class="mt-auto flex items-center justify-between gap-3 pt-4 border-t border-white/5">
+<button class="flex-1 py-2 rounded-lg bg-secondary/10 text-secondary font-label-md text-label-md hover:bg-secondary/20 transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="download">download</span>
+                                Download
+                            </button>
+<button class="p-2 rounded-lg glass-level-2 text-on-surface-variant hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="glass-level-1 rounded-2xl overflow-hidden group hover:border-primary/50 transition-all duration-300 flex flex-col">
+<div class="relative overflow-hidden aspect-[4/3]">
+<img alt="Overlay 2" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="A soft minimalist anime style stream background with cherry blossoms and a floating chat window" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBVGeklX__73K5trHvCFGWVoVBPcU3CiddLL4itB4g5a9zd-GqaQNgn3NboEvnlz4TvNdSEb8_BUHkK2z30WI7Mu8ejY7YpIFs1mAHCLSK6iaQry1DzLOjjFzpFNaQ74MhOBqqbBzMK04V7a8gmZHntM6w7-VXzMr2plBFQbtubBvi5lxEp2yb4EnSTprM7o-zTG4q-WGrCS4c_12VftHtu2e7x_Ybj1dj1ba1mCzHLNP9F0TaBKdoLyfCI44Xaw2Lp3xHfsa23Wo"/>
+<div class="absolute top-3 right-3 glass-level-2 p-2 rounded-full">
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="check_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<div class="p-5 flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-headline-md text-body-lg text-white mb-1">Zen Garden Stream</h3>
+<p class="text-on-surface-variant font-label-sm text-label-sm">By MochiDesign</p>
+</div>
+</div>
+<div class="mt-auto flex items-center justify-between gap-3 pt-4 border-t border-white/5">
+<button class="flex-1 py-2 rounded-lg bg-secondary/10 text-secondary font-label-md text-label-md hover:bg-secondary/20 transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="download">download</span>
+                                Download
+                            </button>
+<button class="p-2 rounded-lg glass-level-2 text-on-surface-variant hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 3 (Tall/Masonry vibe) -->
+<div class="glass-level-1 rounded-2xl overflow-hidden group hover:border-primary/50 transition-all duration-300 flex flex-col">
+<div class="relative overflow-hidden aspect-[9/16]">
+<img alt="Overlay 3" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Retro 80s synthwave theme stream asset with chrome grid floor and violet sun" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbuc5OsYIMUSbIDZF2v9ZLBkV830liTR4flyJAMCVvmnnjkR8Amklg6VHQBmXp_boN3liFkXkULiMlIfcuoE6G56eTFCWcENOOYTttFjqxctybIv2BarZ8JXGSAiIgV7DMf4rkq-SP5ufj0Lhrn89ZjKrneZJJzbVSzHgmJ2Lw5nKrIULmr92BE2JvNKqkAjES-reHtnwtSAaJ17seTYLXTXSgJGhevN23icXiIxOv1cDPLlsWldKIuxEylmBXmZkLSpAAv0-MLqk"/>
+<div class="absolute top-3 right-3 glass-level-2 p-2 rounded-full">
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="check_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<div class="p-5 flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-headline-md text-body-lg text-white mb-1">Synthwave Mobile</h3>
+<p class="text-on-surface-variant font-label-sm text-label-sm">By RetroVibes</p>
+</div>
+</div>
+<div class="mt-auto flex items-center justify-between gap-3 pt-4 border-t border-white/5">
+<button class="flex-1 py-2 rounded-lg bg-secondary/10 text-secondary font-label-md text-label-md hover:bg-secondary/20 transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="download">download</span>
+                                Download
+                            </button>
+<button class="p-2 rounded-lg glass-level-2 text-on-surface-variant hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="glass-level-1 rounded-2xl overflow-hidden group hover:border-primary/50 transition-all duration-300 flex flex-col">
+<div class="relative overflow-hidden aspect-[16/10]">
+<img alt="Overlay 4" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Abstract 3D liquid metal shapes floating in a dark void, luxury streaming theme" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsj8xlwvd417kadyNlAY_qyp0-B_EvMQu9GXHajkhPExZJV1nLOBXxqi-rTYTVPnMZ4-paGF0WkUv5NCwU0LTtkUOb1MkhH1laMQxEyLuCr998f5D70uWUF_ISs5G7WdECB47zRelFEs4CVzqZ8yDmHcm6n40Cwcd-kCeE-rV8H5bhM6NSzN2Zh-B4laiGT7Smrg6p9oWXcMgJ2iUB-i6A4Yop9mrh7sA2chJ4944LPLqqdv37Es9n1UJFDjXeYl5PXOcF5IVS92Q"/>
+<div class="absolute top-3 right-3 glass-level-2 p-2 rounded-full">
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="check_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<div class="p-5 flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-headline-md text-body-lg text-white mb-1">Liquid Metal Pro</h3>
+<p class="text-on-surface-variant font-label-sm text-label-sm">By FluidArts</p>
+</div>
+</div>
+<div class="mt-auto flex items-center justify-between gap-3 pt-4 border-t border-white/5">
+<button class="flex-1 py-2 rounded-lg bg-secondary/10 text-secondary font-label-md text-label-md hover:bg-secondary/20 transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="download">download</span>
+                                Download
+                            </button>
+<button class="p-2 rounded-lg glass-level-2 text-on-surface-variant hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 5 -->
+<div class="glass-level-1 rounded-2xl overflow-hidden group hover:border-primary/50 transition-all duration-300 flex flex-col">
+<div class="relative overflow-hidden aspect-[16/9]">
+<img alt="Overlay 5" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="Futuristic high-tech computer interface overlay for gaming" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDP420u93Mpc5z-F2cD4HXboBTY0g7nU36m8SrnMuMN4nG_XXbORY5PeNYiR6Rdu1hjait-iwxCzppSVgm-rxQsIeytmHEmhjyZxpcagARm0zVdIzwU8xR4IrW_9pvHXf3qRCE1CjLzMHrv7337OMNT8ie5X_5-viNFIbmazPog0NLIAEcUnV38c_yDtQe6JIa97DgYYxleVyLNQE8YQQloIPW9y5-vibeX2YzGajZz0mlJmtZYxZV5d-Ij2l3ZUWAPM8brPHWbnMI"/>
+<div class="absolute top-3 right-3 glass-level-2 p-2 rounded-full">
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="check_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<div class="p-5 flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-headline-md text-body-lg text-white mb-1">Terminal Master</h3>
+<p class="text-on-surface-variant font-label-sm text-label-sm">By CodeBenders</p>
+</div>
+</div>
+<div class="mt-auto flex items-center justify-between gap-3 pt-4 border-t border-white/5">
+<button class="flex-1 py-2 rounded-lg bg-secondary/10 text-secondary font-label-md text-label-md hover:bg-secondary/20 transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="download">download</span>
+                                Download
+                            </button>
+<button class="p-2 rounded-lg glass-level-2 text-on-surface-variant hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Empty State / Load More (Invisible trigger or simple button) -->
+<div class="mt-16 flex flex-col items-center justify-center py-12 border-2 border-dashed border-white/5 rounded-3xl">
+<div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-on-surface-variant text-4xl" data-icon="auto_awesome">auto_awesome</span>
+</div>
+<h3 class="font-headline-md text-white mb-2">Find more assets</h3>
+<p class="text-on-surface-variant font-body-md mb-6">Explore thousands of premium OBS overlays and stream packs.</p>
+<button class="glass-level-1 px-8 py-3 rounded-full text-primary font-label-md hover:bg-white/10 transition-all">Go to Marketplace</button>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="w-full bg-surface-container-lowest border-t border-white/5 flex flex-col md:flex-row justify-between items-center py-12 px-margin-desktop">
+<div class="flex flex-col items-center md:items-start mb-8 md:mb-0">
+<span class="font-headline-md text-headline-md font-bold text-primary mb-2">SimplyOver</span>
+<p class="text-on-surface-variant font-label-sm text-label-sm">© 2024 SimplyOver Marketplace. All rights reserved.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-8">
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-primary transition-colors" href="#">Terms</a>
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-primary transition-colors" href="#">Privacy</a>
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-primary transition-colors" href="#">Support</a>
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-primary transition-colors" href="#">Artists</a>
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-primary transition-colors" href="#">Sell Overlays</a>
+</div>
+</footer>
+<!-- Atmosphere/Micro-interactions Scripts -->
+<script>
+        // Smooth scaling for buttons and cards
+        document.querySelectorAll('button, .glass-level-1').forEach(el => {
+            el.addEventListener('mousedown', () => {
+                el.style.transform = 'scale(0.98)';
+            });
+            el.addEventListener('mouseup', () => {
+                el.style.transform = '';
+            });
+            el.addEventListener('mouseleave', () => {
+                el.style.transform = '';
+            });
+        });
+
+        // Add a subtle subtle pulse to the "Start Creating" button
+        const cta = document.querySelector('.primary-gradient');
+        if (cta) {
+            setInterval(() => {
+                cta.classList.add('shadow-primary-container/40');
+                setTimeout(() => {
+                    cta.classList.remove('shadow-primary-container/40');
+                }, 1000);
+            }, 3000);
+        }
+    </script>
+</body></html>

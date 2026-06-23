@@ -1,0 +1,163 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =====================================================
+   SimplyOver — Obsidian Ethereal Global Styles
+   ===================================================== */
+
+@layer base {
+  body {
+    background-color: #13131a;
+    color: #e4e1ec;
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #13131a;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #4a4455;
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #7c3aed;
+  }
+}
+
+@layer components {
+  /* ── Glass Surfaces ── */
+  .glass-surface {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .glass-input {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e4e1ec;
+    transition: all 0.3s ease;
+  }
+
+  .glass-input:focus {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: #4cd7f6;
+    box-shadow: 0 0 15px rgba(76, 215, 246, 0.2);
+    outline: none;
+  }
+
+  /* ── Gradients ── */
+  .primary-gradient {
+    background: linear-gradient(45deg, #7c3aed, #ddb7ff);
+  }
+
+  .primary-gradient-btn {
+    background: linear-gradient(45deg, #7c3aed, #8d36db);
+  }
+
+  .text-gradient {
+    background: linear-gradient(45deg, #d2bbff, #06B6D4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-text {
+    background: linear-gradient(45deg, #7c3aed, #4cd7f6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── Masonry Grid ── */
+  .masonry-grid {
+    column-count: 2;
+    column-gap: 16px;
+  }
+
+  @media (min-width: 1024px) {
+    .masonry-grid {
+      column-count: 4;
+      column-gap: 24px;
+    }
+  }
+
+  @media (min-width: 1536px) {
+    .masonry-grid {
+      column-count: 5;
+    }
+  }
+
+  .masonry-item {
+    break-inside: avoid;
+    margin-bottom: 24px;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar-transition {
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* ── Utility ── */
+  .state-hidden {
+    display: none;
+  }
+
+  /* ── Material Icons ── */
+  .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-style: normal;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    direction: ltr;
+    user-select: none;
+  }
+}
+
+@layer utilities {
+  @keyframes float {
+    0%   { transform: translateY(0px);   }
+    50%  { transform: translateY(-10px); }
+    100% { transform: translateY(0px);   }
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0);    }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(124, 58, 237, 0.15); }
+    50%       { box-shadow: 0 0 40px rgba(124, 58, 237, 0.4);  }
+  }
+
+  .animate-float          { animation: float      4s ease-in-out infinite;   }
+  .animate-float-delayed  { animation: float      5s ease-in-out infinite 1s;}
+  .animate-fade-in-up     { animation: fadeInUp   0.6s ease-out both;        }
+  .animate-pulse-glow     { animation: pulse-glow 3s ease-in-out infinite;   }
+}

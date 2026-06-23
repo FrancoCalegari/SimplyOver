@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SimplyOver - OBS Overlay Marketplace Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#ddb7ff",
+                        "surface-container-lowest": "#0e0e15",
+                        "surface-container-high": "#2a2931",
+                        "inverse-on-surface": "#303038",
+                        "secondary": "#4cd7f6",
+                        "primary-fixed-dim": "#d2bbff",
+                        "surface-container-low": "#1b1b22",
+                        "tertiary": "#ddb7ff",
+                        "surface-container-highest": "#34343c",
+                        "on-surface-variant": "#ccc3d8",
+                        "surface-container": "#1f1f26",
+                        "tertiary-container": "#8d36db",
+                        "surface": "#13131a",
+                        "secondary-fixed": "#acedff",
+                        "on-primary-fixed": "#25005a",
+                        "on-tertiary": "#490080",
+                        "on-secondary-fixed-variant": "#004e5c",
+                        "on-secondary-container": "#00424e",
+                        "on-primary": "#3f008e",
+                        "secondary-container": "#03b5d3",
+                        "surface-variant": "#34343c",
+                        "on-error": "#690005",
+                        "inverse-surface": "#e4e1ec",
+                        "primary-fixed": "#eaddff",
+                        "primary-container": "#7c3aed",
+                        "error-container": "#93000a",
+                        "inverse-primary": "#732ee4",
+                        "on-primary-container": "#ede0ff",
+                        "surface-tint": "#d2bbff",
+                        "surface-bright": "#393840",
+                        "on-tertiary-container": "#f2dfff",
+                        "on-error-container": "#ffdad6",
+                        "background": "#13131a",
+                        "on-surface": "#e4e1ec",
+                        "surface-dim": "#13131a",
+                        "primary": "#d2bbff",
+                        "outline-variant": "#4a4455",
+                        "on-tertiary-fixed-variant": "#6900b3",
+                        "error": "#ffb4ab",
+                        "on-background": "#e4e1ec",
+                        "tertiary-fixed": "#f0dbff",
+                        "on-secondary-fixed": "#001f26",
+                        "secondary-fixed-dim": "#4cd7f6",
+                        "on-secondary": "#003640",
+                        "on-primary-fixed-variant": "#5a00c6",
+                        "outline": "#958da1",
+                        "on-tertiary-fixed": "#2c0051"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter-mobile": "16px",
+                        "sidebar-collapsed-width": "80px",
+                        "margin-desktop": "48px",
+                        "gutter-desktop": "24px",
+                        "margin-mobile": "20px",
+                        "base-unit": "4px",
+                        "sidebar-width": "280px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-xl": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-md": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glass-input {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .glass-input:focus {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: #4cd7f6;
+            box-shadow: 0 0 15px rgba(76, 215, 246, 0.2);
+            outline: none;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+        .animate-float-delayed {
+            animation: float 5s ease-in-out infinite 1s;
+        }
+        .gradient-text {
+            background: linear-gradient(45deg, #7c3aed, #4cd7f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .primary-gradient {
+            background: linear-gradient(45deg, #7c3aed, #8d36db);
+        }
+        .state-hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen overflow-hidden selection:bg-primary/30">
+<main class="flex flex-col md:flex-row min-h-screen w-full">
+<!-- Left Panel: Visual/Atmosphere -->
+<section class="hidden md:flex relative w-full md:w-[60%] h-full bg-[#0D0D14] overflow-hidden items-center">
+<!-- Background Image with Fade to Transparent -->
+<div class="absolute inset-0 z-0 bg-cover bg-center opacity-60 mix-blend-lighten" data-alt="A cinematic, high-fidelity dark landscape featuring glowing cyan and purple neon circuit lines etched across a rugged, crystalline terrain. The atmosphere is dense and moody with floating hexagonal particles and soft bokeh lighting in the distance, evoking a high-end gaming aesthetic for OBS stream overlays." style="background-image: url('https://lh3.googleusercontent.com/aida/AP1WRLv4I8ucRFfhK5bsuHjLuOmsjnXuR40rKcROfKcLAJ5qyPXaEvOBHk6aEebvtU1WZYMxN7nTT2xSQg1nudUj2VMOtGYKRero1CPXYhj0OKw2RDEWGT15iBWVFjPNEQDteUjd6B6QCRFWg3-gZRJM0BNszM186UdqPWJymeqb2sQ8KV_uLXy32m_gR20TpNblsyWJIY25-1Q91ZOvq2Xtm8ce7G4ciwuH1vw9COjgM4wi05-V-AjTDz_03iY');">
+</div>
+<!-- Fade Overlay -->
+<div class="absolute inset-0 z-10 bg-gradient-to-r from-[#0D0D14] via-[#0D0D14]/60 to-transparent"></div>
+<!-- Content -->
+<div class="relative z-20 px-margin-desktop w-full h-full flex flex-col justify-between py-12">
+<!-- Top Left: Logo -->
+<div class="flex items-center gap-4">
+<img alt="SimplyOver Logo" class="h-12 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AP1WRLud17br2tzw4NizPnU_EDx0uHfLklKxOyLNzZj4LOyVXVkBBJj0X2CFnNLy9tgMdtmwCzbPAW8iPwu6ISS5cmBmE3GBXbgRwn6NMBJDjNjTVMr9R5S9CEnwhrvmaI6iDhoS6rbbqaCIl3_O80oEwziGDXXB61Go7MAxjdSsxpYKu8pz7v6eJXGJDqp0YLJvGKovvuDV8VXdyfJIlrWLNCaNotE0D9XJP5QYzqQLvPV-uMnfMmunUkjwfQ"/>
+</div>
+<!-- Center Content: Tagline & Stats -->
+<div class="max-w-xl">
+<h1 class="font-headline-xl text-headline-xl text-white mb-8 leading-tight">
+                        The world's premier <br/>
+<span class="gradient-text">OBS overlay</span> marketplace.
+                    </h1>
+<div class="flex flex-wrap gap-4 mt-12">
+<!-- Stat Pill 1 -->
+<div class="glass-panel px-6 py-3 rounded-full flex items-center gap-3 animate-float border border-white/5 shadow-xl">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">layers</span>
+<span class="font-label-md text-label-md text-white">10k+ Overlays</span>
+</div>
+<!-- Stat Pill 2 -->
+<div class="glass-panel px-6 py-3 rounded-full flex items-center gap-3 animate-float-delayed border border-white/5 shadow-xl">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">palette</span>
+<span class="font-label-md text-label-md text-white">3k+ Artists</span>
+</div>
+<!-- Stat Pill 3 -->
+<div class="glass-panel px-6 py-3 rounded-full flex items-center gap-3 animate-float border border-white/5 shadow-xl" style="animation-delay: 0.5s">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-label-md text-label-md text-white">100% Free to Browse</span>
+</div>
+</div>
+</div>
+<!-- Bottom Hint -->
+<div class="flex items-center gap-2 text-on-surface-variant/40">
+<span class="text-label-sm font-label-sm uppercase tracking-widest">Built for creators by artists</span>
+</div>
+</div>
+</section>
+<!-- Right Panel: Auth Form -->
+<section class="flex-1 flex items-center justify-center p-6 md:p-12 bg-background relative">
+<!-- Mobile Background Hint -->
+<div class="absolute inset-0 md:hidden opacity-20" style="background-image: url('https://lh3.googleusercontent.com/aida/AP1WRLv4I8ucRFfhK5bsuHjLuOmsjnXuR40rKcROfKcLAJ5qyPXaEvOBHk6aEebvtU1WZYMxN7nTT2xSQg1nudUj2VMOtGYKRero1CPXYhj0OKw2RDEWGT15iBWVFjPNEQDteUjd6B6QCRFWg3-gZRJM0BNszM186UdqPWJymeqb2sQ8KV_uLXy32m_gR20TpNblsyWJIY25-1Q91ZOvq2Xtm8ce7G4ciwuH1vw9COjgM4wi05-V-AjTDz_03iY'); background-size: cover;"></div>
+<div class="w-full max-w-md relative z-10">
+<!-- Mobile Logo only -->
+<div class="md:hidden flex justify-center mb-8">
+<img alt="SimplyOver Logo" class="h-10 w-auto" src="https://lh3.googleusercontent.com/aida/AP1WRLud17br2tzw4NizPnU_EDx0uHfLklKxOyLNzZj4LOyVXVkBBJj0X2CFnNLy9tgMdtmwCzbPAW8iPwu6ISS5cmBmE3GBXbgRwn6NMBJDjNjTVMr9R5S9CEnwhrvmaI6iDhoS6rbbqaCIl3_O80oEwziGDXXB61Go7MAxjdSsxpYKu8pz7v6eJXGJDqp0YLJvGKovvuDV8VXdyfJIlrWLNCaNotE0D9XJP5QYzqQLvPV-uMnfMmunUkjwfQ"/>
+</div>
+<!-- Tabs Container -->
+<div class="flex items-center justify-center mb-8 gap-8 border-b border-white/10">
+<button class="pb-3 px-2 font-label-md text-label-md transition-all duration-300 relative text-primary" id="login-tab" onclick="switchState('login')">
+                        Login
+                        <span class="absolute bottom-0 left-0 w-full h-[2px] bg-primary-container rounded-full" id="login-indicator"></span>
+</button>
+<button class="pb-3 px-2 font-label-md text-label-md transition-all duration-300 relative text-on-surface-variant hover:text-white" id="register-tab" onclick="switchState('register')">
+                        Register
+                        <span class="absolute bottom-0 left-0 w-full h-[2px] bg-primary-container rounded-full scale-x-0 transition-transform duration-300 origin-center" id="register-indicator"></span>
+</button>
+</div>
+<!-- Form Card -->
+<div class="glass-panel rounded-xl p-8 md:p-10 shadow-2xl">
+<!-- Login State -->
+<div class="space-y-6" id="login-state">
+<header>
+<h2 class="font-headline-lg text-headline-lg gradient-text mb-2">Welcome back</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Sign in to your SimplyOver account</p>
+</header>
+<div class="space-y-4">
+<div class="space-y-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant block ml-1">Email Address</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">mail</span>
+<input class="w-full h-12 pl-12 pr-4 rounded-lg glass-input text-white font-body-md" placeholder="name@example.com" type="email"/>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-center px-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant block">Password</label>
+<a class="text-label-sm font-label-sm text-primary hover:underline" href="#">Forgot password?</a>
+</div>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">lock</span>
+<input class="w-full h-12 pl-12 pr-4 rounded-lg glass-input text-white font-body-md" placeholder="••••••••" type="password"/>
+</div>
+</div>
+</div>
+<button class="w-full h-12 primary-gradient rounded-lg text-white font-label-md text-label-md shadow-lg shadow-primary-container/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                            Sign In
+                        </button>
+<div class="relative flex items-center gap-4 py-2">
+<div class="flex-1 h-px bg-white/10"></div>
+<span class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">or continue with</span>
+<div class="flex-1 h-px bg-white/10"></div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<button class="flex items-center justify-center gap-3 h-12 rounded-lg bg-[#6441a5] hover:bg-[#7d5bbe] transition-colors">
+<svg class="w-5 h-5 fill-white" viewbox="0 0 24 24"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"></path></svg>
+<span class="text-label-md font-label-md text-white">Twitch</span>
+</button>
+<button class="flex items-center justify-center gap-3 h-12 rounded-lg glass-panel hover:bg-white/10 transition-colors">
+<svg class="w-5 h-5" viewbox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"></path><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 12-4.53z" fill="#EA4335"></path></svg>
+<span class="text-label-md font-label-md text-white">Google</span>
+</button>
+</div>
+<p class="text-center text-body-md text-on-surface-variant pt-2">
+                            Don't have an account? 
+                            <button class="text-primary font-bold hover:underline" onclick="switchState('register')">Register</button>
+</p>
+</div>
+<!-- Register State -->
+<div class="state-hidden space-y-6" id="register-state">
+<header>
+<h2 class="font-headline-lg text-headline-lg gradient-text mb-2">Join SimplyOver</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Create your free account</p>
+</header>
+<div class="space-y-4">
+<div class="space-y-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant block ml-1">Username</label>
+<div class="relative">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 text-primary font-bold">@</span>
+<input class="w-full h-12 pl-10 pr-10 rounded-lg glass-input text-white font-body-md" placeholder="username" type="text"/>
+<div class="absolute right-4 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[#34A853] shadow-[0_0_8px_rgba(52,168,83,0.5)]"></div>
+</div>
+<p class="text-[11px] text-[#34A853] ml-1">Username is available</p>
+</div>
+<div class="space-y-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant block ml-1">Email Address</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">mail</span>
+<input class="w-full h-12 pl-12 pr-4 rounded-lg glass-input text-white font-body-md" placeholder="name@example.com" type="email"/>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant block ml-1">Password</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">lock</span>
+<input class="w-full h-12 pl-12 pr-4 rounded-lg glass-input text-white font-body-md" placeholder="••••••••" type="password"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant block ml-1">Confirm</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">verified_user</span>
+<input class="w-full h-12 pl-12 pr-4 rounded-lg glass-input text-white font-body-md" placeholder="••••••••" type="password"/>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-start gap-3 px-1">
+<input class="mt-1 rounded bg-white/5 border-white/10 text-primary-container focus:ring-primary-container" id="terms" type="checkbox"/>
+<label class="text-label-sm font-label-sm text-on-surface-variant leading-relaxed" for="terms">
+                                I agree to the <a class="text-white hover:underline" href="#">Terms of Service</a> and <a class="text-white hover:underline" href="#">Privacy Policy</a>.
+                            </label>
+</div>
+<button class="w-full h-12 primary-gradient rounded-lg text-white font-label-md text-label-md shadow-lg shadow-primary-container/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                            Create Account
+                        </button>
+<p class="text-center text-body-md text-on-surface-variant pt-2">
+                            Already have an account? 
+                            <button class="text-primary font-bold hover:underline" onclick="switchState('login')">Sign in</button>
+</p>
+</div>
+</div>
+<!-- Subtle Footer Branding -->
+<p class="mt-12 text-center text-label-sm font-label-sm text-on-surface-variant/40">
+                    © 2024 SimplyOver Marketplace. All rights reserved.
+                </p>
+</div>
+</section>
+</main>
+<script>
+        function switchState(state) {
+            const loginState = document.getElementById('login-state');
+            const registerState = document.getElementById('register-state');
+            const loginTab = document.getElementById('login-tab');
+            const registerTab = document.getElementById('register-tab');
+            const loginIndicator = document.getElementById('login-indicator');
+            const registerIndicator = document.getElementById('register-indicator');
+
+            if (state === 'login') {
+                loginState.classList.remove('state-hidden');
+                registerState.classList.add('state-hidden');
+                
+                loginTab.classList.remove('text-on-surface-variant');
+                loginTab.classList.add('text-primary');
+                registerTab.classList.add('text-on-surface-variant');
+                registerTab.classList.remove('text-primary', 'text-white');
+
+                loginIndicator.classList.remove('scale-x-0');
+                registerIndicator.classList.add('scale-x-0');
+            } else {
+                loginState.classList.add('state-hidden');
+                registerState.classList.remove('state-hidden');
+
+                registerTab.classList.remove('text-on-surface-variant');
+                registerTab.classList.add('text-primary');
+                loginTab.classList.add('text-on-surface-variant');
+                loginTab.classList.remove('text-primary');
+
+                registerIndicator.classList.remove('scale-x-0');
+                loginIndicator.classList.add('scale-x-0');
+            }
+        }
+
+        // Initialize tilt effect or micro-interactions
+        document.querySelectorAll('.glass-panel').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+    </script>
+</body></html>

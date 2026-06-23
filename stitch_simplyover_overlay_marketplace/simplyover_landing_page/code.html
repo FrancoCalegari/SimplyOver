@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SimplyOver | High-Performance OBS Overlay Marketplace</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-error": "#690005",
+                    "primary": "#d2bbff",
+                    "secondary-container": "#03b5d3",
+                    "on-background": "#e4e1ec",
+                    "surface-container-high": "#2a2931",
+                    "inverse-surface": "#e4e1ec",
+                    "tertiary-fixed-dim": "#ddb7ff",
+                    "on-tertiary": "#490080",
+                    "on-tertiary-fixed": "#2c0051",
+                    "on-secondary-container": "#00424e",
+                    "on-primary-container": "#ede0ff",
+                    "surface-container-low": "#1b1b22",
+                    "on-secondary-fixed": "#001f26",
+                    "primary-fixed": "#eaddff",
+                    "surface-dim": "#13131a",
+                    "surface-container": "#1f1f26",
+                    "tertiary": "#ddb7ff",
+                    "background": "#13131a",
+                    "on-primary-fixed": "#25005a",
+                    "surface": "#13131a",
+                    "primary-container": "#7c3aed",
+                    "surface-container-lowest": "#0e0e15",
+                    "on-surface": "#e4e1ec",
+                    "secondary-fixed-dim": "#4cd7f6",
+                    "outline-variant": "#4a4455",
+                    "primary-fixed-dim": "#d2bbff",
+                    "on-primary": "#3f008e",
+                    "surface-tint": "#d2bbff",
+                    "secondary": "#4cd7f6",
+                    "on-primary-fixed-variant": "#5a00c6",
+                    "inverse-on-surface": "#303038",
+                    "on-tertiary-container": "#f2dfff",
+                    "on-secondary-fixed-variant": "#004e5c",
+                    "error": "#ffb4ab",
+                    "tertiary-container": "#8d36db",
+                    "on-tertiary-fixed-variant": "#6900b3",
+                    "error-container": "#93000a",
+                    "surface-container-highest": "#34343c",
+                    "secondary-fixed": "#acedff",
+                    "tertiary-fixed": "#f0dbff",
+                    "inverse-primary": "#732ee4",
+                    "surface-bright": "#393840",
+                    "surface-variant": "#34343c",
+                    "on-secondary": "#003640",
+                    "outline": "#958da1",
+                    "on-surface-variant": "#ccc3d8",
+                    "on-error-container": "#ffdad6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter-desktop": "24px",
+                    "margin-desktop": "48px",
+                    "base-unit": "4px",
+                    "sidebar-width": "280px",
+                    "margin-mobile": "20px",
+                    "gutter-mobile": "16px",
+                    "sidebar-collapsed-width": "80px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-xl": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #0D0D14;
+            color: #e4e1ec;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .glass-surface {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-surface-hover:hover {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(18px);
+        }
+
+        .masonry-grid {
+            column-count: 2;
+            column-gap: 16px;
+        }
+        @media (min-width: 1024px) {
+            .masonry-grid {
+                column-count: 4;
+                column-gap: 24px;
+            }
+        }
+        @media (min-width: 1536px) {
+            .masonry-grid {
+                column-count: 5;
+            }
+        }
+
+        .masonry-item {
+            break-inside: avoid;
+            margin-bottom: 24px;
+        }
+
+        .primary-gradient {
+            background: linear-gradient(45deg, #7c3aed, #ddb7ff);
+        }
+
+        .text-gradient {
+            background: linear-gradient(45deg, #d2bbff, #06B6D4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sidebar-transition {
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background">
+<!-- TopNavBar -->
+<nav class="sticky top-0 w-full z-50 bg-surface/30 backdrop-blur-md border-b border-white/10 shadow-sm flex items-center justify-between px-gutter-desktop h-20">
+<div class="flex items-center gap-8 flex-1">
+<img alt="SimplyOver" class="h-8 w-auto" src="data:image/png;base64,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"/>
+<div class="hidden lg:flex flex-1 max-w-xl relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-secondary">search</span>
+<input class="w-full bg-surface-container-highest/50 border border-white/10 rounded-full py-2.5 pl-12 pr-4 font-body-md text-body-md focus:ring-2 focus:ring-primary outline-none transition-all" placeholder="Search overlays, streamers, styles..." type="text"/>
+</div>
+</div>
+<div class="hidden xl:flex items-center gap-6 px-8">
+<a class="text-secondary font-bold border-b-2 border-secondary pb-1 font-label-md text-label-md" href="#">All</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="#">Anime</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="#">Esports</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="#">Neon</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="#">Gaming</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="hidden md:block text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md">Login</button>
+<button class="primary-gradient text-white px-6 py-2.5 rounded-full font-label-md text-label-md font-bold hover:scale-105 transition-transform">
+                Start Creating
+            </button>
+</div>
+</nav>
+<div class="flex">
+<!-- SideNavBar -->
+<aside class="fixed left-0 h-full w-sidebar-width bg-surface-container/40 backdrop-blur-xl border-r border-white/10 flex flex-col py-8 sidebar-transition z-40 hidden md:flex" id="sidebar">
+<div class="px-6 mb-8">
+<h2 class="font-headline-md text-headline-md font-bold text-primary">Filters</h2>
+<p class="text-on-surface-variant font-body-md text-body-md">Refine your search</p>
+</div>
+<nav class="flex-1 space-y-2">
+<div class="px-3">
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg border-l-4 border-primary bg-primary/10 text-primary transition-all" href="#">
+<span class="material-symbols-outlined">category</span>
+<span class="font-label-md text-label-md">Categories</span>
+</a>
+</div>
+<div class="px-3">
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-md text-label-md">Price: Free</span>
+</a>
+</div>
+<div class="px-3">
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all" href="#">
+<span class="material-symbols-outlined">attach_money</span>
+<span class="font-label-md text-label-md">Price: Paid</span>
+</a>
+</div>
+<div class="px-3">
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all" href="#">
+<span class="material-symbols-outlined">star</span>
+<span class="font-label-md text-label-md">Ratings</span>
+</a>
+</div>
+<div class="px-3">
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all" href="#">
+<span class="material-symbols-outlined">trending_up</span>
+<span class="font-label-md text-label-md">Trending</span>
+</a>
+</div>
+</nav>
+<div class="px-6 mt-auto">
+<button class="w-full bg-secondary-container/20 border border-secondary text-secondary py-3 rounded-xl font-label-md text-label-md hover:bg-secondary-container/30 transition-all">
+                    Apply Filters
+                </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-sidebar-width px-margin-mobile md:px-margin-desktop pt-12 pb-24">
+<!-- Hero Section -->
+<section class="max-w-4xl mx-auto text-center mb-16 space-y-6">
+<div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-surface border-white/20 text-secondary mb-4">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+<span class="font-label-sm text-label-sm">Official Stream Marketplace</span>
+</div>
+<h1 class="font-headline-xl text-headline-xl text-gradient leading-tight">
+                    Discover Stunning Stream Overlays
+                </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">
+                    The world's premier marketplace for high-performance OBS overlays and artistic stream assets. High-tech aesthetics for modern creators.
+                </p>
+<div class="flex flex-wrap justify-center gap-4 mt-8">
+<div class="px-6 py-2 rounded-full glass-surface border-white/10 animate-pulse">
+<span class="font-label-md text-label-md text-primary font-bold">10k+</span>
+<span class="font-label-md text-label-md ml-1">Overlays</span>
+</div>
+<div class="px-6 py-2 rounded-full glass-surface border-white/10">
+<span class="font-label-md text-label-md text-secondary font-bold">3k+</span>
+<span class="font-label-md text-label-md ml-1">Artists</span>
+</div>
+<div class="px-6 py-2 rounded-full glass-surface border-white/10">
+<span class="font-label-md text-label-md text-tertiary font-bold">Free &amp; Premium</span>
+</div>
+</div>
+</section>
+<!-- Masonry Grid -->
+<div class="masonry-grid">
+<!-- Card 1: Featured -->
+<div class="masonry-item group cursor-pointer relative overflow-hidden rounded-xl glass-surface border-primary/30 shadow-[0_0_20px_rgba(124,58,237,0.15)] transition-all duration-300 hover:scale-[1.02]">
+<div class="relative overflow-hidden">
+<img class="w-full object-cover rounded-t-xl transition-transform duration-500 group-hover:scale-105" data-alt="A futuristic dark purple and neon cyan OBS overlay design featuring complex geometric HUD elements and glowing border animations. The aesthetic is high-tech cyberpunk with a focus on deep blacks and vibrant violet energy effects. The lighting is moody and atmospheric, designed for a professional high-energy gaming stream." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRsoob6EkT2hqOtaJ2aqT-HZjRQHrXml3ymGd5BPAG0mp0cFLA3pVMrmKNCeKSpoWuYt_Nw3PEmFt4FxiIJAykRV9X301bzo9x77mT0HKcCb70Qf6xGmoeKfEJaLURGnfyUryuXuAwKVmhbk5np9qO6FUA_RTWCz86YWnsIN7Y5z8VRohuqBWWVC9yHhtq9589vVzOTuv-G7jNDDhATPYJJC5-pH4l1SLTFxKy9qeL-RUJrye8RwSIJm9Nsr9oYzuEWbJHtVi0UtI" style="height: 320px;"/>
+<!-- Hover Overlay -->
+<div class="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+<button class="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-primary transition-colors">
+<span class="material-symbols-outlined text-white">favorite</span>
+</button>
+<button class="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-primary transition-colors">
+<span class="material-symbols-outlined text-white">push_pin</span>
+</button>
+<button class="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-primary transition-colors">
+<span class="material-symbols-outlined text-white">shopping_cart</span>
+</button>
+</div>
+</div>
+<div class="p-4 flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<img class="w-8 h-8 rounded-full border border-primary/20" data-alt="Professional creator headshot portrait of a man in his late 20s with a modern tech-focused style. The background is a blurred high-end gaming setup with soft violet and blue lighting, reflecting the brand's creative and professional marketplace identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9w3ZvMYXKAV1LFJa6K-b-kkeOsZxN8xs8LjpTeUNVvYzglDuyC8aCeLmGuF30jMysBG7g8coA2mbiiSvbKCJ_oxpqtqWmjtedtecqk4_FcISjEtI9QSUGzA7mBJkdoLULHJvvY9yGGti4YNVyQhNfhGDfiUeAExnp9PJeCLpbIwP6BcKJQ2BferpU7O-mSjL5uk08ElzSQIx8G0jDjo9WXqc-BMaCm-9h53OQosIUAe2FkIrn7YeQeGqTxClQ4jIhxP6zoK-Qqok"/>
+<span class="font-label-md text-label-md">Neon_Pulse</span>
+</div>
+<span class="bg-primary-container text-white px-2 py-1 rounded text-[12px] font-bold">$24.99</span>
+</div>
+<div class="flex items-center gap-1 text-tertiary">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-sm text-label-sm">4.9 (1.2k)</span>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="masonry-item group cursor-pointer relative overflow-hidden rounded-xl glass-surface border-white/10 transition-all duration-300 hover:scale-[1.02]">
+<div class="relative overflow-hidden">
+<img class="w-full object-cover rounded-t-xl transition-transform duration-500 group-hover:scale-105" data-alt="Minimalist abstract stream background with soft floating glass elements and gentle cyan gradients. The style is clean, modern, and high-tech, perfect for a sophisticated chat or talk show stream. The composition is airy with plenty of negative space, utilizing a premium palette of deep navy and luminous teal." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_bxEV0uLzRvYnNSct039kpxFNDPkKgjV6sfAk3Yvqn_A7gONLfe0EAIv9xU5wb2EF2lkqWmePbG5t4zkzjAdUbB5JaRJDGlDdC1JFuLgOwWPPQeC6DJIoUobilbr3SY1xGpeo07vW3zMGzuWA3ztCOt3Qh04--rd-Knq2NBW0rjYt6yc92nfZLhsyRZlYrPpYC9fASmSS9YYi_oKkXKBuHqnnUEjfW7-sn07BhuRxsmugZt36dOe3-tlePebjo0XJbFkEP1SDxnE" style="height: 240px;"/>
+<div class="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+<button class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-secondary transition-colors"><span class="material-symbols-outlined text-white">favorite</span></button>
+<button class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-secondary transition-colors"><span class="material-symbols-outlined text-white">shopping_cart</span></button>
+</div>
+</div>
+<div class="p-4 flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-secondary-container/20 flex items-center justify-center border border-secondary/20">
+<span class="material-symbols-outlined text-secondary">brush</span>
+</div>
+<span class="font-label-md text-label-md">GlassWork</span>
+</div>
+<span class="bg-secondary-container/20 text-secondary-fixed border border-secondary/30 px-2 py-1 rounded text-[12px] font-bold">FREE</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-sm text-label-sm">4.7 (840)</span>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="masonry-item group cursor-pointer relative overflow-hidden rounded-xl glass-surface border-white/10 transition-all duration-300 hover:scale-[1.02]">
+<div class="relative overflow-hidden">
+<img class="w-full object-cover rounded-t-xl transition-transform duration-500 group-hover:scale-105" data-alt="Anime-themed stream overlay with vibrant magenta and electric blue accents, featuring stylized character frame borders and decorative floral elements in a high-tech digital art style. The lighting is bright and energetic, capturing the essence of Japanese pop culture with a modern professional stream interface layout." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC08YRV3W5FjHMf-6LAQxRL1vVOmBfW9csE4pnMB70p3qZoycGwDRdgbjOZrxcj2PsMuJubW7FUhiA48tcF4a8HkEZCrbUz5YrUtwrQpcUDCUN7Go-AjnUdukIG-BTLpVSUe1BgniRkR6CAuux0pL5LCKVxSQQnMlU3Y5zOJkCaTW2bM-79ZE6qM4JO6XTk6yDa5A2nuTjzQP7Rl3ejc2ZbvKG3tohCGV8Rp0qFLVfycva57TNUQWP480kOSnG-ZPgiOYBIUcbttEI" style="height: 400px;"/>
+<div class="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+<button class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-primary transition-colors"><span class="material-symbols-outlined text-white">favorite</span></button>
+<button class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-primary transition-colors"><span class="material-symbols-outlined text-white">shopping_cart</span></button>
+</div>
+</div>
+<div class="p-4 flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<img class="w-8 h-8 rounded-full" data-alt="Creative artist portrait in a dark studio setting with cinematic rim lighting in shades of purple. The artist has a contemporary aesthetic, wearing a dark hoodie, symbolizing the underground and creative spirit of the SimplyOver creator community." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmXfJAlxX6H0DMiUPaNYeToEPEbS8YTm-u--4OEGt_M7nWzhxKibJ6UvPTS_X5XEbFTNAEHdzy5svLs4efvm7CkEVyOXV2xfmzhVE1ua1rckHYr9KsAq5j7tpm2Z2uM922IoZV3aN49xzut6DdXJCWYf7MUvMFe-jjZFWgchJBKGxgbqmEWkNM7Ta0qbhoHmwwA9CgiLm4ufnXBl3AivbWXF8lKyFgq3GxiZF1GECM-tT6NCIF-iLRCQnt9m6wep5NnEwcg1MaR_U"/>
+<span class="font-label-md text-label-md">Senpai_Visuals</span>
+</div>
+<span class="bg-primary-container text-white px-2 py-1 rounded text-[12px] font-bold">$19.00</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-sm text-label-sm">5.0 (310)</span>
+</div>
+</div>
+</div>
+<!-- Card 4: Featured -->
+<div class="masonry-item group cursor-pointer relative overflow-hidden rounded-xl glass-surface border-primary/30 shadow-[0_0_20px_rgba(124,58,237,0.15)] transition-all duration-300 hover:scale-[1.02]">
+<div class="relative overflow-hidden">
+<img class="w-full object-cover rounded-t-xl transition-transform duration-500 group-hover:scale-105" data-alt="Retro-futuristic synthwave OBS overlay with vibrant sunset gradients, pixel art elements, and glowing grid lines. The design combines 1980s nostalgia with modern high-fidelity digital art, featuring animated social media pop-ups and a custom alert system. The palette is dominated by hot pink, deep purple, and electric yellow." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-YtbttTe4j3ofG7ImSDNzfoYAGo41rcfRRtCvd_WX5kbemVDeG7sd2hFx069phKDafmdUFZyD1TLNCz-jFsP0FvxRBNIxF1SuZnGwNPSIw_0kzPKWGVZwEE451n3eIEwMoFKoIYGCFEZ6YoxQq5Rh6TKluOO116ifLkFXqJYGFuYipKp2t85nW_Rz7ddbeeFv2bfOu9tRonTEolxR-RVyy8IO6MxMwEQrzu7XChQXFmxvEbyXxpuDbxU3FyhwP2Dh99JGTaGjfT8" style="height: 280px;"/>
+<div class="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+<button class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-primary transition-colors"><span class="material-symbols-outlined text-white">favorite</span></button>
+<button class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-primary transition-colors"><span class="material-symbols-outlined text-white">shopping_cart</span></button>
+</div>
+</div>
+<div class="p-4 flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center border border-primary/20">
+<span class="material-symbols-outlined text-primary">joystick</span>
+</div>
+<span class="font-label-md text-label-md">RetroGrid_Labs</span>
+</div>
+<span class="bg-primary-container text-white px-2 py-1 rounded text-[12px] font-bold">$12.50</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-sm text-label-sm">4.8 (156)</span>
+</div>
+</div>
+</div>
+<!-- Card 5 -->
+<div class="masonry-item group cursor-pointer relative overflow-hidden rounded-xl glass-surface border-white/10 transition-all duration-300 hover:scale-[1.02]">
+<div class="relative overflow-hidden">
+<img class="w-full object-cover rounded-t-xl transition-transform duration-500 group-hover:scale-105" data-alt="High-contrast black and white minimalist OBS overlay featuring elegant typography and razor-sharp border lines. The aesthetic is extremely clean and professional, focusing on high-end luxury stream presentation. Subtle gray gradients provide depth while maintaining a monochrome palette that fits any streamer's brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGNG0YddqWgk_gYB9oftw5AOKjIjALYA4hy_4XPn1QAnh3MmYN5bzMO_QyitcSpmRYVmDAnvzkoJsxi1R8h2GwqAIxVpXaDaKnhpGNaj2soNexi1lKQnMoUi0xzMqoLbR5x954UbNEL6JMHkre4tWXeB8khYWzfr-h45Jy_YMbhsTiG_F_rTZFNEwLsfVC415p0yaA7dVq4Oi4AgW4vL073pfikGDxEGYq3aaNVF7ejfYZcS_6RTnXuKIK_Z6mStOeNuh8DsN7k_k" style="height: 360px;"/>
+<div class="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+<button class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-secondary transition-colors"><span class="material-symbols-outlined text-white">favorite</span></button>
+<button class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-secondary transition-colors"><span class="material-symbols-outlined text-white">shopping_cart</span></button>
+</div>
+</div>
+<div class="p-4 flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<img class="w-8 h-8 rounded-full" data-alt="Minimalist headshot of a female digital designer in a bright, modern studio. The lighting is soft and even, highlighting a clean and sophisticated professional presence that aligns with the high-end minimalist design assets they create for the platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuByVyUG0tIfp-y5Dg4x6zQDuV320QtfqB2qosTVhuMhQrrgkxMKVkPKhKocHELYRftkabSd42Jev13F7KRup0q9tUT7h56ay_-ho7mKT24I07rY15OwjZuqeed_HxB0DyLbTJgbSX0NCREQ-6yW5APQhsLRdyR-kvmN46UaroiuUyCHyVM3FsesWEVJ5DRIZ2lGlQQ6kp-F4s5KZ2T9n5SNUbl9_fZEDfhSVn7LySJcvMlo8ukvwly18gfGAQeNS6Vj1t9pXwKSUio"/>
+<span class="font-label-md text-label-md">Mono_Studio</span>
+</div>
+<span class="bg-primary-container text-white px-2 py-1 rounded text-[12px] font-bold">$30.00</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-sm text-label-sm">4.9 (42)</span>
+</div>
+</div>
+</div>
+<!-- Card 6 -->
+<div class="masonry-item group cursor-pointer relative overflow-hidden rounded-xl glass-surface border-white/10 transition-all duration-300 hover:scale-[1.02]">
+<div class="relative overflow-hidden">
+<img class="w-full object-cover rounded-t-xl transition-transform duration-500 group-hover:scale-105" data-alt="Abstract fluid motion OBS overlay with organic liquid shapes in deep sapphire blue and radiant emerald. The design is dynamic and ever-changing, suggesting a living, breathing background for high-production-value streams. The style is artistic and contemporary, utilizing sophisticated transparency and light refraction effects." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAaEdrAR25uzw0kEnFBix3lLK4r3t-wCBRLNCHLCiWJrRxUU8RxEC_1sXQ4Hr5Ga4Tof4OyfB0gF068e0fqYwrFuQ-FvfiK0qrNk5PD6qzIkTFnVgEihSL9a7yrSKafClKWbsCCc1XAuK7JcLdgw82f6y3xYdhVIGIAoSh0synZYCt7-jwOHFB0Tgo8xq0nlSq-u6pF2nZBo5eh8KWUEpUjuFRGmCrG5yit3JLgZJttKThclbzX5dw4twShQkE3vhHXVDvvezIifgM" style="height: 220px;"/>
+<div class="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+<button class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-secondary transition-colors"><span class="material-symbols-outlined text-white">favorite</span></button>
+<button class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-secondary transition-colors"><span class="material-symbols-outlined text-white">shopping_cart</span></button>
+</div>
+</div>
+<div class="p-4 flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center border border-secondary/20">
+<span class="material-symbols-outlined text-secondary">water_drop</span>
+</div>
+<span class="font-label-md text-label-md">Fluid_Motion</span>
+</div>
+<span class="bg-secondary-container/20 text-secondary-fixed border border-secondary/30 px-2 py-1 rounded text-[12px] font-bold">FREE</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-sm text-label-sm">4.6 (1.9k)</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="w-full bg-surface-container-lowest border-t border-white/5 flex flex-col md:flex-row justify-between items-center py-12 px-margin-desktop">
+<div class="flex flex-col gap-4 mb-8 md:mb-0">
+<img alt="SimplyOver" class="h-6 w-auto opacity-80" src="data:image/png;base64,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"/>
+<p class="text-on-surface-variant font-body-md text-body-md max-w-xs">
+                Empowering streamers with the world's most advanced visual assets and creative overlays.
+            </p>
+<p class="text-on-surface-variant font-label-sm text-label-sm">
+                © 2024 SimplyOver Marketplace. All rights reserved.
+            </p>
+</div>
+<div class="flex gap-12">
+<div class="flex flex-col gap-2">
+<span class="text-white font-bold font-label-md text-label-md mb-2">Platform</span>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-sm text-label-sm" href="#">Artists</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-sm text-label-sm" href="#">Sell Overlays</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-sm text-label-sm" href="#">Support</a>
+</div>
+<div class="flex flex-col gap-2">
+<span class="text-white font-bold font-label-md text-label-md mb-2">Legal</span>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-sm text-label-sm" href="#">Terms</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-sm text-label-sm" href="#">Privacy</a>
+</div>
+</div>
+<div class="flex gap-4 mt-8 md:mt-0">
+<a class="w-10 h-10 rounded-full glass-surface flex items-center justify-center hover:bg-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">language</span>
+</a>
+<a class="w-10 h-10 rounded-full glass-surface flex items-center justify-center hover:bg-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</a>
+</div>
+</footer>
+<script>
+        // Simple micro-interactions
+        document.querySelectorAll('.masonry-item').forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                item.style.zIndex = '10';
+            });
+            item.addEventListener('mouseleave', () => {
+                item.style.zIndex = '1';
+            });
+        });
+
+        // Search bar focus effect
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('scale-[1.02]');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('scale-[1.02]');
+        });
+    </script>
+</body></html>
