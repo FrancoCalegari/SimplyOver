@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "SimplyOver Backend/API Built with Next.js",
   "main": "next-env.d.ts",
+  "type": "module",
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js"
