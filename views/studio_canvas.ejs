@@ -1,94 +1,13 @@
 <!DOCTYPE html>
 <html class="dark" lang="en">
-<head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>GLASSOBS STUDIO | My Studio Canvas</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "primary": "#d2bbff",
-                        "secondary": "#4cd7f6",
-                        "background": "#090910",
-                        "on-background": "#e4e1ec",
-                        "surface": "#13131a",
-                        "on-surface": "#e4e1ec",
-                        "surface-container": "#1f1f26",
-                        "on-surface-variant": "#ccc3d8",
-                        "surface-container-high": "#2a2931",
-                        "surface-container-lowest": "#0e0e15",
-                        "surface-variant": "#34343c",
-                        "outline-variant": "#4a4455",
-                        "primary-container": "#7c3aed",
-                        "secondary-container": "#03b5d3",
-                        "primary-fixed-dim": "#d2bbff"
-                    },
-                    "fontFamily": {
-                        "headline-md": ["Inter"],
-                        "body-lg": ["Inter"],
-                        "label-md": ["Inter"],
-                        "headline-lg": ["Inter"],
-                        "label-sm": ["Inter"],
-                        "body-md": ["Inter"],
-                        "headline-xl": ["Inter"]
-                    }
-                },
-            },
-        }
-    </script>
-    <style>
-        body {
-            background-color: #090910;
-            color: #e4e1ec;
-            font-family: 'Inter', sans-serif;
-            overflow: hidden;
-        }
-
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .checkered-canvas {
-            background-image: 
-                linear-gradient(45deg, #0d0d14 25%, transparent 25%), 
-                linear-gradient(-45deg, #0d0d14 25%, transparent 25%), 
-                linear-gradient(45deg, transparent 75%, #0d0d14 75%), 
-                linear-gradient(-45deg, transparent 75%, #0d0d14 75%);
-            background-size: 20px 20px;
-            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-            background-color: #090910;
-        }
-
-        .timeline-scroll::-webkit-scrollbar {
-            height: 4px;
-        }
-        .timeline-scroll::-webkit-scrollbar-thumb {
-            background: #4a4455;
-            border-radius: 2px;
-        }
-
-        .primary-gradient {
-            background: linear-gradient(45deg, #7c3aed, #8d36db);
-        }
-
-        .cyan-glow {
-            box-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
-        }
-
-        .violet-glow {
-            box-shadow: 0 0 15px rgba(124, 58, 237, 0.4);
-        }
-    </style>
-</head>
-<body class="h-screen flex flex-col">
+<%- include('partials/head', {title: 'GLASSOBS STUDIO | My Studio Canvas'}) %>
+<style>
+    body.studio-mode {
+        background-color: #090910;
+        overflow: hidden;
+    }
+</style>
+<body class="studio-mode h-screen flex flex-col">
     <!-- Top Bar -->
     <header class="h-12 glass-panel flex items-center justify-between px-4 z-50 border-b border-outline-variant">
         <div class="flex items-center gap-4">

@@ -1,99 +1,8 @@
 <!DOCTYPE html>
 <html class="dark" lang="en">
-<head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Neon Pulse - Cyberpunk Stream Suite | SimplyOver</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "primary": "#d2bbff",
-                        "secondary": "#4cd7f6",
-                        "background": "#13131a",
-                        "on-background": "#e4e1ec",
-                        "surface": "#13131a",
-                        "on-surface": "#e4e1ec",
-                        "surface-container": "#1f1f26",
-                        "on-surface-variant": "#ccc3d8",
-                        "primary-container": "#7c3aed",
-                        "error": "#ffb4ab",
-                        "surface-container-lowest": "#0e0e15",
-                        "surface-variant": "#34343c"
-                    },
-                    "fontFamily": {
-                        "headline-xl": ["Inter"],
-                        "headline-lg": ["Inter"],
-                        "headline-md": ["Inter"],
-                        "body-lg": ["Inter"],
-                        "body-md": ["Inter"],
-                        "label-md": ["Inter"],
-                        "label-sm": ["Inter"]
-                    }
-                },
-            },
-        }
-    </script>
-    <style>
-        body {
-            background-color: #0D0D14;
-            color: #e4e1ec;
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-        }
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .glass-panel-hover:hover {
-            background: rgba(255, 255, 255, 0.06);
-            backdrop-filter: blur(18px);
-            border-color: #7c3aed;
-        }
-        .gradient-button {
-            background: linear-gradient(45deg, #7c3aed, #8d36db);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .gradient-button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.02);
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #7c3aed;
-            border-radius: 10px;
-        }
-    </style>
-</head>
+<%- include('partials/head', {title: 'Neon Pulse - Cyberpunk Stream Suite | SimplyOver'}) %>
 <body class="bg-background selection:bg-primary/30 selection:text-primary">
-    <!-- TopNavBar -->
-    <nav class="sticky top-0 w-full z-50 bg-surface/30 backdrop-blur-md border-b border-white/10 shadow-sm flex items-center justify-between px-6 h-20">
-        <div class="flex items-center gap-8">
-            <a class="text-2xl font-bold text-primary" href="/">SimplyOver</a>
-            <div class="hidden md:flex gap-6 items-center">
-                <a class="text-on-surface-variant font-semibold hover:bg-white/5 transition-colors px-3 py-2 rounded-lg" href="/">All</a>
-                <a class="text-on-surface-variant font-semibold hover:bg-white/5 transition-colors px-3 py-2 rounded-lg" href="#">Anime</a>
-                <a class="text-secondary font-bold border-b-2 border-secondary pb-1 font-semibold" href="#">Gaming</a>
-                <a class="text-on-surface-variant font-semibold hover:bg-white/5 transition-colors px-3 py-2 rounded-lg" href="#">Neon</a>
-                <a class="text-on-surface-variant font-semibold hover:bg-white/5 transition-colors px-3 py-2 rounded-lg" href="#">Minimalist</a>
-            </div>
-        </div>
-        <div class="flex items-center gap-4">
-            <a href="/login" class="hidden lg:block text-on-surface font-semibold hover:bg-white/5 px-4 py-2 rounded-lg transition-colors">Login</a>
-            <a href="/dashboard/library" class="gradient-button text-white font-semibold px-6 py-2.5 rounded-full">Start Creating</a>
-        </div>
-    </nav>
+    <%- include('partials/navbar') %>
     
     <main class="max-w-[1440px] mx-auto px-5 md:px-12 py-12">
         <!-- Breadcrumbs -->
@@ -291,20 +200,7 @@
         </div>
     </main>
     
-    <!-- Footer -->
-    <footer class="w-full bg-surface-container-lowest border-t border-white/5 flex flex-col md:flex-row justify-between items-center py-12 px-5 md:px-12 mt-20">
-        <div class="mb-8 md:mb-0">
-            <span class="text-2xl font-bold text-primary">SimplyOver</span>
-            <p class="text-on-surface-variant mt-2">© 2024 SimplyOver Marketplace. All rights reserved.</p>
-        </div>
-        <div class="flex flex-wrap justify-center gap-8">
-            <a class="text-on-surface-variant text-xs font-semibold hover:text-primary transition-colors" href="#">Terms</a>
-            <a class="text-on-surface-variant text-xs font-semibold hover:text-primary transition-colors" href="#">Privacy</a>
-            <a class="text-on-surface-variant text-xs font-semibold hover:text-primary transition-colors" href="#">Support</a>
-            <a class="text-on-surface-variant text-xs font-semibold hover:text-primary transition-colors" href="#">Artists</a>
-            <a class="text-secondary text-xs font-semibold hover:text-primary transition-colors" href="#">Sell Overlays</a>
-        </div>
-    </footer>
+    <%- include('partials/footer') %>
     
     <script>
         const thumbnails = document.querySelectorAll('.aspect-video.rounded-lg.cursor-pointer');

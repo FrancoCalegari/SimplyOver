@@ -1,0 +1,48 @@
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title><%= typeof title !== 'undefined' ? title : 'SimplyOver' %></title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#d2bbff",
+                        "secondary": "#4cd7f6",
+                        "tertiary": "#ddb7ff",
+                        "background": "#13131a",
+                        "on-background": "#e4e1ec",
+                        "surface": "#13131a",
+                        "on-surface": "#e4e1ec",
+                        "surface-container": "#1f1f26",
+                        "surface-container-low": "#1b1b22",
+                        "surface-container-lowest": "#0e0e15",
+                        "surface-container-high": "#2a2931",
+                        "surface-container-highest": "#34343c",
+                        "surface-variant": "#34343c",
+                        "primary-container": "#7c3aed",
+                        "secondary-container": "#03b5d3",
+                        "tertiary-container": "#8d36db",
+                        "on-surface-variant": "#ccc3d8",
+                        "secondary-fixed": "#acedff",
+                        "primary-fixed-dim": "#d2bbff",
+                        "outline-variant": "#4a4455"
+                    },
+                    "fontFamily": {
+                        "headline-xl": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="/css/style.css">
+</head>

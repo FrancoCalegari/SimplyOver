@@ -1,0 +1,25 @@
+        <!-- SideNavBar (Left) -->
+        <aside class="fixed left-0 h-full w-[280px] bg-surface-container/40 backdrop-blur-xl border-r border-white/10 flex flex-col py-8 z-40 hidden md:flex">
+            <div class="px-8 mb-10">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="w-12 h-12 rounded-full border-2 border-primary overflow-hidden">
+                        <img alt="Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBeOc3lzebNG534uqNyyuebhVk4d4lpx8KgQbJxIHh0SQoqPjzHbYNNp54XddEIjtDjQhsBPs1LbIYJ7g5n3Ethfd77x8igz1aCS_tG4VwTv288cOj5DQ5Y-roJLqNiRGZD9LZWF4tA2rKH3zFMP_LI8MzH9A92O_5RoMTfLlAXu26aHoV8C_mx8rX-VAD1aMlqQDw8ygIjQiNSbjWz4RphaEg3_5v_Rj8zWirP6h7waIrfDX21pxtZvhPyrdc9eZi1ziOQ-JCLoOw"/>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-white">NeonOver</p>
+                        <p class="text-xs text-on-surface-variant">Pro Designer</p>
+                    </div>
+                </div>
+                <h2 class="text-2xl font-bold text-primary mb-1">My Dashboard</h2>
+            </div>
+            <nav class="flex-1 space-y-1">
+                <a class="flex items-center gap-4 px-8 py-4 <%= typeof activeTab !== 'undefined' && activeTab === 'library' ? 'border-l-4 border-primary bg-primary/10 text-primary' : 'text-on-surface-variant hover:bg-white/5' %> transition-all duration-300" href="/dashboard/library">
+                    <span class="material-symbols-outlined">library_music</span>
+                    <span class="font-semibold">My Library</span>
+                </a>
+                <a class="flex items-center gap-4 px-8 py-4 <%= typeof activeTab !== 'undefined' && activeTab === 'boards' ? 'border-l-4 border-primary bg-primary/10 text-primary' : 'text-on-surface-variant hover:bg-white/5' %> transition-all duration-300" href="/dashboard/boards">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span class="font-semibold">My Boards</span>
+                </a>
+            </nav>
+        </aside>

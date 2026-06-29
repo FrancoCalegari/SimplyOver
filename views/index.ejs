@@ -1,123 +1,8 @@
 <!DOCTYPE html>
 <html class="dark" lang="en">
-<head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>SimplyOver | High-Performance OBS Overlay Marketplace</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "primary": "#d2bbff",
-                        "secondary": "#4cd7f6",
-                        "tertiary": "#ddb7ff",
-                        "background": "#13131a",
-                        "on-background": "#e4e1ec",
-                        "surface": "#13131a",
-                        "on-surface": "#e4e1ec",
-                        "surface-container": "#1f1f26",
-                        "surface-container-high": "#2a2931",
-                        "surface-container-highest": "#34343c",
-                        "primary-container": "#7c3aed",
-                        "secondary-container": "#03b5d3",
-                        "tertiary-container": "#8d36db",
-                        "on-surface-variant": "#ccc3d8",
-                        "secondary-fixed": "#acedff",
-                    },
-                    "fontFamily": {
-                        "headline-xl": ["Inter"],
-                        "headline-md": ["Inter"],
-                        "body-lg": ["Inter"],
-                        "body-md": ["Inter"],
-                        "label-md": ["Inter"],
-                        "label-sm": ["Inter"]
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body {
-            background-color: #0D0D14;
-            color: #e4e1ec;
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-        }
-        .glass-surface {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .glass-surface-hover:hover {
-            background: rgba(255, 255, 255, 0.06);
-            backdrop-filter: blur(18px);
-        }
-        .masonry-grid {
-            column-count: 2;
-            column-gap: 16px;
-        }
-        @media (min-width: 1024px) {
-            .masonry-grid {
-                column-count: 4;
-                column-gap: 24px;
-            }
-        }
-        @media (min-width: 1536px) {
-            .masonry-grid {
-                column-count: 5;
-            }
-        }
-        .masonry-item {
-            break-inside: avoid;
-            margin-bottom: 24px;
-        }
-        .primary-gradient {
-            background: linear-gradient(45deg, #7c3aed, #ddb7ff);
-        }
-        .text-gradient {
-            background: linear-gradient(45deg, #d2bbff, #06B6D4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .sidebar-transition {
-            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-    </style>
-</head>
+<%- include('partials/head', {title: 'SimplyOver | High-Performance OBS Overlay Marketplace'}) %>
 <body class="bg-background text-on-background">
-    <!-- TopNavBar -->
-    <nav class="sticky top-0 w-full z-50 bg-surface/30 backdrop-blur-md border-b border-white/10 shadow-sm flex items-center justify-between px-6 h-20">
-        <div class="flex items-center gap-8 flex-1">
-            <a href="/">
-                <img alt="SimplyOver" class="h-8 w-auto" src="https://lh3.googleusercontent.com/aida/AP1WRLud17br2tzw4NizPnU_EDx0uHfLklKxOyLNzZj4LOyVXVkBBJj0X2CFnNLy9tgMdtmwCzbPAW8iPwu6ISS5cmBmE3GBXbgRwn6NMBJDjNjTVMr9R5S9CEnwhrvmaI6iDhoS6rbbqaCIl3_O80oEwziGDXXB61Go7MAxjdSsxpYKu8pz7v6eJXGJDqp0YLJvGKovvuDV8VXdyfJIlrWLNCaNotE0D9XJP5QYzqQLvPV-uMnfMmunUkjwfQ"/>
-            </a>
-            <div class="hidden lg:flex flex-1 max-w-xl relative">
-                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-secondary">search</span>
-                <input class="w-full bg-surface-container-highest/50 border border-white/10 rounded-full py-2.5 pl-12 pr-4 focus:ring-2 focus:ring-primary outline-none transition-all text-white" placeholder="Search overlays, streamers, styles..." type="text"/>
-            </div>
-        </div>
-        <div class="hidden xl:flex items-center gap-6 px-8">
-            <a class="text-secondary font-bold border-b-2 border-secondary pb-1" href="/">All</a>
-            <a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Anime</a>
-            <a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Esports</a>
-            <a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Neon</a>
-            <a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Gaming</a>
-        </div>
-        <div class="flex items-center gap-4">
-            <a href="/login" class="hidden md:block text-on-surface-variant hover:text-primary transition-colors font-semibold">Login</a>
-            <a href="/dashboard/library" class="primary-gradient text-white px-6 py-2.5 rounded-full font-bold hover:scale-105 transition-transform">
-                Start Creating
-            </a>
-        </div>
-    </nav>
+    <%- include('partials/navbar') %>
     <div class="flex">
         <!-- SideNavBar -->
         <aside class="fixed left-0 h-full w-[280px] bg-surface-container/40 backdrop-blur-xl border-r border-white/10 flex flex-col py-8 sidebar-transition z-40 hidden md:flex" id="sidebar">
@@ -305,16 +190,6 @@
         </main>
     </div>
     
-    <!-- Footer -->
-    <footer class="w-full bg-surface-container-lowest border-t border-white/5 flex flex-col md:flex-row justify-between items-center py-12 px-12">
-        <div class="flex flex-col gap-4 mb-8 md:mb-0">
-            <p class="text-on-surface-variant font-semibold text-lg opacity-80">SimplyOver</p>
-            <p class="text-on-surface-variant text-sm max-w-xs">
-                Empowering streamers with the world's most advanced visual assets and creative overlays.
-            </p>
-            <p class="text-on-surface-variant text-xs">
-                © 2024 SimplyOver Marketplace. All rights reserved.
-            </p>
         </div>
         <div class="flex gap-12">
             <div class="flex flex-col gap-2">
