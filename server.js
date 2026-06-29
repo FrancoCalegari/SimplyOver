@@ -28,6 +28,41 @@ app.get('/', (req, res) => {
   res.render('index', { title: 'SimplyOver Marketplace' });
 });
 
+app.get('/login', (req, res) => {
+  res.render('login', { title: 'SimplyOver - Login / Register' });
+});
+
+app.get('/dashboard/library', (req, res) => {
+  res.render('dashboard_library', { title: 'My Library | SimplyOver' });
+});
+
+app.get('/dashboard/boards', (req, res) => {
+  res.render('dashboard_boards', { title: 'My Boards | SimplyOver' });
+});
+
+app.get('/artist/:username', (req, res) => {
+  res.render('artist_profile', { title: 'Artist Profile | SimplyOver' });
+});
+
+app.get('/overlay/:id', (req, res) => {
+  res.render('overlay_details', { title: 'Overlay Details | SimplyOver' });
+});
+
+app.get('/studio', (req, res) => {
+  res.render('studio_canvas', { title: 'Studio Canvas | SimplyOver' });
+});
+
+// Dummy Auth routes
+app.post('/auth/login', (req, res) => {
+  console.log('Login attempt:', req.body);
+  res.redirect('/');
+});
+
+app.post('/auth/register', (req, res) => {
+  console.log('Register attempt:', req.body);
+  res.redirect('/login');
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server listening on http://localhost:${PORT}`);

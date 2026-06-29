@@ -1,21 +1,351 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %></title>
-    <!-- Use Tailwind CDN temporarily if you want to keep your Tailwind classes, or link your custom style.css -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
-    <link rel="stylesheet" href="/css/style.css">
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>SimplyOver | High-Performance OBS Overlay Marketplace</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#d2bbff",
+                        "secondary": "#4cd7f6",
+                        "tertiary": "#ddb7ff",
+                        "background": "#13131a",
+                        "on-background": "#e4e1ec",
+                        "surface": "#13131a",
+                        "on-surface": "#e4e1ec",
+                        "surface-container": "#1f1f26",
+                        "surface-container-high": "#2a2931",
+                        "surface-container-highest": "#34343c",
+                        "primary-container": "#7c3aed",
+                        "secondary-container": "#03b5d3",
+                        "tertiary-container": "#8d36db",
+                        "on-surface-variant": "#ccc3d8",
+                        "secondary-fixed": "#acedff",
+                    },
+                    "fontFamily": {
+                        "headline-xl": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0D0D14;
+            color: #e4e1ec;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        .glass-surface {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-surface-hover:hover {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(18px);
+        }
+        .masonry-grid {
+            column-count: 2;
+            column-gap: 16px;
+        }
+        @media (min-width: 1024px) {
+            .masonry-grid {
+                column-count: 4;
+                column-gap: 24px;
+            }
+        }
+        @media (min-width: 1536px) {
+            .masonry-grid {
+                column-count: 5;
+            }
+        }
+        .masonry-item {
+            break-inside: avoid;
+            margin-bottom: 24px;
+        }
+        .primary-gradient {
+            background: linear-gradient(45deg, #7c3aed, #ddb7ff);
+        }
+        .text-gradient {
+            background: linear-gradient(45deg, #d2bbff, #06B6D4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .sidebar-transition {
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
 </head>
-<body class="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-center">
-    
-    <div class="text-center space-y-6">
-        <h1 class="text-5xl font-bold text-purple-500"><%= title %></h1>
-        <p class="text-xl text-gray-400">Next.js and Vite have been eliminated.</p>
-        <p class="text-lg">Welcome back to Express + EJS.</p>
-    </div>
+<body class="bg-background text-on-background">
+    <!-- TopNavBar -->
+    <nav class="sticky top-0 w-full z-50 bg-surface/30 backdrop-blur-md border-b border-white/10 shadow-sm flex items-center justify-between px-6 h-20">
+        <div class="flex items-center gap-8 flex-1">
+            <a href="/">
+                <img alt="SimplyOver" class="h-8 w-auto" src="https://lh3.googleusercontent.com/aida/AP1WRLud17br2tzw4NizPnU_EDx0uHfLklKxOyLNzZj4LOyVXVkBBJj0X2CFnNLy9tgMdtmwCzbPAW8iPwu6ISS5cmBmE3GBXbgRwn6NMBJDjNjTVMr9R5S9CEnwhrvmaI6iDhoS6rbbqaCIl3_O80oEwziGDXXB61Go7MAxjdSsxpYKu8pz7v6eJXGJDqp0YLJvGKovvuDV8VXdyfJIlrWLNCaNotE0D9XJP5QYzqQLvPV-uMnfMmunUkjwfQ"/>
+            </a>
+            <div class="hidden lg:flex flex-1 max-w-xl relative">
+                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-secondary">search</span>
+                <input class="w-full bg-surface-container-highest/50 border border-white/10 rounded-full py-2.5 pl-12 pr-4 focus:ring-2 focus:ring-primary outline-none transition-all text-white" placeholder="Search overlays, streamers, styles..." type="text"/>
+            </div>
+        </div>
+        <div class="hidden xl:flex items-center gap-6 px-8">
+            <a class="text-secondary font-bold border-b-2 border-secondary pb-1" href="/">All</a>
+            <a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Anime</a>
+            <a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Esports</a>
+            <a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Neon</a>
+            <a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Gaming</a>
+        </div>
+        <div class="flex items-center gap-4">
+            <a href="/login" class="hidden md:block text-on-surface-variant hover:text-primary transition-colors font-semibold">Login</a>
+            <a href="/dashboard/library" class="primary-gradient text-white px-6 py-2.5 rounded-full font-bold hover:scale-105 transition-transform">
+                Start Creating
+            </a>
+        </div>
+    </nav>
+    <div class="flex">
+        <!-- SideNavBar -->
+        <aside class="fixed left-0 h-full w-[280px] bg-surface-container/40 backdrop-blur-xl border-r border-white/10 flex flex-col py-8 sidebar-transition z-40 hidden md:flex" id="sidebar">
+            <div class="px-6 mb-8">
+                <h2 class="text-2xl font-bold text-primary">Filters</h2>
+                <p class="text-on-surface-variant">Refine your search</p>
+            </div>
+            <nav class="flex-1 space-y-2">
+                <div class="px-3">
+                    <a class="flex items-center gap-4 px-4 py-3 rounded-lg border-l-4 border-primary bg-primary/10 text-primary transition-all" href="#">
+                        <span class="material-symbols-outlined">category</span>
+                        <span>Categories</span>
+                    </a>
+                </div>
+                <div class="px-3">
+                    <a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all" href="#">
+                        <span class="material-symbols-outlined">payments</span>
+                        <span>Price: Free</span>
+                    </a>
+                </div>
+                <div class="px-3">
+                    <a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all" href="#">
+                        <span class="material-symbols-outlined">attach_money</span>
+                        <span>Price: Paid</span>
+                    </a>
+                </div>
+                <div class="px-3">
+                    <a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all" href="#">
+                        <span class="material-symbols-outlined">star</span>
+                        <span>Ratings</span>
+                    </a>
+                </div>
+                <div class="px-3">
+                    <a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all" href="#">
+                        <span class="material-symbols-outlined">trending_up</span>
+                        <span>Trending</span>
+                    </a>
+                </div>
+            </nav>
+            <div class="px-6 mt-auto">
+                <button class="w-full bg-secondary-container/20 border border-secondary text-secondary py-3 rounded-xl font-semibold hover:bg-secondary-container/30 transition-all">
+                    Apply Filters
+                </button>
+            </div>
+        </aside>
+        
+        <!-- Main Content Area -->
+        <main class="flex-1 md:ml-[280px] px-5 md:px-12 pt-12 pb-24">
+            <!-- Hero Section -->
+            <section class="max-w-4xl mx-auto text-center mb-16 space-y-6">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-surface border-white/20 text-secondary mb-4">
+                    <span class="material-symbols-outlined text-[18px]">verified</span>
+                    <span class="text-xs font-semibold">Official Stream Marketplace</span>
+                </div>
+                <h1 class="text-5xl md:text-6xl font-bold text-gradient leading-tight">
+                    Discover Stunning Stream Overlays
+                </h1>
+                <p class="text-lg text-on-surface-variant max-w-2xl mx-auto">
+                    The world's premier marketplace for high-performance OBS overlays and artistic stream assets. High-tech aesthetics for modern creators.
+                </p>
+                <div class="flex flex-wrap justify-center gap-4 mt-8">
+                    <div class="px-6 py-2 rounded-full glass-surface border-white/10 animate-pulse">
+                        <span class="text-primary font-bold">10k+</span>
+                        <span class="ml-1">Overlays</span>
+                    </div>
+                    <div class="px-6 py-2 rounded-full glass-surface border-white/10">
+                        <span class="text-secondary font-bold">3k+</span>
+                        <span class="ml-1">Artists</span>
+                    </div>
+                    <div class="px-6 py-2 rounded-full glass-surface border-white/10">
+                        <span class="text-tertiary font-bold">Free &amp; Premium</span>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Masonry Grid -->
+            <div class="masonry-grid">
+                <!-- Card 1: Featured -->
+                <div class="masonry-item group cursor-pointer relative overflow-hidden rounded-xl glass-surface border-primary/30 shadow-[0_0_20px_rgba(124,58,237,0.15)] transition-all duration-300 hover:scale-[1.02]">
+                    <div class="relative overflow-hidden">
+                        <img class="w-full object-cover rounded-t-xl transition-transform duration-500 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRsoob6EkT2hqOtaJ2aqT-HZjRQHrXml3ymGd5BPAG0mp0cFLA3pVMrmKNCeKSpoWuYt_Nw3PEmFt4FxiIJAykRV9X301bzo9x77mT0HKcCb70Qf6xGmoeKfEJaLURGnfyUryuXuAwKVmhbk5np9qO6FUA_RTWCz86YWnsIN7Y5z8VRohuqBWWVC9yHhtq9589vVzOTuv-G7jNDDhATPYJJC5-pH4l1SLTFxKy9qeL-RUJrye8RwSIJm9Nsr9oYzuEWbJHtVi0UtI" style="height: 320px;"/>
+                        <div class="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+                            <button class="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-primary transition-colors">
+                                <span class="material-symbols-outlined text-white">favorite</span>
+                            </button>
+                            <button class="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-primary transition-colors">
+                                <span class="material-symbols-outlined text-white">push_pin</span>
+                            </button>
+                            <a href="/overlay/details" class="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-primary transition-colors">
+                                <span class="material-symbols-outlined text-white">visibility</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="p-4 flex flex-col gap-3">
+                        <div class="flex items-center justify-between">
+                            <a href="/artist/neon_pulse" class="flex items-center gap-2 hover:opacity-80">
+                                <img class="w-8 h-8 rounded-full border border-primary/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9w3ZvMYXKAV1LFJa6K-b-kkeOsZxN8xs8LjpTeUNVvYzglDuyC8aCeLmGuF30jMysBG7g8coA2mbiiSvbKCJ_oxpqtqWmjtedtecqk4_FcISjEtI9QSUGzA7mBJkdoLULHJvvY9yGGti4YNVyQhNfhGDfiUeAExnp9PJeCLpbIwP6BcKJQ2BferpU7O-mSjL5uk08ElzSQIx8G0jDjo9WXqc-BMaCm-9h53OQosIUAe2FkIrn7YeQeGqTxClQ4jIhxP6zoK-Qqok"/>
+                                <span class="font-semibold text-sm">Neon_Pulse</span>
+                            </a>
+                            <span class="bg-primary-container text-white px-2 py-1 rounded text-xs font-bold">$24.99</span>
+                        </div>
+                        <div class="flex items-center gap-1 text-tertiary">
+                            <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="text-xs font-semibold">4.9 (1.2k)</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Card 2 -->
+                <div class="masonry-item group cursor-pointer relative overflow-hidden rounded-xl glass-surface border-white/10 transition-all duration-300 hover:scale-[1.02]">
+                    <div class="relative overflow-hidden">
+                        <img class="w-full object-cover rounded-t-xl transition-transform duration-500 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_bxEV0uLzRvYnNSct039kpxFNDPkKgjV6sfAk3Yvqn_A7gONLfe0EAIv9xU5wb2EF2lkqWmePbG5t4zkzjAdUbB5JaRJDGlDdC1JFuLgOwWPPQeC6DJIoUobilbr3SY1xGpeo07vW3zMGzuWA3ztCOt3Qh04--rd-Knq2NBW0rjYt6yc92nfZLhsyRZlYrPpYC9fASmSS9YYi_oKkXKBuHqnnUEjfW7-sn07BhuRxsmugZt36dOe3-tlePebjo0XJbFkEP1SDxnE" style="height: 240px;"/>
+                        <div class="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+                            <button class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-secondary transition-colors"><span class="material-symbols-outlined text-white">favorite</span></button>
+                            <a href="/overlay/details" class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-secondary transition-colors"><span class="material-symbols-outlined text-white">visibility</span></a>
+                        </div>
+                    </div>
+                    <div class="p-4 flex flex-col gap-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-full bg-secondary-container/20 flex items-center justify-center border border-secondary/20">
+                                    <span class="material-symbols-outlined text-secondary">brush</span>
+                                </div>
+                                <span class="font-semibold text-sm">GlassWork</span>
+                            </div>
+                            <span class="bg-secondary-container/20 text-secondary border border-secondary/30 px-2 py-1 rounded text-xs font-bold">FREE</span>
+                        </div>
+                        <div class="flex items-center gap-1 text-on-surface-variant">
+                            <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="text-xs font-semibold">4.7 (840)</span>
+                        </div>
+                    </div>
+                </div>
 
+                <!-- Card 3 -->
+                <div class="masonry-item group cursor-pointer relative overflow-hidden rounded-xl glass-surface border-white/10 transition-all duration-300 hover:scale-[1.02]">
+                    <div class="relative overflow-hidden">
+                        <img class="w-full object-cover rounded-t-xl transition-transform duration-500 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC08YRV3W5FjHMf-6LAQxRL1vVOmBfW9csE4pnMB70p3qZoycGwDRdgbjOZrxcj2PsMuJubW7FUhiA48tcF4a8HkEZCrbUz5YrUtwrQpcUDCUN7Go-AjnUdukIG-BTLpVSUe1BgniRkR6CAuux0pL5LCKVxSQQnMlU3Y5zOJkCaTW2bM-79ZE6qM4JO6XTk6yDa5A2nuTjzQP7Rl3ejc2ZbvKG3tohCGV8Rp0qFLVfycva57TNUQWP480kOSnG-ZPgiOYBIUcbttEI" style="height: 400px;"/>
+                        <div class="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+                            <button class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-primary transition-colors"><span class="material-symbols-outlined text-white">favorite</span></button>
+                            <a href="/overlay/details" class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-primary transition-colors"><span class="material-symbols-outlined text-white">visibility</span></a>
+                        </div>
+                    </div>
+                    <div class="p-4 flex flex-col gap-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <img class="w-8 h-8 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmXfJAlxX6H0DMiUPaNYeToEPEbS8YTm-u--4OEGt_M7nWzhxKibJ6UvPTS_X5XEbFTNAEHdzy5svLs4efvm7CkEVyOXV2xfmzhVE1ua1rckHYr9KsAq5j7tpm2Z2uM922IoZV3aN49xzut6DdXJCWYf7MUvMFe-jjZFWgchJBKGxgbqmEWkNM7Ta0qbhoHmwwA9CgiLm4ufnXBl3AivbWXF8lKyFgq3GxiZF1GECM-tT6NCIF-iLRCQnt9m6wep5NnEwcg1MaR_U"/>
+                                <span class="font-semibold text-sm">Senpai_Visuals</span>
+                            </div>
+                            <span class="bg-primary-container text-white px-2 py-1 rounded text-xs font-bold">$19.00</span>
+                        </div>
+                        <div class="flex items-center gap-1 text-on-surface-variant">
+                            <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="text-xs font-semibold">5.0 (310)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="masonry-item group cursor-pointer relative overflow-hidden rounded-xl glass-surface border-white/10 transition-all duration-300 hover:scale-[1.02]">
+                    <div class="relative overflow-hidden">
+                        <img class="w-full object-cover rounded-t-xl transition-transform duration-500 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAaEdrAR25uzw0kEnFBix3lLK4r3t-wCBRLNCHLCiWJrRxUU8RxEC_1sXQ4Hr5Ga4Tof4OyfB0gF068e0fqYwrFuQ-FvfiK0qrNk5PD6qzIkTFnVgEihSL9a7yrSKafClKWbsCCc1XAuK7JcLdgw82f6y3xYdhVIGIAoSh0synZYCt7-jwOHFB0Tgo8xq0nlSq-u6pF2nZBo5eh8KWUEpUjuFRGmCrG5yit3JLgZJttKThclbzX5dw4twShQkE3vhHXVDvvezIifgM" style="height: 220px;"/>
+                        <div class="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+                            <button class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-secondary transition-colors"><span class="material-symbols-outlined text-white">favorite</span></button>
+                            <a href="/overlay/details" class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-secondary transition-colors"><span class="material-symbols-outlined text-white">visibility</span></a>
+                        </div>
+                    </div>
+                    <div class="p-4 flex flex-col gap-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center border border-secondary/20">
+                                    <span class="material-symbols-outlined text-secondary">water_drop</span>
+                                </div>
+                                <span class="font-semibold text-sm">Fluid_Motion</span>
+                            </div>
+                            <span class="bg-secondary-container/20 text-secondary border border-secondary/30 px-2 py-1 rounded text-xs font-bold">FREE</span>
+                        </div>
+                        <div class="flex items-center gap-1 text-on-surface-variant">
+                            <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="text-xs font-semibold">4.6 (1.9k)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="w-full bg-surface-container-lowest border-t border-white/5 flex flex-col md:flex-row justify-between items-center py-12 px-12">
+        <div class="flex flex-col gap-4 mb-8 md:mb-0">
+            <p class="text-on-surface-variant font-semibold text-lg opacity-80">SimplyOver</p>
+            <p class="text-on-surface-variant text-sm max-w-xs">
+                Empowering streamers with the world's most advanced visual assets and creative overlays.
+            </p>
+            <p class="text-on-surface-variant text-xs">
+                © 2024 SimplyOver Marketplace. All rights reserved.
+            </p>
+        </div>
+        <div class="flex gap-12">
+            <div class="flex flex-col gap-2">
+                <span class="text-white font-bold mb-2">Platform</span>
+                <a class="text-on-surface-variant hover:text-primary transition-colors text-sm" href="#">Artists</a>
+                <a class="text-on-surface-variant hover:text-primary transition-colors text-sm" href="#">Sell Overlays</a>
+                <a class="text-on-surface-variant hover:text-primary transition-colors text-sm" href="#">Support</a>
+            </div>
+            <div class="flex flex-col gap-2">
+                <span class="text-white font-bold mb-2">Legal</span>
+                <a class="text-on-surface-variant hover:text-primary transition-colors text-sm" href="#">Terms</a>
+                <a class="text-on-surface-variant hover:text-primary transition-colors text-sm" href="#">Privacy</a>
+            </div>
+        </div>
+    </footer>
+    <script>
+        document.querySelectorAll('.masonry-item').forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                item.style.zIndex = '10';
+            });
+            item.addEventListener('mouseleave', () => {
+                item.style.zIndex = '1';
+            });
+        });
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('scale-[1.02]');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('scale-[1.02]');
+        });
+    </script>
 </body>
 </html>

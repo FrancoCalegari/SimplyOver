@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>SimplyOver - Login / Register</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#7c3aed",
+                        "primary": "#d2bbff",
+                        "secondary": "#4cd7f6",
+                        "background": "#13131a",
+                        "on-background": "#e4e1ec",
+                        "on-surface-variant": "#ccc3d8",
+                        "surface-container": "#1f1f26",
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "headline-xl": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "label-md": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glass-input {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .glass-input:focus {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: #4cd7f6;
+            box-shadow: 0 0 15px rgba(76, 215, 246, 0.2);
+            outline: none;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+        .animate-float-delayed {
+            animation: float 5s ease-in-out infinite 1s;
+        }
+        .gradient-text {
+            background: linear-gradient(45deg, #7c3aed, #4cd7f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .primary-gradient {
+            background: linear-gradient(45deg, #7c3aed, #8d36db);
+        }
+        .state-hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen overflow-hidden selection:bg-primary/30">
+<main class="flex flex-col md:flex-row min-h-screen w-full">
+    <!-- Left Panel: Visual/Atmosphere -->
+    <section class="hidden md:flex relative w-full md:w-[60%] h-full bg-[#0D0D14] overflow-hidden items-center">
+        <!-- Background Image with Fade to Transparent -->
+        <div class="absolute inset-0 z-0 bg-cover bg-center opacity-60 mix-blend-lighten" style="background-image: url('https://lh3.googleusercontent.com/aida/AP1WRLv4I8ucRFfhK5bsuHjLuOmsjnXuR40rKcROfKcLAJ5qyPXaEvOBHk6aEebvtU1WZYMxN7nTT2xSQg1nudUj2VMOtGYKRero1CPXYhj0OKw2RDEWGT15iBWVFjPNEQDteUjd6B6QCRFWg3-gZRJM0BNszM186UdqPWJymeqb2sQ8KV_uLXy32m_gR20TpNblsyWJIY25-1Q91ZOvq2Xtm8ce7G4ciwuH1vw9COjgM4wi05-V-AjTDz_03iY');">
+        </div>
+        <!-- Fade Overlay -->
+        <div class="absolute inset-0 z-10 bg-gradient-to-r from-[#0D0D14] via-[#0D0D14]/60 to-transparent"></div>
+        
+        <!-- Content -->
+        <div class="relative z-20 px-12 w-full h-full flex flex-col justify-between py-12">
+            <!-- Top Left: Logo -->
+            <div class="flex items-center gap-4">
+                <a href="/">
+                    <img alt="SimplyOver Logo" class="h-12 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AP1WRLud17br2tzw4NizPnU_EDx0uHfLklKxOyLNzZj4LOyVXVkBBJj0X2CFnNLy9tgMdtmwCzbPAW8iPwu6ISS5cmBmE3GBXbgRwn6NMBJDjNjTVMr9R5S9CEnwhrvmaI6iDhoS6rbbqaCIl3_O80oEwziGDXXB61Go7MAxjdSsxpYKu8pz7v6eJXGJDqp0YLJvGKovvuDV8VXdyfJIlrWLNCaNotE0D9XJP5QYzqQLvPV-uMnfMmunUkjwfQ"/>
+                </a>
+            </div>
+            
+            <!-- Center Content: Tagline & Stats -->
+            <div class="max-w-xl">
+                <h1 class="font-headline-xl text-5xl text-white mb-8 leading-tight font-bold">
+                    The world's premier <br/>
+                    <span class="gradient-text">OBS overlay</span> marketplace.
+                </h1>
+                
+                <div class="flex flex-wrap gap-4 mt-12">
+                    <div class="glass-panel px-6 py-3 rounded-full flex items-center gap-3 animate-float border border-white/5 shadow-xl">
+                        <span class="material-symbols-outlined text-secondary">layers</span>
+                        <span class="font-label-md text-white">10k+ Overlays</span>
+                    </div>
+                    <div class="glass-panel px-6 py-3 rounded-full flex items-center gap-3 animate-float-delayed border border-white/5 shadow-xl">
+                        <span class="material-symbols-outlined text-primary">palette</span>
+                        <span class="font-label-md text-white">3k+ Artists</span>
+                    </div>
+                    <div class="glass-panel px-6 py-3 rounded-full flex items-center gap-3 animate-float border border-white/5 shadow-xl" style="animation-delay: 0.5s">
+                        <span class="material-symbols-outlined text-secondary">verified</span>
+                        <span class="font-label-md text-white">100% Free to Browse</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bottom Hint -->
+            <div class="flex items-center gap-2 text-on-surface-variant/40">
+                <span class="text-label-sm uppercase tracking-widest">Built for creators by artists</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Right Panel: Auth Form -->
+    <section class="flex-1 flex items-center justify-center p-6 md:p-12 bg-background relative">
+        <div class="w-full max-w-md relative z-10">
+            <!-- Tabs Container -->
+            <div class="flex items-center justify-center mb-8 gap-8 border-b border-white/10">
+                <button class="pb-3 px-2 font-label-md transition-all duration-300 relative text-primary" id="login-tab" onclick="switchState('login')">
+                    Login
+                    <span class="absolute bottom-0 left-0 w-full h-[2px] bg-primary-container rounded-full" id="login-indicator"></span>
+                </button>
+                <button class="pb-3 px-2 font-label-md transition-all duration-300 relative text-on-surface-variant hover:text-white" id="register-tab" onclick="switchState('register')">
+                    Register
+                    <span class="absolute bottom-0 left-0 w-full h-[2px] bg-primary-container rounded-full scale-x-0 transition-transform duration-300 origin-center" id="register-indicator"></span>
+                </button>
+            </div>
+            
+            <!-- Form Card -->
+            <div class="glass-panel rounded-xl p-8 md:p-10 shadow-2xl">
+                <!-- Login State -->
+                <form action="/auth/login" method="POST" class="space-y-6" id="login-state">
+                    <header>
+                        <h2 class="text-3xl font-bold gradient-text mb-2">Welcome back</h2>
+                        <p class="text-on-surface-variant">Sign in to your SimplyOver account</p>
+                    </header>
+                    
+                    <div class="space-y-4">
+                        <div class="space-y-2">
+                            <label class="text-sm text-on-surface-variant block ml-1">Email Address</label>
+                            <div class="relative">
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">mail</span>
+                                <input name="email" class="w-full h-12 pl-12 pr-4 rounded-lg glass-input text-white" placeholder="name@example.com" type="email" required/>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center px-1">
+                                <label class="text-sm text-on-surface-variant block">Password</label>
+                                <a class="text-sm text-primary hover:underline" href="#">Forgot password?</a>
+                            </div>
+                            <div class="relative">
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">lock</span>
+                                <input name="password" class="w-full h-12 pl-12 pr-4 rounded-lg glass-input text-white" placeholder="••••••••" type="password" required/>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="w-full h-12 primary-gradient rounded-lg text-white font-semibold shadow-lg shadow-primary-container/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                        Sign In
+                    </button>
+                    
+                    <p class="text-center text-sm text-on-surface-variant pt-2">
+                        Don't have an account? 
+                        <button type="button" class="text-primary font-bold hover:underline" onclick="switchState('register')">Register</button>
+                    </p>
+                </form>
+
+                <!-- Register State -->
+                <form action="/auth/register" method="POST" class="state-hidden space-y-6" id="register-state">
+                    <header>
+                        <h2 class="text-3xl font-bold gradient-text mb-2">Join SimplyOver</h2>
+                        <p class="text-on-surface-variant">Create your free account</p>
+                    </header>
+                    
+                    <div class="space-y-4">
+                        <div class="space-y-2">
+                            <label class="text-sm text-on-surface-variant block ml-1">Username</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-primary font-bold">@</span>
+                                <input name="username" class="w-full h-12 pl-10 pr-10 rounded-lg glass-input text-white" placeholder="username" type="text" required/>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm text-on-surface-variant block ml-1">Email Address</label>
+                            <div class="relative">
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">mail</span>
+                                <input name="email" class="w-full h-12 pl-12 pr-4 rounded-lg glass-input text-white" placeholder="name@example.com" type="email" required/>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label class="text-sm text-on-surface-variant block ml-1">Password</label>
+                                <div class="relative">
+                                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">lock</span>
+                                    <input name="password" class="w-full h-12 pl-12 pr-4 rounded-lg glass-input text-white" placeholder="••••••••" type="password" required/>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-sm text-on-surface-variant block ml-1">Confirm</label>
+                                <div class="relative">
+                                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">verified_user</span>
+                                    <input name="confirmPassword" class="w-full h-12 pl-12 pr-4 rounded-lg glass-input text-white" placeholder="••••••••" type="password" required/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="w-full h-12 primary-gradient rounded-lg text-white font-semibold shadow-lg shadow-primary-container/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                        Create Account
+                    </button>
+                    
+                    <p class="text-center text-sm text-on-surface-variant pt-2">
+                        Already have an account? 
+                        <button type="button" class="text-primary font-bold hover:underline" onclick="switchState('login')">Sign in</button>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+    function switchState(state) {
+        const loginState = document.getElementById('login-state');
+        const registerState = document.getElementById('register-state');
+        const loginTab = document.getElementById('login-tab');
+        const registerTab = document.getElementById('register-tab');
+        const loginIndicator = document.getElementById('login-indicator');
+        const registerIndicator = document.getElementById('register-indicator');
+
+        if (state === 'login') {
+            loginState.classList.remove('state-hidden');
+            registerState.classList.add('state-hidden');
+            
+            loginTab.classList.remove('text-on-surface-variant');
+            loginTab.classList.add('text-primary');
+            registerTab.classList.add('text-on-surface-variant');
+            registerTab.classList.remove('text-primary', 'text-white');
+
+            loginIndicator.classList.remove('scale-x-0');
+            registerIndicator.classList.add('scale-x-0');
+        } else {
+            loginState.classList.add('state-hidden');
+            registerState.classList.remove('state-hidden');
+
+            registerTab.classList.remove('text-on-surface-variant');
+            registerTab.classList.add('text-primary');
+            loginTab.classList.add('text-on-surface-variant');
+            loginTab.classList.remove('text-primary');
+
+            registerIndicator.classList.remove('scale-x-0');
+            loginIndicator.classList.add('scale-x-0');
+        }
+    }
+</script>
+</body>
+</html>

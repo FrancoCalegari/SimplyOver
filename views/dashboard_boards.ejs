@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>My Boards | SimplyOver</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#d2bbff",
+                        "secondary": "#4cd7f6",
+                        "background": "#13131a",
+                        "on-background": "#e4e1ec",
+                        "surface": "#13131a",
+                        "surface-container": "#1f1f26",
+                        "on-surface-variant": "#ccc3d8",
+                        "surface-container-highest": "#34343c",
+                        "primary-container": "#7c3aed",
+                        "error": "#ffb4ab",
+                        "surface-variant": "#34343c"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-xl": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-md": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0D0D14;
+            color: #e4e1ec;
+            font-family: 'Inter', sans-serif;
+        }
+        .glass-surface {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-surface-hover:hover {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(18px);
+        }
+        .violet-gradient {
+            background: linear-gradient(45deg, #7c3aed, #8d36db);
+        }
+        .sidebar-active {
+            border-left: 4px solid #7c3aed;
+            background: rgba(124, 58, 237, 0.1);
+            color: #d2bbff;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+    <!-- Top Navigation -->
+    <header class="sticky top-0 w-full z-50 bg-surface/30 backdrop-blur-md border-b border-white/10 shadow-sm flex items-center justify-between px-6 h-20">
+        <div class="flex items-center gap-4">
+            <a href="/">
+                <img alt="SimplyOver Logo" class="h-10" src="https://lh3.googleusercontent.com/aida/AP1WRLud17br2tzw4NizPnU_EDx0uHfLklKxOyLNzZj4LOyVXVkBBJj0X2CFnNLy9tgMdtmwCzbPAW8iPwu6ISS5cmBmE3GBXbgRwn6NMBJDjNjTVMr9R5S9CEnwhrvmaI6iDhoS6rbbqaCIl3_O80oEwziGDXXB61Go7MAxjdSsxpYKu8pz7v6eJXGJDqp0YLJvGKovvuDV8VXdyfJIlrWLNCaNotE0D9XJP5QYzqQLvPV-uMnfMmunUkjwfQ"/>
+            </a>
+            <span class="text-2xl font-bold text-primary">SimplyOver</span>
+        </div>
+        <div class="hidden md:flex items-center gap-8">
+            <nav class="flex gap-6">
+                <a class="text-on-surface-variant hover:text-primary transition-colors font-semibold" href="/">All</a>
+                <a class="text-on-surface-variant hover:text-primary transition-colors font-semibold" href="#">Anime</a>
+                <a class="text-on-surface-variant hover:text-primary transition-colors font-semibold" href="#">Gaming</a>
+                <a class="text-secondary font-bold border-b-2 border-secondary pb-1" href="/dashboard/library">Dashboard</a>
+            </nav>
+            <div class="flex items-center gap-4">
+                <a href="/dashboard/library" class="violet-gradient text-white px-6 py-2 rounded-lg font-semibold hover:scale-95 transition-transform duration-200">Start Creating</a>
+            </div>
+        </div>
+    </header>
+    <div class="flex">
+        <!-- Persistent Sidebar -->
+        <aside class="fixed left-0 top-20 h-[calc(100vh-80px)] w-[280px] bg-surface-container/40 backdrop-blur-xl border-r border-white/10 flex flex-col py-8 z-40 hidden md:flex">
+            <!-- User Profile -->
+            <div class="px-8 mb-10 flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-primary/30">
+                    <img alt="User Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AP1WRLv4I8ucRFfhK5bsuHjLuOmsjnXuR40rKcROfKcLAJ5qyPXaEvOBHk6aEebvtU1WZYMxN7nTT2xSQg1nudUj2VMOtGYKRero1CPXYhj0OKw2RDEWGT15iBWVFjPNEQDteUjd6B6QCRFWg3-gZRJM0BNszM186UdqPWJymeqb2sQ8KV_uLXy32m_gR20TpNblsyWJIY25-1Q91ZOvq2Xtm8ce7G4ciwuH1vw9COjgM4wi05-V-AjTDz_03iY"/>
+                </div>
+                <div>
+                    <h3 class="font-bold text-white">NeonOver</h3>
+                    <p class="text-xs text-secondary">Pro Designer</p>
+                </div>
+            </div>
+            <!-- Sidebar Navigation -->
+            <nav class="flex flex-col gap-1 flex-grow">
+                <a class="flex items-center gap-4 px-8 py-3 text-on-surface-variant hover:bg-white/5 transition-all duration-300" href="/dashboard/library">
+                    <span class="material-symbols-outlined">library_books</span>
+                    <span class="font-semibold">My Library</span>
+                </a>
+                <a class="flex items-center gap-4 px-8 py-3 sidebar-active transition-all duration-300" href="/dashboard/boards">
+                    <span class="material-symbols-outlined">dashboard_customize</span>
+                    <span class="font-semibold">My Boards</span>
+                </a>
+            </nav>
+            <!-- Bottom Sidebar Action -->
+            <div class="px-6 mt-auto">
+                <a href="/studio" class="w-full violet-gradient text-white py-3 rounded-xl flex items-center justify-center gap-2 font-semibold hover:brightness-110 transition-all">
+                    <span class="material-symbols-outlined">brush</span>
+                    Studio Canvas
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-grow md:ml-[280px] p-5 md:p-12 min-h-screen">
+            <!-- Header Section -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
+                <div>
+                    <h1 class="text-5xl font-bold text-white">My Boards</h1>
+                    <p class="text-on-surface-variant opacity-70">6 boards · 142 overlays saved</p>
+                </div>
+                <button class="violet-gradient text-white px-8 py-4 rounded-xl flex items-center gap-3 font-semibold hover:scale-105 transition-transform" onclick="document.getElementById('modal').classList.remove('hidden')">
+                    <span class="material-symbols-outlined">add</span>
+                    Create New Board
+                </button>
+            </div>
+
+            <!-- Boards Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
+                <!-- Featured Board -->
+                <div class="glass-surface glass-surface-hover rounded-xl overflow-hidden border-primary p-1 border-2 relative group cursor-pointer">
+                    <div class="grid grid-cols-2 gap-1 h-48 rounded-lg overflow-hidden">
+                        <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMU0FKqGANE4eYf01esNq8R6_eSMjGCXzhCFtoaIYhFEa4DvyVFArwgimIotLRi_pFY3ANgze6Exg2FZt7mPVClAiF6G5u6IQmQGkPTV1koMa171xDGiX9VkI_pbSYIYSBBxomCr6PLQvrK2t8GXRJBwsp2CXgDImCKOp4jN8-b7fFhT6aNUBUio_J-tS5TsNCOS5mfqMIyqHXcusEB3jpJjhJbvsrPKC8T8t6I0Rvmme6-qB2UyqW5TP0PKcjJWe-hts3eD_52aA"/>
+                        <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbog_BJ1su4HGcSAzSTIkMM_x1XlhrV2HPD12mR8587UaQW77eyyV9rut_by88yQ5lxDB3nOPQ8gtwcrEANHc9XBgCIKJXwgW41Uz-geDvU2WU5RxdWK0sQEiViMG1oKhmuex3AnVXvSOca-ljlg8u36EgtHv_e7gVdJbVxgHZz8OjNX5G3YVGuyeT7zCfNPsnMnRgaSH3hiDUHpdnpcksvIeYzSn050eetWvlT2dR7EktZzQpKziTzv1hlZogHBqqkXmd-dckDvA"/>
+                        <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBr_gGIEOAzNJJdWjMNfsAiU8tWZWfgm14Qvz3H-PZQPfY_z5BvnGk9S-edWSkxbCMqRj0H5BYbISigMos54Ihd_qV048HTqNayffoLrPeolTxUke9CxkTUoPCuF2qggv8TaTAVIwddRVcIxfCfzLM-sK63uDysPPThoX7pJ-3I0dKufGwdNAEYtL3mZsOeMJSI19LrkhvtnZprBesgVbr3prvTnFZgCy2nbF_foRouHN9GHrXmWUzVoHmXqKDa0b91tvWoo-_Vw28"/>
+                        <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfjFDcdeKmHVtiUzgqkQLqa6OxmEd7bA1RZVwOjcrFiioQJF-H53FHC51gM0dJVE8Xj-OQ-iATfXT4DRdVprP_1K4DcVuFP7tb19oC_JYJ4rWfhDKmJuWALVw1WIN2wzvLWAjignLNAgHw6ipNzAchgC1G41TZ7HQsEwYGlX3Qrs_OaVKGZQrmOrIqH_maRbPpGxe3yLPaj3BUDe1etxZlbL0BKXF3x3oLn2CFBpqyJ8h4IpvEnrVP3cDWCw-7bHdLknHZaXtXUow"/>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-2xl text-white font-bold">Cyberpunk Collection</h3>
+                            <span class="bg-secondary-container/20 text-secondary border border-secondary/30 px-3 py-1 rounded-full text-xs flex items-center gap-1">
+                                <span class="material-symbols-outlined text-sm">public</span> Public
+                            </span>
+                        </div>
+                        <p class="font-semibold text-on-surface-variant">42 overlays</p>
+                    </div>
+                    <!-- Hover Actions -->
+                    <div class="absolute inset-0 bg-background/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+                        <button class="bg-surface-container-high p-3 rounded-full hover:bg-primary/20 transition-colors">
+                            <span class="material-symbols-outlined text-primary">edit</span>
+                        </button>
+                        <button class="violet-gradient text-white px-6 py-3 rounded-lg font-semibold">View Board</button>
+                        <button class="bg-surface-container-high p-3 rounded-full hover:bg-error/20 transition-colors">
+                            <span class="material-symbols-outlined text-error">delete</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Board Card 2 -->
+                <div class="glass-surface glass-surface-hover rounded-xl overflow-hidden p-1 border border-white/10 relative group cursor-pointer">
+                    <div class="grid grid-cols-2 gap-1 h-48 rounded-lg overflow-hidden">
+                        <div class="bg-surface-variant h-full flex items-center justify-center text-on-surface-variant">
+                            <span class="material-symbols-outlined text-4xl opacity-20">image</span>
+                        </div>
+                        <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVHzhI7mstgh7mVa6U_t2djiV3N3yyEhS4Eq-UU3TqLX37XDR6VepIolcKoicIL0cSSyJi6tUGt0Pkkmydi0UqYhSn9QX6_WeXWa9PugpXPu6_kJNePBfRwCtKnXv5FpLJWKuqpE4t22_EAD3F1qDjdhuAHbyU3SBTybUX6jnRevI2dCnVqOcOHQp7lhcxUfBNKIAhWN1vuVZnojy2TKlIcDn-xUN7d_XCk9IZEribGWQW1pRxu59fp3tY2cGk4vScD55nbD-9row"/>
+                        <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwGJmMq1uwTIs1QcR5pNNMzRhf8dkePaTG61ABuiRYhZ0qMWPhiIKwuRXZeEavCi6exroHw19Ghe8Plr63ojvKT5AYm68b5_kACBIRfsbmtYaJbO_PXlTBJB-xg7OopAnAHbrYo9vygPwdc0OZVUiPyzngXUOhoNn0NpFZ2vqe5rIH_rkx2cA9SgZTSLxD1JDAMHVZBDMzJiSzDsUjIXLDvAfmDB6rpv7k9FGAH1NAlCBKx_r417827o6hEj_okIBxAiP5xDPdrek"/>
+                        <div class="bg-surface-variant h-full flex items-center justify-center text-on-surface-variant">
+                            <span class="material-symbols-outlined text-4xl opacity-20">image</span>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-2xl text-white font-bold">Minimalist Work</h3>
+                            <span class="bg-surface-variant text-on-surface-variant px-3 py-1 rounded-full text-xs flex items-center gap-1">
+                                <span class="material-symbols-outlined text-sm">lock</span> Private
+                            </span>
+                        </div>
+                        <p class="font-semibold text-on-surface-variant">12 overlays</p>
+                    </div>
+                    <div class="absolute inset-0 bg-background/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+                        <button class="bg-surface-container-high p-3 rounded-full hover:bg-primary/20 transition-colors"><span class="material-symbols-outlined text-primary">edit</span></button>
+                        <button class="violet-gradient text-white px-6 py-3 rounded-lg font-semibold">View Board</button>
+                        <button class="bg-surface-container-high p-3 rounded-full hover:bg-error/20 transition-colors"><span class="material-symbols-outlined text-error">delete</span></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Expanded Masonry View -->
+            <section class="mt-16">
+                <div class="flex items-center gap-3 mb-8">
+                    <span class="w-2 h-8 bg-secondary rounded-full"></span>
+                    <h2 class="text-3xl font-bold text-white">Recent: Cyberpunk Collection</h2>
+                </div>
+                <div class="columns-1 sm:columns-2 lg:columns-4 gap-6 space-y-6">
+                    <!-- Overlay Card 1 -->
+                    <div class="relative group break-inside-avoid">
+                        <div class="glass-surface rounded-xl overflow-hidden hover:scale-[1.02] transition-transform duration-300">
+                            <img class="w-full h-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9ku-26Rfujm3kog_cSGButwT6uW5QSpEyuWDKy6udbiRNr6Fgq5McTd3VJzuGOsCHRUx_Ut5pHiGUovg5fw3mqKayJkP9GfjI5i_w4mPkI--Xuk9_ZyoyGO0TdaBAsnL9SRyaMWG5tPqOHxA1AlionFJu9Ldwl8xaQ2GzBFgQ7MORqF17g0PcV5oRiprTlP2U9WR--zrnwYvrJ1-j8P9C0hpvUeUOf5GE8uH8rwYltWTKR4ZS3w7XSl5ms3atpTt2gEKv0SdT2Zo"/>
+                            <div class="p-4 bg-gradient-to-t from-background/90 to-transparent">
+                                <p class="font-semibold text-white">Neon Drift HUD</p>
+                                <p class="text-xs text-on-surface-variant">Artist: SynthWave</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Overlay Card 2 -->
+                    <div class="relative group break-inside-avoid">
+                        <div class="glass-surface rounded-xl overflow-hidden hover:scale-[1.02] transition-transform duration-300">
+                            <img class="w-full h-auto min-h-[400px] object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAx7J8iRphH_KLfNmMnS96wiDu629ysCSvj1kENE6U07GGK1hVe5Ju4teBtRbhGg6250PXpPQyFb6R5TeN9ILu9c4agcgny4WdkNEiFpBJg5MmkD0v-85p_0mQ1PtL4QMxW3JAqZPl_tQMMK48LKT9onJyzvhkc0IUNA2MCpmLC7owWJ6AUmjua7-eSuqkgqNoF6jLuew5_xFxouc15m-Np_lE7Et3m2w_QiYj-l0ih-q8tleQtnQD65BVZzFdMrstLlQOrlvLmpLM"/>
+                            <div class="p-4 bg-gradient-to-t from-background/90 to-transparent">
+                                <p class="font-semibold text-white">Prism Glass Interface</p>
+                                <p class="text-xs text-on-surface-variant">Artist: GlassMaster</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <!-- Modal: Create New Board -->
+    <div class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4" id="modal">
+        <div class="absolute inset-0 bg-background/80 backdrop-blur-md" onclick="document.getElementById('modal').classList.add('hidden')"></div>
+        <div class="glass-surface p-8 rounded-2xl w-full max-w-lg relative shadow-2xl animate-in zoom-in duration-300">
+            <h2 class="text-3xl font-bold text-white mb-6">Create New Board</h2>
+            <div class="space-y-6">
+                <div>
+                    <label class="block font-semibold text-on-surface-variant mb-2">Board Name</label>
+                    <input class="w-full bg-white/5 border-white/10 rounded-xl px-4 py-3 text-white focus:ring-primary focus:border-primary" placeholder="e.g. Dreamy Neon Collection" type="text"/>
+                </div>
+                <div>
+                    <label class="block font-semibold text-on-surface-variant mb-2">Description</label>
+                    <textarea class="w-full bg-white/5 border-white/10 rounded-xl px-4 py-3 text-white focus:ring-primary focus:border-primary" placeholder="What's this board about?" rows="3"></textarea>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="font-semibold text-white">Make Public</p>
+                        <p class="text-xs text-on-surface-variant">Allow others to see this board</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input checked="" class="sr-only peer" type="checkbox"/>
+                        <div class="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                    </label>
+                </div>
+                <div class="flex gap-4 pt-4">
+                    <button class="flex-1 bg-white/5 hover:bg-white/10 text-white font-semibold py-3 rounded-xl transition-colors" onclick="document.getElementById('modal').classList.add('hidden')">Cancel</button>
+                    <button class="flex-1 violet-gradient text-white font-semibold py-3 rounded-xl hover:brightness-110 transition-all">Create Board</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

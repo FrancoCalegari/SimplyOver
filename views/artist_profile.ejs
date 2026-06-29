@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>SimplyOver - Neon Pulse Creator Profile</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#d2bbff",
+                        "secondary": "#4cd7f6",
+                        "tertiary": "#ddb7ff",
+                        "background": "#13131a",
+                        "on-background": "#e4e1ec",
+                        "surface": "#13131a",
+                        "on-surface": "#e4e1ec",
+                        "surface-container": "#1f1f26",
+                        "surface-container-highest": "#34343c",
+                        "surface-container-lowest": "#0e0e15",
+                        "primary-container": "#7c3aed",
+                        "secondary-container": "#03b5d3",
+                        "on-surface-variant": "#ccc3d8",
+                        "error": "#ffb4ab"
+                    },
+                    "fontFamily": {
+                        "headline-xl": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #13131a;
+            color: #e4e1ec;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .glass-surface {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-surface-hover:hover {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(210, 187, 255, 0.3);
+        }
+
+        .primary-gradient {
+            background: linear-gradient(45deg, #7c3aed 0%, #8d36db 100%);
+        }
+
+        .text-gradient {
+            background: linear-gradient(90deg, #d2bbff 0%, #4cd7f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .masonry-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-auto-rows: 10px;
+            gap: 24px;
+        }
+
+        .masonry-item {
+            grid-row-end: span 30;
+        }
+
+        .masonry-item:nth-child(even) {
+            grid-row-end: span 38;
+        }
+
+        .masonry-item:nth-child(3n) {
+            grid-row-end: span 32;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .sidebar-rail {
+            width: 80px;
+            transition: width 0.3s ease;
+        }
+        
+        @media (min-width: 1024px) {
+            .sidebar-expanded {
+                width: 280px;
+            }
+        }
+
+        .btn-scale:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body class="bg-surface selection:bg-primary-container selection:text-on-primary-container">
+    <!-- Top Navigation -->
+    <header class="sticky top-0 w-full z-50 bg-surface/30 backdrop-blur-md border-b border-white/10 shadow-sm flex items-center justify-between px-6 h-20">
+        <div class="flex items-center gap-8">
+            <a class="text-2xl font-bold text-primary" href="/">SimplyOver</a>
+            <nav class="hidden md:flex items-center gap-6">
+                <a class="text-on-surface-variant font-semibold hover:bg-white/5 transition-colors px-3 py-2 rounded-lg" href="/">All</a>
+                <a class="text-on-surface-variant font-semibold hover:bg-white/5 transition-colors px-3 py-2 rounded-lg" href="#">Anime</a>
+                <a class="text-on-surface-variant font-semibold hover:bg-white/5 transition-colors px-3 py-2 rounded-lg" href="#">Esports</a>
+                <a class="text-secondary font-bold border-b-2 border-secondary pb-1 font-semibold" href="#">Neon</a>
+                <a class="text-on-surface-variant font-semibold hover:bg-white/5 transition-colors px-3 py-2 rounded-lg" href="#">Minimalist</a>
+            </nav>
+        </div>
+        <div class="flex items-center gap-4">
+            <a href="/dashboard/library" class="hidden lg:flex items-center px-6 py-2.5 primary-gradient text-white font-semibold rounded-full btn-scale">
+                Start Creating
+            </a>
+            <a href="/login" class="text-on-surface font-semibold hover:bg-white/5 px-4 py-2 rounded-lg transition-colors">
+                Login
+            </a>
+        </div>
+    </header>
+
+    <div class="flex min-h-screen">
+        <!-- Side Filter Rail -->
+        <aside class="hidden md:flex flex-col py-8 fixed left-0 h-full w-[80px] lg:w-[280px] bg-surface-container/40 backdrop-blur-xl border-r border-white/10 transition-all duration-300 z-40">
+            <div class="px-6 mb-8 lg:block hidden">
+                <h2 class="text-2xl font-bold text-primary">Filters</h2>
+                <p class="text-on-surface-variant">Refine your search</p>
+            </div>
+            <nav class="flex flex-col gap-2">
+                <button class="flex items-center gap-4 px-6 py-4 border-l-4 border-primary bg-primary/10 text-primary transition-all duration-300">
+                    <span class="material-symbols-outlined">category</span>
+                    <span class="font-semibold lg:block hidden">Categories</span>
+                </button>
+                <button class="flex items-center gap-4 px-6 py-4 text-on-surface-variant hover:bg-white/5 transition-all duration-300">
+                    <span class="material-symbols-outlined">payments</span>
+                    <span class="font-semibold lg:block hidden">Price: Free</span>
+                </button>
+                <button class="flex items-center gap-4 px-6 py-4 text-on-surface-variant hover:bg-white/5 transition-all duration-300">
+                    <span class="material-symbols-outlined">attach_money</span>
+                    <span class="font-semibold lg:block hidden">Price: Paid</span>
+                </button>
+                <button class="flex items-center gap-4 px-6 py-4 text-on-surface-variant hover:bg-white/5 transition-all duration-300">
+                    <span class="material-symbols-outlined">star</span>
+                    <span class="font-semibold lg:block hidden">Ratings</span>
+                </button>
+                <button class="flex items-center gap-4 px-6 py-4 text-on-surface-variant hover:bg-white/5 transition-all duration-300">
+                    <span class="material-symbols-outlined">trending_up</span>
+                    <span class="font-semibold lg:block hidden">Trending</span>
+                </button>
+            </nav>
+            <div class="mt-auto px-6 py-6 lg:block hidden">
+                <button class="w-full py-3 glass-surface rounded-xl font-semibold text-primary btn-scale">
+                    Apply Filters
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 md:ml-[80px] lg:ml-[280px] bg-surface relative">
+            <!-- Profile Hero Banner -->
+            <section class="relative w-full h-[300px] overflow-hidden">
+                <img alt="Panoramic neon grid and cyberpunk landscape" class="w-full h-full object-cover brightness-75" src="https://lh3.googleusercontent.com/aida/AP1WRLv4I8ucRFfhK5bsuHjLuOmsjnXuR40rKcROfKcLAJ5qyPXaEvOBHk6aEebvtU1WZYMxN7nTT2xSQg1nudUj2VMOtGYKRero1CPXYhj0OKw2RDEWGT15iBWVFjPNEQDteUjd6B6QCRFWg3-gZRJM0BNszM186UdqPWJymeqb2sQ8KV_uLXy32m_gR20TpNblsyWJIY25-1Q91ZOvq2Xtm8ce7G4ciwuH1vw9COjgM4wi05-V-AjTDz_03iY"/>
+                <div class="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent"></div>
+            </section>
+
+            <!-- Profile Header Content -->
+            <section class="px-5 md:px-12 -mt-16 relative z-10">
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                    <div class="flex flex-col md:flex-row items-center md:items-end gap-6">
+                        <div class="w-32 h-32 rounded-full border-4 border-surface overflow-hidden shadow-2xl glass-surface">
+                            <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYtktgigO5IKZh9ThL-c_qarIe10BPopkcEvRskLtz9wXMjXuUXCYb-8IPmbcMbOfg43fgYwQXXHk6g3MV66mivK9LCKwxgesogb1nXwyv7gqNv3d-IFRTgRmHIAklahgZzQ7i1Q143eQv_TIP41VaE_Igmn8FIKyVMHTgOMr6IDgtnlHvZEepb42QdyAEiBZiG8Brvxp_nvJYm7kpoTpa6YYfO1vfDU1C8u6zd8p0sOeI2nSDUViWzefDaumMMqqo0IFwqQ800a8"/>
+                        </div>
+                        <div class="text-center md:text-left mb-2">
+                            <h1 class="text-5xl font-bold text-gradient">Neon Pulse Creator</h1>
+                            <p class="text-lg text-on-surface-variant">@neonpulse</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 justify-center">
+                        <button class="px-8 py-3 primary-gradient text-white font-semibold rounded-full shadow-lg shadow-primary/20 btn-scale">
+                            Follow
+                        </button>
+                        <button class="px-8 py-3 glass-surface text-on-surface font-semibold rounded-full btn-scale">
+                            Share Profile
+                        </button>
+                    </div>
+                </div>
+                <div class="mt-8 max-w-2xl">
+                    <p class="text-lg text-on-surface leading-relaxed">
+                        Specializing in high-performance cyberpunk and minimalist OBS overlays for professional streamers.
+                    </p>
+                </div>
+                <!-- Social Row -->
+                <div class="mt-6 flex flex-wrap gap-3">
+                    <button class="p-2.5 rounded-full bg-[#9146FF]/10 text-[#9146FF] border border-[#9146FF]/20 hover:bg-[#9146FF]/20 transition-all">
+                        <span class="material-symbols-outlined">videocam</span>
+                    </button>
+                    <button class="p-2.5 rounded-full bg-[#53FC18]/10 text-[#53FC18] border border-[#53FC18]/20 hover:bg-[#53FC18]/20 transition-all">
+                        <span class="material-symbols-outlined">bolt</span>
+                    </button>
+                    <button class="p-2.5 rounded-full bg-[#E4405F]/10 text-[#E4405F] border border-[#E4405F]/20 hover:bg-[#E4405F]/20 transition-all">
+                        <span class="material-symbols-outlined">photo_camera</span>
+                    </button>
+                    <button class="p-2.5 rounded-full bg-[#ffffff]/5 text-white border border-white/10 hover:bg-white/10 transition-all">
+                        <span class="material-symbols-outlined">music_note</span>
+                    </button>
+                </div>
+                <!-- Stats Bar -->
+                <div class="mt-10 grid grid-cols-2 md:flex md:items-center gap-8 py-6 border-y border-white/5">
+                    <div class="flex flex-col">
+                        <span class="text-2xl font-bold text-on-surface">42</span>
+                        <span class="text-xs text-on-surface-variant uppercase tracking-wider">Overlays Created</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-2xl font-bold text-on-surface">1.2k</span>
+                        <span class="text-xs text-on-surface-variant uppercase tracking-wider">Favorites</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-2xl font-bold text-on-surface">8</span>
+                        <span class="text-xs text-on-surface-variant uppercase tracking-wider">Boards</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-2xl font-bold text-on-surface">2022</span>
+                        <span class="text-xs text-on-surface-variant uppercase tracking-wider">Member since</span>
+                    </div>
+                </div>
+                <!-- Navigation Tabs -->
+                <div class="mt-8 flex items-center gap-10 border-b border-white/5 overflow-x-auto no-scrollbar">
+                    <button class="pb-4 text-secondary font-bold border-b-2 border-secondary font-semibold whitespace-nowrap">
+                        Designs
+                    </button>
+                    <button class="pb-4 text-on-surface-variant hover:text-on-surface font-semibold transition-colors whitespace-nowrap">
+                        Boards
+                    </button>
+                    <button class="pb-4 text-on-surface-variant hover:text-on-surface font-semibold transition-colors whitespace-nowrap">
+                        About
+                    </button>
+                </div>
+                
+                <!-- Masonry Grid (Designs Tab) -->
+                <div class="mt-12 mb-20 masonry-grid">
+                    <!-- Card 1 -->
+                    <article class="masonry-item group glass-surface glass-surface-hover rounded-2xl overflow-hidden transition-all duration-300 relative flex flex-col cursor-pointer" onclick="window.location.href='/overlay/neon-drift'">
+                        <div class="relative overflow-hidden aspect-video bg-surface-container">
+                            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuByUDBorMdlBeWaRu8uTS0Wua8QdNPg0w7qR8tqx_0vBAk1AQns8HkLxGTLgg8B3iPbA_sKESxs7DzNTdSokmG2qbM-rt2e7liKKEpqwojminVnDqYt_cGfVt2vxlQqycb6i-uF-CoAEOpxkW9ExDcVsIUTqXLgH5fAmmFBf1jkrPwWjP104eGJLuLK8fPb6LaSdDz9npHkJqEQXLBhSWNB9RsJuKi9QSqOnyMBfIYaAQuy_Oft-yWheDAhsBp8nx-218-gexVp_h0"/>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <span class="absolute top-3 right-3 bg-secondary text-surface px-3 py-1 rounded-full text-xs font-semibold">$24.99</span>
+                        </div>
+                        <div class="p-4 flex flex-col justify-between flex-grow">
+                            <div>
+                                <h3 class="text-xl font-bold text-on-surface mb-1">Ether Grid Overlay</h3>
+                                <p class="text-on-surface-variant">Cyberpunk / Full HUD</p>
+                            </div>
+                            <div class="mt-4 flex items-center justify-between">
+                                <span class="text-on-surface-variant text-xs font-semibold">Creator @neonpulse</span>
+                                <button class="text-error hover:scale-110 transition-transform" onclick="event.stopPropagation()">
+                                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">favorite</span>
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+                    
+                    <!-- Card 2 -->
+                    <article class="masonry-item group glass-surface glass-surface-hover rounded-2xl overflow-hidden transition-all duration-300 relative flex flex-col cursor-pointer" onclick="window.location.href='/overlay/neon-drift'">
+                        <div class="relative overflow-hidden aspect-square bg-surface-container">
+                            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJpHtdmzpKFzkGNmpJrbMeCA4wibis6JZEc0XPQasHZ_GAV3pnTc8E3yE5_tomMX-pNMFXXkg9ZYwGhgBHVv0ee8IJV7Lcf-TZP-f1xRCpIOLNhSn1X43YBZ4q1cM6DC0SDySEMv7SSScP41YuYcm2HoRzhADNnPy_u-XtghSLDhpwaadrUw5rzQfLAOv4jDBw7LlKfoXGLm68mVZ7cRiU_h_MmEqZcd3u6K-bHe7bWpZuebNzwp2IN9_y3LN1-5JEClJPyUHdeA8"/>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <span class="absolute top-3 right-3 bg-primary text-surface px-3 py-1 rounded-full text-xs font-semibold">FREE</span>
+                        </div>
+                        <div class="p-4 flex flex-col justify-between flex-grow">
+                            <div>
+                                <h3 class="text-xl font-bold text-on-surface mb-1">Minimal Zenith</h3>
+                                <p class="text-on-surface-variant">Minimalist / Webcam</p>
+                            </div>
+                            <div class="mt-4 flex items-center justify-between">
+                                <span class="text-on-surface-variant text-xs font-semibold">Creator @neonpulse</span>
+                                <button class="text-on-surface-variant hover:text-error transition-colors" onclick="event.stopPropagation()">
+                                    <span class="material-symbols-outlined">favorite</span>
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+            
+            <!-- Footer -->
+            <footer class="w-full border-t border-white/5 bg-surface-container-lowest flex flex-col md:flex-row justify-between items-center py-12 px-5 md:px-12 mt-auto">
+                <div class="flex flex-col gap-2 mb-8 md:mb-0">
+                    <span class="text-2xl font-bold text-primary">SimplyOver</span>
+                    <p class="text-on-surface-variant">© 2024 SimplyOver Marketplace. All rights reserved.</p>
+                </div>
+                <nav class="flex flex-wrap justify-center gap-8">
+                    <a class="text-xs text-on-surface-variant hover:text-primary transition-colors" href="#">Terms</a>
+                    <a class="text-xs text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy</a>
+                    <a class="text-xs text-on-surface-variant hover:text-primary transition-colors" href="#">Support</a>
+                    <a class="text-xs text-on-surface-variant hover:text-primary transition-colors" href="#">Artists</a>
+                </nav>
+            </footer>
+        </main>
+    </div>
+</body>
+</html>

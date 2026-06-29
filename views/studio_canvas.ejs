@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>GLASSOBS STUDIO | My Studio Canvas</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#d2bbff",
+                        "secondary": "#4cd7f6",
+                        "background": "#090910",
+                        "on-background": "#e4e1ec",
+                        "surface": "#13131a",
+                        "on-surface": "#e4e1ec",
+                        "surface-container": "#1f1f26",
+                        "on-surface-variant": "#ccc3d8",
+                        "surface-container-high": "#2a2931",
+                        "surface-container-lowest": "#0e0e15",
+                        "surface-variant": "#34343c",
+                        "outline-variant": "#4a4455",
+                        "primary-container": "#7c3aed",
+                        "secondary-container": "#03b5d3",
+                        "primary-fixed-dim": "#d2bbff"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-xl": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            background-color: #090910;
+            color: #e4e1ec;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .checkered-canvas {
+            background-image: 
+                linear-gradient(45deg, #0d0d14 25%, transparent 25%), 
+                linear-gradient(-45deg, #0d0d14 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #0d0d14 75%), 
+                linear-gradient(-45deg, transparent 75%, #0d0d14 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            background-color: #090910;
+        }
+
+        .timeline-scroll::-webkit-scrollbar {
+            height: 4px;
+        }
+        .timeline-scroll::-webkit-scrollbar-thumb {
+            background: #4a4455;
+            border-radius: 2px;
+        }
+
+        .primary-gradient {
+            background: linear-gradient(45deg, #7c3aed, #8d36db);
+        }
+
+        .cyan-glow {
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+        }
+
+        .violet-glow {
+            box-shadow: 0 0 15px rgba(124, 58, 237, 0.4);
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col">
+    <!-- Top Bar -->
+    <header class="h-12 glass-panel flex items-center justify-between px-4 z-50 border-b border-outline-variant">
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2 cursor-pointer" onclick="window.location.href='/'">
+                <div class="w-6 h-6 primary-gradient rounded flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[16px] text-white">blur_on</span>
+                </div>
+                <span class="text-sm font-semibold tracking-tight">GLASSOBS <span class="text-primary-fixed-dim">STUDIO</span></span>
+            </div>
+            <div class="h-4 w-px bg-outline-variant"></div>
+            <div class="flex items-center gap-2 text-on-surface-variant">
+                <input class="bg-transparent border-none focus:ring-0 text-sm font-medium text-on-surface p-0 w-44" type="text" value="Neon Gaming Pack v2"/>
+                <span class="material-symbols-outlined text-sm">edit</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <div class="flex items-center gap-1 text-secondary text-xs mr-2">
+                <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                <span>Saved</span>
+            </div>
+            <button class="px-3 py-1.5 glass-panel rounded-lg text-xs hover:bg-surface-variant/20 transition-all">Preview</button>
+            <button class="px-4 py-1.5 primary-gradient text-white rounded-lg text-xs font-bold shadow-lg hover:brightness-110 transition-all">Submit for Review</button>
+            <a href="/dashboard/library" class="ml-2 w-8 h-8 rounded-full overflow-hidden border border-outline-variant block">
+                <img alt="User" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrFdhVgd9ziYzOXp764trrcWDjCGONiTc9reL7UKD0N2AI2nGZJewLO6ftTokDQoEwy6qtL8AXn4NMXINj85Do2dwHC71fRoEYqVIxnvb4trelsu96XiN0UiNuMS0NELpdmFNO4BFSEsrHEe9dRYEgjjYA4yfbjc9xkYNLVzNuJbAhgQD_wuMaPsEAH850tr62A2KDe4oy3WcNRndNunVLsHmREmcCKTJ6RjpHmOASpZmBQ4fI9aHOC5GNBHqtXn7bOjNDhKYiV-k"/>
+            </a>
+        </div>
+    </header>
+    
+    <div class="flex flex-1 overflow-hidden">
+        <!-- Left Panel: My Drafts -->
+        <aside class="w-[280px] glass-panel flex flex-col border-r border-outline-variant shrink-0">
+            <div class="p-4 border-b border-outline-variant flex items-center justify-between">
+                <h2 class="text-sm font-bold uppercase tracking-wider text-on-surface-variant">My Drafts</h2>
+                <span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary">add_box</span>
+            </div>
+            <div class="flex-1 overflow-y-auto p-3 space-y-3">
+                <!-- Active Draft -->
+                <div class="p-3 rounded-xl bg-primary-container/10 border border-primary relative group cursor-pointer transition-all draft-item">
+                    <div class="flex gap-3">
+                        <div class="w-16 h-10 rounded-md bg-surface-container-high overflow-hidden border border-outline-variant">
+                            <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4TkthAzow_pK8P6Cd5jRK_G_ZHeUK8zEso6I5Q8kHU83s9Li9eflzKOVCvUxEZb1I0_7LQ0jqFnPdobmMLmUXfcEujwHYPEsiJXsno8vdhUOepBgsIUuI98J4ol1u58U4dYu7gJZiq7eOXe1VNKCIL6vMXh4OXRE3v-tLbjWBJ4YPC2jyaa_Xy0ybWKlSBPfU-zEVzalkSaMoEIbNi06uTeTmr8LN2smSlnLpF3CUzcnygBC9JUkTRka9kWrTesVTbdu--WkBRjo"/>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs font-bold truncate text-primary label-text">Neon Gaming Pack v2</p>
+                            <p class="text-[10px] text-on-surface-variant">Edited 2m ago</p>
+                        </div>
+                    </div>
+                    <div class="mt-2 flex justify-between items-center">
+                        <span class="px-1.5 py-0.5 rounded bg-primary-container text-[9px] font-bold text-on-primary-container uppercase">Draft</span>
+                        <span class="material-symbols-outlined text-xs text-on-surface-variant opacity-0 group-hover:opacity-100">more_horiz</span>
+                    </div>
+                </div>
+                
+                <!-- Other Drafts -->
+                <div class="p-3 rounded-xl glass-panel border border-transparent hover:border-outline-variant cursor-pointer transition-all group draft-item">
+                    <div class="flex gap-3">
+                        <div class="w-16 h-10 rounded-md bg-surface-container-high overflow-hidden border border-outline-variant">
+                            <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0jyVi806DYVl9HMwN8VftkN-uSEC8j4YsrjEJnv-fNfka7meJ5C102ONzaMvvw_m3jAYCi3XMSqIsa6d8GJOM8jiNaavZonWJ8Ca8VNoHh34vwdBbEgxqRqpp_AHumlx8ITT7nQ0n8Y6hUefYGbD4l5Kxs75jT5YgkC200cx0GRKY4J9usZMbydB4e623wM7rIZVB01-WBcwuNV85ujk9TWG7T9FVSOa3NlXodJEJrqJ3KWIOjggBxWV9icdhdFN0A7NfIUV8Wd4"/>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs font-bold truncate text-on-surface label-text">Minimal Frost UI</p>
+                            <p class="text-[10px] text-on-surface-variant">Edited 1d ago</p>
+                        </div>
+                    </div>
+                    <div class="mt-2 flex justify-between items-center">
+                        <span class="px-1.5 py-0.5 rounded bg-secondary-container/20 text-[9px] font-bold text-secondary uppercase">In Review</span>
+                        <span class="material-symbols-outlined text-xs text-on-surface-variant opacity-0 group-hover:opacity-100">more_horiz</span>
+                    </div>
+                </div>
+                
+                <div class="p-3 rounded-xl glass-panel border border-transparent hover:border-outline-variant cursor-pointer transition-all group draft-item">
+                    <div class="flex gap-3">
+                        <div class="w-16 h-10 rounded-md bg-surface-container-high overflow-hidden border border-outline-variant">
+                            <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDga3JjlYfo7tmC4aXxAX4hEQapp8ZEP7xTzDwtZtp-Px2hFyIFMWZtJufbXWtkoi_5QCSskC33oVsy66yqvVTHPMP1PCrC7TegeBfBGuLDFq8OS7WtE2a70MEHYMNx71K-WOT2zVYMuyXMsNX64x-iL2KhmbGWNvFayysUdFrK90rgOTC5_pNeq-uaWqkedLmr4L24wpg1lxa3IJxbn22o4t25c2DSaunEcR4gS3piuGOGgEc4mJaZC7rAOiRfDI_IvLchKleCREc"/>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs font-bold truncate text-on-surface label-text">Retro CRT Theme</p>
+                            <p class="text-[10px] text-on-surface-variant">Edited 5d ago</p>
+                        </div>
+                    </div>
+                    <div class="mt-2 flex justify-between items-center">
+                        <span class="px-1.5 py-0.5 rounded bg-green-500/20 text-[9px] font-bold text-green-400 uppercase">Approved</span>
+                        <span class="material-symbols-outlined text-xs text-on-surface-variant opacity-0 group-hover:opacity-100">more_horiz</span>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-outline-variant flex items-center justify-between text-on-surface-variant text-[11px]">
+                <span>Storage: 45% used</span>
+                <span class="text-primary font-bold cursor-pointer">Upgrade</span>
+            </div>
+        </aside>
+        
+        <!-- Center Canvas -->
+        <main class="flex-1 relative flex flex-col checkered-canvas overflow-hidden">
+            <!-- Toolbar Top -->
+            <div class="absolute top-4 left-1/2 -translate-x-1/2 flex items-center gap-1 p-1 glass-panel rounded-xl z-20">
+                <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-variant/40 text-on-surface-variant"><span class="material-symbols-outlined text-[20px]">near_me</span></button>
+                <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-variant/40 text-on-surface-variant"><span class="material-symbols-outlined text-[20px]">crop_square</span></button>
+                <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-variant/40 text-on-surface-variant"><span class="material-symbols-outlined text-[20px]">text_fields</span></button>
+                <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-variant/40 text-on-surface-variant"><span class="material-symbols-outlined text-[20px]">image</span></button>
+                <div class="w-px h-4 bg-outline-variant mx-1"></div>
+                <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-variant/40 text-on-surface-variant"><span class="material-symbols-outlined text-[20px]">brush</span></button>
+            </div>
+            
+            <!-- Canvas Container -->
+            <div class="flex-1 flex items-center justify-center p-12 overflow-auto">
+                <div class="relative w-[800px] h-[450px] bg-black border-2 border-dashed border-outline-variant shadow-2xl flex-shrink-0">
+                    <!-- Overlay Elements -->
+                    <div class="absolute top-4 left-4 w-48 h-12 border border-secondary border-dashed flex items-center justify-center cyan-glow bg-secondary/5 group canvas-item cursor-pointer">
+                        <span class="text-[10px] font-bold text-secondary uppercase tracking-tighter">Alert Zone</span>
+                        <div class="absolute -top-1 -left-1 w-2 h-2 bg-secondary rounded-full"></div>
+                    </div>
+                    <div class="absolute bottom-4 right-4 w-64 h-36 border border-secondary border-dashed flex items-center justify-center cyan-glow bg-secondary/5 canvas-item cursor-pointer">
+                        <span class="text-[10px] font-bold text-secondary uppercase tracking-tighter">Webcam Frame</span>
+                    </div>
+                    <div class="absolute bottom-4 left-4 w-56 h-64 border border-secondary border-dashed flex items-center justify-center cyan-glow bg-secondary/5 canvas-item cursor-pointer">
+                        <span class="text-[10px] font-bold text-secondary uppercase tracking-tighter">Chat Box</span>
+                    </div>
+                    <!-- Decorative UI items -->
+                    <div class="absolute top-0 right-0 w-32 h-1 bg-gradient-to-l from-primary to-transparent pointer-events-none"></div>
+                    <div class="absolute bottom-0 left-0 w-1 h-32 bg-gradient-to-t from-primary to-transparent pointer-events-none"></div>
+                </div>
+            </div>
+            
+            <!-- Floating Bottom Tools -->
+            <div class="absolute bottom-28 left-1/2 -translate-x-1/2 flex items-center gap-4 p-2 glass-panel rounded-2xl z-20">
+                <div class="flex items-center gap-2 px-2 border-r border-outline-variant">
+                    <span class="material-symbols-outlined text-sm text-on-surface-variant">zoom_in</span>
+                    <span class="text-xs font-medium text-on-surface">65%</span>
+                </div>
+                <div class="flex items-center gap-2 px-2 border-r border-outline-variant">
+                    <span class="material-symbols-outlined text-sm text-on-surface-variant">aspect_ratio</span>
+                    <span class="text-xs font-medium text-on-surface">1920x1080</span>
+                </div>
+                <div class="flex items-center gap-3 px-2">
+                    <button class="material-symbols-outlined text-[20px] text-secondary" style="font-variation-settings: 'FILL' 1;">grid_on</button>
+                    <button class="material-symbols-outlined text-[20px] text-on-surface-variant">straighten</button>
+                </div>
+            </div>
+            
+            <!-- AI Assistant Button -->
+            <button class="absolute bottom-28 right-6 flex items-center gap-2 px-4 py-2.5 bg-primary-container text-on-primary-container rounded-full text-xs font-bold violet-glow hover:scale-105 transition-all z-20">
+                <span>AI Assist ✨</span>
+            </button>
+            
+            <!-- Bottom Animation Timeline -->
+            <div class="h-24 glass-panel border-t border-outline-variant flex flex-col z-30">
+                <div class="flex items-center justify-between px-4 py-1 border-b border-outline-variant text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">
+                    <div class="flex items-center gap-4">
+                        <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">play_arrow</span> Timeline</span>
+                        <span class="text-primary">00:02.15</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span>Loop Enabled</span>
+                        <span class="material-symbols-outlined text-[14px]">settings</span>
+                    </div>
+                </div>
+                <div class="flex-1 flex timeline-scroll overflow-x-auto relative">
+                    <!-- Timeline markers -->
+                    <div class="flex divide-x divide-outline-variant/30 items-end pb-2" id="timeline-markers">
+                        <!-- Markers will be generated by JS -->
+                    </div>
+                    <!-- Playhead -->
+                    <div class="absolute left-64 top-0 bottom-0 w-px bg-primary z-10 pointer-events-none">
+                        <div class="absolute -top-1 -left-1 w-2 h-2 bg-primary rounded-full"></div>
+                    </div>
+                    <!-- Keyframes -->
+                    <div class="absolute top-4 left-24 w-4 h-4 rounded-sm bg-secondary rotate-45 border border-white/20 pointer-events-none"></div>
+                    <div class="absolute top-4 left-96 w-4 h-4 rounded-sm bg-primary rotate-45 border border-white/20 pointer-events-none"></div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Right Panel: Editor -->
+        <aside class="w-80 glass-panel border-l border-outline-variant flex flex-col shrink-0">
+            <!-- Tabs -->
+            <div class="flex border-b border-outline-variant">
+                <button class="flex-1 py-3 text-xs font-bold text-primary border-b-2 border-primary">Canvas</button>
+                <button class="flex-1 py-3 text-xs font-bold text-on-surface-variant hover:text-on-surface transition-colors">Layers</button>
+                <button class="flex-1 py-3 text-xs font-bold text-on-surface-variant hover:text-on-surface transition-colors">Assets</button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto p-4 space-y-6">
+                <!-- Canvas Section -->
+                <section class="space-y-4">
+                    <div>
+                        <label class="text-[10px] font-bold text-on-surface-variant uppercase mb-2 block">Resolution</label>
+                        <select class="w-full bg-surface-container-high border-outline-variant rounded-lg text-xs focus:ring-primary focus:border-primary">
+                            <option>1920 x 1080 (16:9)</option>
+                            <option>1080 x 1920 (Vertical)</option>
+                            <option>2560 x 1440 (2K)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-on-surface-variant uppercase mb-2 block">Background Color</label>
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-black border border-outline-variant flex items-center justify-center">
+                                <span class="material-symbols-outlined text-sm text-white/40">colorize</span>
+                            </div>
+                            <input class="flex-1 bg-surface-container-high border-outline-variant rounded-lg text-xs" type="text" value="#000000"/>
+                            <div class="w-8 h-8 rounded-lg bg-surface-variant/20 border border-outline-variant flex items-center justify-center">
+                                <span class="material-symbols-outlined text-sm">opacity</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-on-surface-variant uppercase mb-2 block">Export Quality</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="p-3 glass-panel border-primary bg-primary/5 rounded-xl text-center cursor-pointer">
+                                <p class="text-xs font-bold text-primary">WebM</p>
+                                <p class="text-[9px] text-on-surface-variant">Transparent</p>
+                            </div>
+                            <div class="p-3 glass-panel rounded-xl text-center cursor-pointer hover:bg-surface-variant/20">
+                                <p class="text-xs font-bold">MOV</p>
+                                <p class="text-[9px] text-on-surface-variant">Lossless</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <div class="h-px bg-outline-variant"></div>
+                
+                <!-- Layers Section -->
+                <section class="space-y-2">
+                    <label class="text-[10px] font-bold text-on-surface-variant uppercase mb-3 block">Scene Layers</label>
+                    <div class="space-y-1">
+                        <div class="flex items-center justify-between p-2 rounded-lg bg-primary-container/10 border border-primary/20">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-xs text-secondary">view_agenda</span>
+                                <span class="text-xs font-medium">Alert Zone</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-on-surface-variant">
+                                <span class="material-symbols-outlined text-xs">visibility</span>
+                                <span class="material-symbols-outlined text-xs">lock_open</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between p-2 rounded-lg hover:bg-surface-variant/10">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-xs">videocam</span>
+                                <span class="text-xs font-medium text-on-surface-variant">Webcam Frame</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-on-surface-variant">
+                                <span class="material-symbols-outlined text-xs">visibility</span>
+                                <span class="material-symbols-outlined text-xs">lock</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between p-2 rounded-lg hover:bg-surface-variant/10">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-xs">chat</span>
+                                <span class="text-xs font-medium text-on-surface-variant">Chat Box</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-on-surface-variant">
+                                <span class="material-symbols-outlined text-xs">visibility</span>
+                                <span class="material-symbols-outlined text-xs">lock_open</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <div class="h-px bg-outline-variant"></div>
+                
+                <!-- Asset Grid -->
+                <section>
+                    <label class="text-[10px] font-bold text-on-surface-variant uppercase mb-3 block">Quick Assets</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="aspect-square glass-panel rounded-lg overflow-hidden border border-outline-variant group relative cursor-pointer">
+                            <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnCFNGxJ1RPkqB0ZR8hacUVKah1d1p5ZrAu_kttFKo0_YiHZvbr2kNVkuSYMjrub5-rHS_othUafZPlAGAQKJyT5U_nd_32qGP01GyMqopuD_WvFp9wH0sbLFPlRB3drUiFM6uQpXVxdUTKWq_0zjVrQ3LJHfp_l0kiZ6Q6HqD1FCPch6-bnccw7w8s0rRvHCIIw1Ihq9-Ok1NnOm7y41otEQKPsQ08q3PX9-Geh0k3QYepZcP4QEQKaYI_9IxCtNNPUSt8Wvm7LY"/>
+                            <div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        </div>
+                        <div class="aspect-square glass-panel rounded-lg overflow-hidden border border-outline-variant group relative cursor-pointer">
+                            <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDIdgX5eBnVSZjAnsSAIuaWW8igkch4WONxyIZ2JcO-DbelOk7MlKo861o0wdHXq3UniRWITpLXeqnANtC5tSn1oezjqXoxWKvMHjXxGRJB9ucZepju994UmoJNyIQylFH5K9GpoADMntz5o3iNL4_AhejABwhfPpx1gzsgHgv2xMFjPZU5bqNmiZDDHgVvPDMROjBWZGw75fZCM1N5sy-NYJnWBAju6Jo6dy-1eMH_u3OTIBRqorFcz1RM1Jy-48v9awXtCMLX4rE"/>
+                        </div>
+                        <div class="aspect-square glass-panel rounded-lg overflow-hidden border border-outline-variant group relative cursor-pointer">
+                            <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPK2aw2OoOVWJYBHo_Rkt_nZkd5Yyz_IUePQoH99cT4xhWAP_isX5CuZROvSjnJH35CQ7nAH1woyr-f-05p4ua0dwBtQXiJ0VrLmhZVcvRv_-X2j945cNA9NThrBUJbL3KkHild30SEutVoFONTlsv2awimfN6MYObEStAzGEml_yeGnRmIh9MaeadNDrlQze_maESWetCemUy3ohcPDwRUOYIvOmaHSJl5MkepV2zq5jklUuaEI0aba-UZwj4c0zQv60PpsKsTfE"/>
+                        </div>
+                        <div class="aspect-square glass-panel rounded-lg border-2 border-dashed border-outline-variant flex items-center justify-center hover:bg-surface-variant/20 transition-all cursor-pointer">
+                            <span class="material-symbols-outlined text-on-surface-variant">upload</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            
+            <!-- Panel Footer -->
+            <div class="p-4 border-t border-outline-variant bg-surface-container-lowest">
+                <button class="w-full py-2 bg-surface-variant/20 border border-outline-variant rounded-lg text-xs font-bold hover:bg-surface-variant/40 transition-all">Export Package</button>
+            </div>
+        </aside>
+    </div>
+    
+    <script>
+        // Generate timeline markers
+        const markersContainer = document.getElementById('timeline-markers');
+        if (markersContainer) {
+            let html = '';
+            for(let i=0; i<40; i++) {
+                html += `<div class="w-12 h-4 shrink-0 border-l border-outline-variant/20 flex flex-col justify-end px-1"><span class="text-[8px] text-on-surface-variant/40">${i}s</span></div>`;
+            }
+            markersContainer.innerHTML = html;
+        }
+
+        // Canvas interactive states
+        document.querySelectorAll('.canvas-item').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                el.style.backgroundColor = 'rgba(6, 182, 212, 0.1)';
+                el.style.transform = 'scale(1.02)';
+                el.style.transition = 'all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            });
+            el.addEventListener('mouseleave', () => {
+                el.style.backgroundColor = 'rgba(6, 182, 212, 0.05)';
+                el.style.transform = 'scale(1)';
+            });
+        });
+
+        // Drafts selection logic
+        const drafts = document.querySelectorAll('.draft-item');
+        drafts.forEach(draft => {
+            draft.addEventListener('click', () => {
+                drafts.forEach(d => {
+                    d.classList.remove('bg-primary-container/10', 'border-primary');
+                    d.classList.add('glass-panel', 'border-transparent');
+                    const label = d.querySelector('.label-text');
+                    if(label) label.classList.remove('text-primary');
+                    if(label) label.classList.add('text-on-surface');
+                });
+                draft.classList.add('bg-primary-container/10', 'border-primary');
+                draft.classList.remove('glass-panel', 'border-transparent');
+                const selectedLabel = draft.querySelector('.label-text');
+                if (selectedLabel) selectedLabel.classList.add('text-primary');
+            });
+        });
+    </script>
+</body>
+</html>
