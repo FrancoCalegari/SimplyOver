@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>My Boards | SimplyOver</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#690005",
+                        "tertiary-fixed-dim": "#ddb7ff",
+                        "on-tertiary-container": "#f2dfff",
+                        "on-surface": "#e4e1ec",
+                        "tertiary-container": "#8d36db",
+                        "on-secondary-fixed": "#001f26",
+                        "inverse-surface": "#e4e1ec",
+                        "on-secondary-fixed-variant": "#004e5c",
+                        "primary-fixed": "#eaddff",
+                        "secondary-container": "#03b5d3",
+                        "primary-fixed-dim": "#d2bbff",
+                        "outline": "#958da1",
+                        "on-surface-variant": "#ccc3d8",
+                        "background": "#13131a",
+                        "secondary-fixed-dim": "#4cd7f6",
+                        "surface-container-high": "#2a2931",
+                        "secondary": "#4cd7f6",
+                        "inverse-on-surface": "#303038",
+                        "surface-container-lowest": "#0e0e15",
+                        "tertiary": "#ddb7ff",
+                        "on-primary-fixed": "#25005a",
+                        "outline-variant": "#4a4455",
+                        "primary-container": "#7c3aed",
+                        "inverse-primary": "#732ee4",
+                        "primary": "#d2bbff",
+                        "on-tertiary-fixed-variant": "#6900b3",
+                        "on-primary-fixed-variant": "#5a00c6",
+                        "on-primary-container": "#ede0ff",
+                        "surface-container-low": "#1b1b22",
+                        "surface-variant": "#34343c",
+                        "surface-container-highest": "#34343c",
+                        "secondary-fixed": "#acedff",
+                        "surface-container": "#1f1f26",
+                        "on-secondary": "#003640",
+                        "surface-dim": "#13131a",
+                        "surface-tint": "#d2bbff",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary": "#490080",
+                        "surface-bright": "#393840",
+                        "surface": "#13131a",
+                        "on-tertiary-fixed": "#2c0051",
+                        "tertiary-fixed": "#f0dbff",
+                        "on-primary": "#3f008e",
+                        "on-background": "#e4e1ec",
+                        "error-container": "#93000a",
+                        "error": "#ffb4ab",
+                        "on-secondary-container": "#00424e"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "20px",
+                        "sidebar-collapsed-width": "80px",
+                        "base-unit": "4px",
+                        "margin-desktop": "48px",
+                        "sidebar-width": "280px",
+                        "gutter-mobile": "16px",
+                        "gutter-desktop": "24px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-xl": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #0D0D14;
+            color: #e4e1ec;
+            font-family: 'Inter', sans-serif;
+        }
+        .glass-surface {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-surface-hover:hover {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(18px);
+        }
+        .violet-gradient {
+            background: linear-gradient(45deg, #7c3aed, #8d36db);
+        }
+        .cyan-glow {
+            box-shadow: 0 0 15px rgba(76, 215, 246, 0.3);
+        }
+        .sidebar-active {
+            border-left: 4px solid #7c3aed;
+            background: rgba(124, 58, 237, 0.1);
+            color: #d2bbff;
+        }
+        .masonry-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-auto-rows: 10px;
+        }
+        .masonry-item {
+            grid-row-end: span 25;
+        }
+        .masonry-item-tall {
+            grid-row-end: span 35;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+<!-- Top Navigation Anchor -->
+<header class="sticky top-0 w-full z-50 bg-surface/30 backdrop-blur-md border-b border-white/10 shadow-sm flex items-center justify-between px-gutter-desktop h-20">
+<div class="flex items-center gap-4">
+<img alt="SimplyOver Logo" class="h-10" src="https://lh3.googleusercontent.com/aida/AP1WRLud17br2tzw4NizPnU_EDx0uHfLklKxOyLNzZj4LOyVXVkBBJj0X2CFnNLy9tgMdtmwCzbPAW8iPwu6ISS5cmBmE3GBXbgRwn6NMBJDjNjTVMr9R5S9CEnwhrvmaI6iDhoS6rbbqaCIl3_O80oEwziGDXXB61Go7MAxjdSsxpYKu8pz7v6eJXGJDqp0YLJvGKovvuDV8VXdyfJIlrWLNCaNotE0D9XJP5QYzqQLvPV-uMnfMmunUkjwfQ"/>
+<span class="font-headline-md text-headline-md font-bold text-primary">SimplyOver</span>
+</div>
+<div class="hidden md:flex items-center gap-8">
+<nav class="flex gap-6">
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="#">All</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="#">Anime</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="#">Gaming</a>
+<a class="text-secondary font-bold border-b-2 border-secondary pb-1 font-label-md text-label-md" href="#">Dashboard</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="violet-gradient text-white px-6 py-2 rounded-lg font-label-md text-label-md hover:scale-95 transition-transform duration-200">Start Creating</button>
+</div>
+</div>
+</header>
+<div class="flex">
+<!-- Persistent Sidebar -->
+<aside class="fixed left-0 top-20 h-[calc(100vh-80px)] w-sidebar-width bg-surface-container/40 backdrop-blur-xl border-r border-white/10 flex flex-col py-8 z-40 hidden md:flex">
+<!-- User Profile -->
+<div class="px-8 mb-10 flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden border-2 border-primary/30">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="A detailed cinematic close-up of a professional gaming personality in a high-tech studio. The lighting is dominated by atmospheric violet and cyan neon highlights reflecting off their face. They are wearing a modern headset, and the background shows a bokeh-blurred array of multi-monitor streaming setups. The overall aesthetic is sleek, professional, and deeply rooted in the cyberpunk creator culture." src="https://lh3.googleusercontent.com/aida/AP1WRLv4I8ucRFfhK5bsuHjLuOmsjnXuR40rKcROfKcLAJ5qyPXaEvOBHk6aEebvtU1WZYMxN7nTT2xSQg1nudUj2VMOtGYKRero1CPXYhj0OKw2RDEWGT15iBWVFjPNEQDteUjd6B6QCRFWg3-gZRJM0BNszM186UdqPWJymeqb2sQ8KV_uLXy32m_gR20TpNblsyWJIY25-1Q91ZOvq2Xtm8ce7G4ciwuH1vw9COjgM4wi05-V-AjTDz_03iY"/>
+</div>
+<div>
+<h3 class="font-label-md text-label-md text-white font-bold">NeonOver</h3>
+<p class="font-label-sm text-label-sm text-secondary">Pro Designer</p>
+</div>
+</div>
+<!-- Sidebar Navigation -->
+<nav class="flex flex-col gap-1 flex-grow">
+<a class="flex items-center gap-4 px-8 py-3 text-on-surface-variant hover:bg-white/5 transition-all duration-300" href="#">
+<span class="material-symbols-outlined">library_books</span>
+<span class="font-label-md text-label-md">My Library</span>
+</a>
+<a class="flex items-center gap-4 px-8 py-3 sidebar-active transition-all duration-300" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard_customize</span>
+<span class="font-label-md text-label-md">My Boards</span>
+</a>
+<a class="flex items-center gap-4 px-8 py-3 text-on-surface-variant hover:bg-white/5 transition-all duration-300" href="#">
+<span class="material-symbols-outlined">favorite</span>
+<span class="font-label-md text-label-md">My Favorites</span>
+</a>
+<a class="flex items-center gap-4 px-8 py-3 text-on-surface-variant hover:bg-white/5 transition-all duration-300" href="#">
+<span class="material-symbols-outlined">brush</span>
+<span class="font-label-md text-label-md">My Studio</span>
+</a>
+<a class="flex items-center gap-4 px-8 py-3 text-on-surface-variant hover:bg-white/5 transition-all duration-300" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+<!-- Bottom Sidebar Action -->
+<div class="px-6 mt-auto">
+<button class="w-full violet-gradient text-white py-3 rounded-xl flex items-center justify-center gap-2 font-label-md text-label-md hover:brightness-110 transition-all">
+<span class="material-symbols-outlined">upload</span>
+                    Upload New Overlay
+                </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-grow md:ml-sidebar-width p-margin-desktop min-h-screen">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
+<div>
+<h1 class="font-headline-xl text-headline-xl text-white">My Boards</h1>
+<p class="font-body-md text-body-md text-on-surface-variant opacity-70">6 boards · 142 overlays saved</p>
+</div>
+<button class="violet-gradient text-white px-8 py-4 rounded-xl flex items-center gap-3 font-label-md text-label-md hover:scale-105 transition-transform" onclick="document.getElementById('modal').classList.remove('hidden')">
+<span class="material-symbols-outlined">add</span>
+                    Create New Board
+                </button>
+</div>
+<!-- Boards Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-gutter-desktop mb-20">
+<!-- Featured Board -->
+<div class="glass-surface glass-surface-hover rounded-xl overflow-hidden border-primary p-1 border-2 relative group cursor-pointer">
+<div class="grid grid-cols-2 gap-1 h-48 rounded-lg overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A sleek cyberpunk stream overlay featuring neon violet glitch effects and ultra-modern typography. The UI elements are sharp, metallic, and glow with a soft purple radiance against a deep black background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMU0FKqGANE4eYf01esNq8R6_eSMjGCXzhCFtoaIYhFEa4DvyVFArwgimIotLRi_pFY3ANgze6Exg2FZt7mPVClAiF6G5u6IQmQGkPTV1koMa171xDGiX9VkI_pbSYIYSBBxomCr6PLQvrK2t8GXRJBwsp2CXgDImCKOp4jN8-b7fFhT6aNUBUio_J-tS5TsNCOS5mfqMIyqHXcusEB3jpJjhJbvsrPKC8T8t6I0Rvmme6-qB2UyqW5TP0PKcjJWe-hts3eD_52aA"/>
+<img class="w-full h-full object-cover" data-alt="A high-tech digital UI interface with cyan blue data visualizations, futuristic HUD elements, and translucent glass panels. The scene is illuminated by glowing fiber optic light trails and geometric patterns." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbog_BJ1su4HGcSAzSTIkMM_x1XlhrV2HPD12mR8587UaQW77eyyV9rut_by88yQ5lxDB3nOPQ8gtwcrEANHc9XBgCIKJXwgW41Uz-geDvU2WU5RxdWK0sQEiViMG1oKhmuex3AnVXvSOca-ljlg8u36EgtHv_e7gVdJbVxgHZz8OjNX5G3YVGuyeT7zCfNPsnMnRgaSH3hiDUHpdnpcksvIeYzSn050eetWvlT2dR7EktZzQpKziTzv1hlZogHBqqkXmd-dckDvA"/>
+<img class="w-full h-full object-cover" data-alt="A minimalist stream overlay in monochrome with thin white lines and elegant sans-serif fonts. The design is clean and professional, featuring a blurred dark background that highlights the sharp UI components." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBr_gGIEOAzNJJdWjMNfsAiU8tWZWfgm14Qvz3H-PZQPfY_z5BvnGk9S-edWSkxbCMqRj0H5BYbISigMos54Ihd_qV048HTqNayffoLrPeolTxUke9CxkTUoPCuF2qggv8TaTAVIwddRVcIxfCfzLM-sK63uDysPPThoX7pJ-3I0dKufGwdNAEYtL3mZsOeMJSI19LrkhvtnZprBesgVbr3prvTnFZgCy2nbF_foRouHN9GHrXmWUzVoHmXqKDa0b91tvWoo-_Vw28"/>
+<img class="w-full h-full object-cover" data-alt="A vibrant esports-themed stream layout with bold red and black color blocking. The graphic design features sharp angular frames for the camera feed and dynamic, high-energy particle effects." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfjFDcdeKmHVtiUzgqkQLqa6OxmEd7bA1RZVwOjcrFiioQJF-H53FHC51gM0dJVE8Xj-OQ-iATfXT4DRdVprP_1K4DcVuFP7tb19oC_JYJ4rWfhDKmJuWALVw1WIN2wzvLWAjignLNAgHw6ipNzAchgC1G41TZ7HQsEwYGlX3Qrs_OaVKGZQrmOrIqH_maRbPpGxe3yLPaj3BUDe1etxZlbL0BKXF3x3oLn2CFBpqyJ8h4IpvEnrVP3cDWCw-7bHdLknHZaXtXUow"/>
+</div>
+<div class="p-5">
+<div class="flex justify-between items-center mb-2">
+<h3 class="font-headline-md text-headline-md text-white font-bold">Cyberpunk Collection</h3>
+<span class="bg-secondary-container/20 text-secondary border border-secondary/30 px-3 py-1 rounded-full font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">public</span> Public
+                            </span>
+</div>
+<p class="font-label-md text-label-md text-on-surface-variant">42 overlays</p>
+</div>
+<!-- Hover Actions -->
+<div class="absolute inset-0 bg-background/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+<button class="bg-surface-container-high p-3 rounded-full hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-primary">edit</span>
+</button>
+<button class="violet-gradient text-white px-6 py-3 rounded-lg font-label-md text-label-md">View Board</button>
+<button class="bg-surface-container-high p-3 rounded-full hover:bg-error/20 transition-colors">
+<span class="material-symbols-outlined text-error">delete</span>
+</button>
+</div>
+</div>
+<!-- Board Card 2 -->
+<div class="glass-surface glass-surface-hover rounded-xl overflow-hidden p-1 border border-white/10 relative group cursor-pointer">
+<div class="grid grid-cols-2 gap-1 h-48 rounded-lg overflow-hidden">
+<div class="bg-surface-variant h-full flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-4xl opacity-20">image</span>
+</div>
+<img class="w-full h-full object-cover" data-alt="An ethereal 3D abstract render with flowing translucent shapes in shades of soft pink and deep purple. The scene is lit with a gentle, diffused glow creating a dreamy and artistic atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVHzhI7mstgh7mVa6U_t2djiV3N3yyEhS4Eq-UU3TqLX37XDR6VepIolcKoicIL0cSSyJi6tUGt0Pkkmydi0UqYhSn9QX6_WeXWa9PugpXPu6_kJNePBfRwCtKnXv5FpLJWKuqpE4t22_EAD3F1qDjdhuAHbyU3SBTybUX6jnRevI2dCnVqOcOHQp7lhcxUfBNKIAhWN1vuVZnojy2TKlIcDn-xUN7d_XCk9IZEribGWQW1pRxu59fp3tY2cGk4vScD55nbD-9row"/>
+<img class="w-full h-full object-cover" data-alt="A professional podcasting setup overlay with warm wood textures and amber accent lighting. The design includes placeholders for multiple speakers and a clean, integrated chat interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwGJmMq1uwTIs1QcR5pNNMzRhf8dkePaTG61ABuiRYhZ0qMWPhiIKwuRXZeEavCi6exroHw19Ghe8Plr63ojvKT5AYm68b5_kACBIRfsbmtYaJbO_PXlTBJB-xg7OopAnAHbrYo9vygPwdc0OZVUiPyzngXUOhoNn0NpFZ2vqe5rIH_rkx2cA9SgZTSLxD1JDAMHVZBDMzJiSzDsUjIXLDvAfmDB6rpv7k9FGAH1NAlCBKx_r417827o6hEj_okIBxAiP5xDPdrek"/>
+<div class="bg-surface-variant h-full flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-4xl opacity-20">image</span>
+</div>
+</div>
+<div class="p-5">
+<div class="flex justify-between items-center mb-2">
+<h3 class="font-headline-md text-headline-md text-white font-bold">Minimalist Work</h3>
+<span class="bg-surface-variant text-on-surface-variant px-3 py-1 rounded-full font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">lock</span> Private
+                            </span>
+</div>
+<p class="font-label-md text-label-md text-on-surface-variant">12 overlays</p>
+</div>
+<div class="absolute inset-0 bg-background/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+<button class="bg-surface-container-high p-3 rounded-full hover:bg-primary/20 transition-colors"><span class="material-symbols-outlined text-primary">edit</span></button>
+<button class="violet-gradient text-white px-6 py-3 rounded-lg font-label-md text-label-md">View Board</button>
+<button class="bg-surface-container-high p-3 rounded-full hover:bg-error/20 transition-colors"><span class="material-symbols-outlined text-error">delete</span></button>
+</div>
+</div>
+<!-- Board Card 3 -->
+<div class="glass-surface glass-surface-hover rounded-xl overflow-hidden p-1 border border-white/10 relative group cursor-pointer">
+<div class="grid grid-cols-2 gap-1 h-48 rounded-lg overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A competitive gaming stream scene with intense yellow and black color grading. The interface shows active kill-feeds, player stats modules, and a dynamic scoreboard with high-fidelity textures." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZnRi388d3IsjKyaO1oAwvMOf_AshVPvW8TbkyHmc9hRpf9KJNkoaEAz58VjrlwXPfumFYULhqNuL2yISOfBTWS07zPmXk4Dcv_RlJ1Gt7AtS8NhfTAum5wwJDdofh6HFY7Ogskn9Od8k2F7uzallVmstJDGYKEn7D88991A9EcEUK3mqtx_Dxxm5Esh6rUwK5PvgZtKmI9s2nzniIsOTsLw2bl2SJ8WcPAF0P7xHBdzpScUhi9AxP6FGsNsKKgXJ53fVS7z2zIHA"/>
+<img class="w-full h-full object-cover" data-alt="A dark forest-themed stream overlay with glowing moss and floating spores. The UI elements are made of weathered wood and stone textures, illuminated by magical green fireflies." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCV-RzMcrJev4zED8sfx4ywFBpcC5ibG3N_ddT3ZMRLF2iHaaB0KGrkx1Eukzu9cXvxGJRhZdsRdtpOBMoCQx2ykzkChF2wbM7q0q0_BOct5D5L-JmTb6ByDsPIQ6JQcwRnGGfFYF5tAQXZd_pwDQ1NoA4qfnHSEkcHhwtQDbZ5-BgEizUwIa0olSDbwbEUnNW9MAwXUXMRbFUyjXFfytnJigepAEuwn3uHnlmv5p0N5GJ80gv18-O8kQRnRdJka_0TkOfBhoh2sNU"/>
+<img class="w-full h-full object-cover" data-alt="A retro-vaporwave aesthetic stream layout with pixel art palm trees and a magenta-to-orange sun. The scene features scanline effects and VHS-style timestamp overlays." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEUNDqz9D9h7ouHGQnPANdxOUNrYYeaKpdLZHSJxrIbqgg6naSkHqix0Ai6yZgEKy9jEg2-yctoi3urwkRfzSfhTDKtG7rx0zDEHxgZy69zJqmviditn8_qxQEOViX6h9OLZwr-G6upogSvnimVnx8IJ6detBXHo2PVQUMX61cqbTLy32wZKeY3eK0p3NXhZBScUFznHCMGu9I9jQ6kF8KMPm9mUw8gau-2mzEnzPN_klbU5n2lnUTAM7ZvWEiklvSNTsIpIlqhfY"/>
+<img class="w-full h-full object-cover" data-alt="A futuristic technology-inspired dashboard with microchip patterns and orange glowing circuitry. The layout is optimized for high-density information display during hardware reviews." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4yiFkWszr4L8UzwfYSFThm6p5tiUAF1zcwK4eZ4F1FGui_nAwvXPbs7uAJ8MjJDbSwoH2-TByPkDueaV5w_j2Bk7VI0N4WdxY-rBxM2t4BZvpBmxmxHdJd3zi5f97DqqFiengCCBUhcqtooKbdOBpYix4XdZz56rJ2q2MpkA4Z8MOByVcRNizWklJ0vkxaWspQQb_0PGI-PQTReWdLD9xDfn4Tuf-AGTZXIU8uptmfAuKL3UjQJeOfDrZ1ZUWYYOj5A0ksMJfdwk"/>
+</div>
+<div class="p-5">
+<div class="flex justify-between items-center mb-2">
+<h3 class="font-headline-md text-headline-md text-white font-bold">Inspiration</h3>
+<span class="bg-secondary-container/20 text-secondary border border-secondary/30 px-3 py-1 rounded-full font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">public</span> Public
+                            </span>
+</div>
+<p class="font-label-md text-label-md text-on-surface-variant">88 overlays</p>
+</div>
+<div class="absolute inset-0 bg-background/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+<button class="bg-surface-container-high p-3 rounded-full hover:bg-primary/20 transition-colors"><span class="material-symbols-outlined text-primary">edit</span></button>
+<button class="violet-gradient text-white px-6 py-3 rounded-lg font-label-md text-label-md">View Board</button>
+<button class="bg-surface-container-high p-3 rounded-full hover:bg-error/20 transition-colors"><span class="material-symbols-outlined text-error">delete</span></button>
+</div>
+</div>
+</div>
+<!-- Expanded Masonry View -->
+<section class="mt-16">
+<div class="flex items-center gap-3 mb-8">
+<span class="w-2 h-8 bg-secondary rounded-full"></span>
+<h2 class="font-headline-lg text-headline-lg text-white">Recent: Cyberpunk Collection</h2>
+</div>
+<div class="columns-1 sm:columns-2 lg:columns-4 gap-gutter-desktop space-y-gutter-desktop">
+<!-- Overlay Card 1 -->
+<div class="relative group break-inside-avoid">
+<div class="glass-surface rounded-xl overflow-hidden hover:scale-[1.02] transition-transform duration-300">
+<img class="w-full h-auto" data-alt="A high-contrast neon stream scene with deep purples and electric blues. The central camera frame is surrounded by animated light beams and floating crystalline shapes in a dark digital void." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9ku-26Rfujm3kog_cSGButwT6uW5QSpEyuWDKy6udbiRNr6Fgq5McTd3VJzuGOsCHRUx_Ut5pHiGUovg5fw3mqKayJkP9GfjI5i_w4mPkI--Xuk9_ZyoyGO0TdaBAsnL9SRyaMWG5tPqOHxA1AlionFJu9Ldwl8xaQ2GzBFgQ7MORqF17g0PcV5oRiprTlP2U9WR--zrnwYvrJ1-j8P9C0hpvUeUOf5GE8uH8rwYltWTKR4ZS3w7XSl5ms3atpTt2gEKv0SdT2Zo"/>
+<div class="p-4 bg-gradient-to-t from-background/90 to-transparent">
+<p class="font-label-md text-label-md text-white">Neon Drift HUD</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Artist: SynthWave</p>
+</div>
+</div>
+<button class="absolute top-4 right-4 bg-error/20 backdrop-blur-md p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-error/40">
+<span class="material-symbols-outlined text-error text-lg">close</span>
+</button>
+</div>
+<!-- Overlay Card 2 (Tall) -->
+<div class="relative group break-inside-avoid">
+<div class="glass-surface rounded-xl overflow-hidden hover:scale-[1.02] transition-transform duration-300">
+<img class="w-full h-auto min-h-[400px] object-cover" data-alt="A complex streaming interface featuring a multi-layered design with glass-morphic widgets. The colors shift between violet and cyan, displaying live stream stats and a sophisticated audio visualizer." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAx7J8iRphH_KLfNmMnS96wiDu629ysCSvj1kENE6U07GGK1hVe5Ju4teBtRbhGg6250PXpPQyFb6R5TeN9ILu9c4agcgny4WdkNEiFpBJg5MmkD0v-85p_0mQ1PtL4QMxW3JAqZPl_tQMMK48LKT9onJyzvhkc0IUNA2MCpmLC7owWJ6AUmjua7-eSuqkgqNoF6jLuew5_xFxouc15m-Np_lE7Et3m2w_QiYj-l0ih-q8tleQtnQD65BVZzFdMrstLlQOrlvLmpLM"/>
+<div class="p-4 bg-gradient-to-t from-background/90 to-transparent">
+<p class="font-label-md text-label-md text-white">Prism Glass Interface</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Artist: GlassMaster</p>
+</div>
+</div>
+<button class="absolute top-4 right-4 bg-error/20 backdrop-blur-md p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-error/40">
+<span class="material-symbols-outlined text-error text-lg">close</span>
+</button>
+</div>
+<!-- Overlay Card 3 -->
+<div class="relative group break-inside-avoid">
+<div class="glass-surface rounded-xl overflow-hidden hover:scale-[1.02] transition-transform duration-300">
+<img class="w-full h-auto" data-alt="Futuristic digital art featuring glowing tech patterns and circuit board aesthetics in vibrant cyan. The design is sleek and professional, ideal for high-end tech streams." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhd__ojJjSXxtytLxE_V6_ICXJ1JII__Zb614gdQifrVpo65Kbft-yqKC9V-SylUMYIrqJRfygL6gbgmHWS5IprcCIn8Bu7FcPQslbuISg8SoO8fNQHIL6UW36MYhsumjt3N068owGYp1jhU10Mxrehs2iJ8BVTPeHY7PIQDXmgxF814Etcd97SZFCsSL6wtEm4FYWmXFTxdb-VY_K0w3mO56EA2reEiqJsR_EK013Hy9lPNHO_ByibDKkw-aMgzzDcjPHcFH2Zio"/>
+<div class="p-4 bg-gradient-to-t from-background/90 to-transparent">
+<p class="font-label-md text-label-md text-white">Circuit Core Overlay</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Artist: TechNoir</p>
+</div>
+</div>
+<button class="absolute top-4 right-4 bg-error/20 backdrop-blur-md p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-error/40">
+<span class="material-symbols-outlined text-error text-lg">close</span>
+</button>
+</div>
+<!-- Overlay Card 4 -->
+<div class="relative group break-inside-avoid">
+<div class="glass-surface rounded-xl overflow-hidden hover:scale-[1.02] transition-transform duration-300">
+<img class="w-full h-auto" data-alt="A serene minimalist layout with dark charcoal textures and thin white border lines. The aesthetic is clean, distraction-free, and sophisticated, suitable for creative coding or design streams." src="https://lh3.googleusercontent.com/aida-public/AB6AXuABzBQyLfEP_TonvLzJfkN2uEmTeQCkOopB2AZKHzvy74ghOSFb4qRLUYuz3nkD4nLLU48cu21HsgMx6ORD8dWZGXlDVdIZiCk0XAw-YqupSy0jRHpkOtbjeA6q9q1VJ_cq7_xqOducoU0GeWN0WtJYQ-S3vkxpFXX11-K8uaNKHipziOYMOZ6x1whdsSvg1vxk_TEsFbGeB-zsDIMQgOAunZ7FvLoPH-PjlwFDi9uduK3LTO-iTsu7n0j_uun7cm09WXx7aU9L7bw"/>
+<div class="p-4 bg-gradient-to-t from-background/90 to-transparent">
+<p class="font-label-md text-label-md text-white">Onyx Minimal</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Artist: PureDesign</p>
+</div>
+</div>
+<button class="absolute top-4 right-4 bg-error/20 backdrop-blur-md p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-error/40">
+<span class="material-symbols-outlined text-error text-lg">close</span>
+</button>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- Modal: Create New Board -->
+<div class="hidden fixed inset-0 z-[100] flex items-center justify-center p-gutter-mobile" id="modal">
+<div class="absolute inset-0 bg-background/80 backdrop-blur-md" onclick="document.getElementById('modal').classList.add('hidden')"></div>
+<div class="glass-surface p-8 rounded-2xl w-full max-w-lg relative shadow-2xl animate-in zoom-in duration-300">
+<h2 class="font-headline-lg text-headline-lg text-white mb-6">Create New Board</h2>
+<div class="space-y-6">
+<div>
+<label class="block font-label-md text-label-md text-on-surface-variant mb-2">Board Name</label>
+<input class="w-full bg-white/5 border-white/10 rounded-xl px-4 py-3 text-white focus:ring-primary focus:border-primary" placeholder="e.g. Dreamy Neon Collection" type="text"/>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-on-surface-variant mb-2">Description</label>
+<textarea class="w-full bg-white/5 border-white/10 rounded-xl px-4 py-3 text-white focus:ring-primary focus:border-primary" placeholder="What's this board about?" rows="3"></textarea>
+</div>
+<div class="flex items-center justify-between">
+<div>
+<p class="font-label-md text-label-md text-white">Make Public</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Allow others to see this board</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex gap-4 pt-4">
+<button class="flex-1 bg-white/5 hover:bg-white/10 text-white font-label-md text-label-md py-3 rounded-xl transition-colors" onclick="document.getElementById('modal').classList.add('hidden')">Cancel</button>
+<button class="flex-1 violet-gradient text-white font-label-md text-label-md py-3 rounded-xl hover:brightness-110 transition-all">Create Board</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="w-full border-t border-white/5 bg-surface-container-lowest flex flex-col md:flex-row justify-between items-center py-12 px-margin-desktop">
+<div class="mb-6 md:mb-0">
+<span class="font-headline-md text-headline-md font-bold text-primary">SimplyOver</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-2 opacity-60">© 2024 SimplyOver Marketplace. All rights reserved.</p>
+</div>
+<div class="flex gap-8">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Terms</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Support</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Artists</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Sell Overlays</a>
+</div>
+</footer>
+<script>
+        // Micro-interaction for the board cards
+        document.querySelectorAll('.glass-surface-hover').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+    </script>
+</body></html>
