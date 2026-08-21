@@ -1,0 +1,25 @@
+    <!-- TopNavBar -->
+    <nav class="sticky top-0 w-full z-50 bg-surface/30 backdrop-blur-md border-b border-white/10 shadow-sm flex items-center justify-between px-6 h-20">
+        <div class="flex items-center gap-8 flex-1">
+            <a href="/" class="flex items-center gap-2">
+                <img src="/img/logo.png" alt="SimplyOver Logo" class="h-8 w-auto object-contain" />
+            </a>
+            <div class="hidden lg:flex flex-1 max-w-xl relative">
+                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-secondary">search</span>
+                <input class="w-full bg-surface-container-highest/50 border border-white/10 rounded-full py-2.5 pl-12 pr-4 focus:ring-2 focus:ring-primary outline-none transition-all text-white" placeholder="Search overlays, streamers, styles..." type="text"/>
+            </div>
+        </div>
+        <div class="hidden xl:flex items-center gap-6 px-8">
+            <a class="text-secondary font-bold border-b-2 border-secondary pb-1" href="/">All</a>
+            <a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Anime</a>
+            <a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Esports</a>
+            <a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Neon</a>
+            <a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Gaming</a>
+        </div>
+        <div class="flex items-center gap-4">
+            <a href="/login" class="hidden md:block text-on-surface-variant hover:text-primary transition-colors font-semibold">Login</a>
+            <a href="/dashboard/library" class="primary-gradient text-white px-6 py-2.5 rounded-full font-bold hover:scale-105 transition-transform">
+                Start Creating
+            </a>
+        </div>
+    </nav>
