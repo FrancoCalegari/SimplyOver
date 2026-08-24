@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<%- include('partials/head', {title}) %>
+<body class="bg-background text-on-background">
+    <%- include('partials/navbar') %>
+
+    <main class="max-w-4xl mx-auto px-5 pt-24 pb-24">
+        <div class="mb-10">
+            <h1 class="text-3xl font-bold text-white mb-2">Admin Settings</h1>
+            <p class="text-on-surface-variant">Global platform configurations.</p>
+        </div>
+
+        <% if (success) { %>
+            <div class="bg-green-500/10 border border-green-500/50 text-green-400 px-4 py-3 rounded-xl mb-8 flex items-center gap-3">
+                <span class="material-symbols-outlined">check_circle</span>
+                <p>Settings saved successfully.</p>
+            </div>
+        <% } %>
+
+        <div class="glass-surface border border-white/10 rounded-2xl p-8">
+            <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">auto_awesome</span>
+                Artificial Intelligence (SpiderIA)
+            </h2>
+            
+            <form action="/admin/settings/ia" method="POST" class="space-y-6">
+                <div>
+                    <label for="modelId" class="block text-sm font-medium text-on-surface-variant mb-2">Default AI Model</label>
+                    <select id="modelId" name="modelId" class="w-full bg-surface-container border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors">
+                        <% if (models && models.length > 0) { %>
+                            <% models.forEach(model => { %>
+                                <option value="<%= model.id %>" <%= currentModelId == model.id ? 'selected' : '' %>>
+                                    <%= model.display_name || model.model_name %> (<%= model.provider_name %>)
+                                </option>
+                            <% }) %>
+                        <% } else { %>
+                            <option value="">No models available from SpiderWeb API</option>
+                        <% } %>
+                    </select>
+                    <p class="text-xs text-on-surface-variant mt-2">
+                        This model will be used across the platform for the floating AI assistant and the Canvas AI generator.
+                    </p>
+                </div>
+
+                <div class="pt-4 border-t border-white/5">
+                    <button type="submit" class="bg-primary text-on-primary font-bold py-3 px-8 rounded-xl hover:bg-primary/90 hover:scale-105 transition-all">
+                        Save AI Settings
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
-// Load env variables from .env.local
-const envPath = path.join(__dirname, '.env.local');
+// Load env variables from .env
+const envPath = path.join(__dirname, '.env');
 const envContent = fs.readFileSync(envPath, 'utf8');
 const env = {};
 envContent.split('\n').forEach(line => {
@@ -72,10 +72,15 @@ async function run() {
       }
 
       if (response.status !== 200 || (resJson && resJson.error)) {
-        console.error(`❌ FAILED with status ${response.status}`);
-        console.error(`Query: ${query}`);
-        console.error(`Response: ${resText}`);
-        process.exit(1);
+        const errorMsg = resJson?.message || resText;
+        if (errorMsg.includes('already exists') || errorMsg.includes('Duplicate key') || errorMsg.includes('Duplicate entry')) {
+            console.warn(`⚠️ Skipped: ${errorMsg}`);
+        } else {
+            console.error(`❌ FAILED with status ${response.status}`);
+            console.error(`Query: ${query}`);
+            console.error(`Response: ${resText}`);
+            process.exit(1);
+        }
       } else {
         console.log(`✅ Success`);
       }

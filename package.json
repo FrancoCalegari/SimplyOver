@@ -10,7 +10,8 @@
     "next-dev": "next dev",
     "next-build": "next build",
     "next-start": "next start",
-    "next-lint": "next lint"
+    "next-lint": "next lint",
+    "update-db": "node init-db.cjs"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
