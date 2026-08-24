@@ -2,195 +2,341 @@
 <html class="dark" lang="en">
 <%- include('partials/head', {title: 'SimplyOver - Login / Register'}) %>
 <body class="bg-background text-on-background font-body-md min-h-screen overflow-hidden selection:bg-primary/30">
-<main class="flex flex-col md:flex-row min-h-screen w-full">
-    <!-- Left Panel: Visual/Atmosphere -->
-    <section class="hidden md:flex relative w-full md:w-[60%] h-full bg-[#0D0D14] overflow-hidden items-center">
-        <!-- Background Image with Fade to Transparent -->
-        <div class="absolute inset-0 z-0 bg-cover bg-center opacity-60 mix-blend-lighten" style="background-image: url('https://lh3.googleusercontent.com/aida/AP1WRLv4I8ucRFfhK5bsuHjLuOmsjnXuR40rKcROfKcLAJ5qyPXaEvOBHk6aEebvtU1WZYMxN7nTT2xSQg1nudUj2VMOtGYKRero1CPXYhj0OKw2RDEWGT15iBWVFjPNEQDteUjd6B6QCRFWg3-gZRJM0BNszM186UdqPWJymeqb2sQ8KV_uLXy32m_gR20TpNblsyWJIY25-1Q91ZOvq2Xtm8ce7G4ciwuH1vw9COjgM4wi05-V-AjTDz_03iY');">
-        </div>
-        <!-- Fade Overlay -->
-        <div class="absolute inset-0 z-10 bg-gradient-to-r from-[#0D0D14] via-[#0D0D14]/60 to-transparent"></div>
-        
-        <!-- Content -->
-        <div class="relative z-20 px-12 w-full h-full flex flex-col justify-between py-12">
-            <!-- Top Left: Logo -->
-            <div class="flex items-center gap-4">
-                <a href="/">
-                    <img alt="SimplyOver Logo" class="h-12 w-auto object-contain" src="/img/logo.png"/>
-                </a>
-            </div>
-            
-            <!-- Center Content: Tagline & Stats -->
-            <div class="max-w-xl">
-                <h1 class="font-headline-xl text-5xl text-white mb-8 leading-tight font-bold">
-                    The world's premier <br/>
-                    <span class="gradient-text">OBS overlay</span> marketplace.
-                </h1>
-                
-                <div class="flex flex-wrap gap-4 mt-12">
-                    <div class="glass-panel px-6 py-3 rounded-full flex items-center gap-3 animate-float border border-white/5 shadow-xl">
-                        <span class="material-symbols-outlined text-secondary">layers</span>
-                        <span class="font-label-md text-white">10k+ Overlays</span>
-                    </div>
-                    <div class="glass-panel px-6 py-3 rounded-full flex items-center gap-3 animate-float-delayed border border-white/5 shadow-xl">
-                        <span class="material-symbols-outlined text-primary">palette</span>
-                        <span class="font-label-md text-white">3k+ Artists</span>
-                    </div>
-                    <div class="glass-panel px-6 py-3 rounded-full flex items-center gap-3 animate-float border border-white/5 shadow-xl" style="animation-delay: 0.5s">
-                        <span class="material-symbols-outlined text-secondary">verified</span>
-                        <span class="font-label-md text-white">100% Free to Browse</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Bottom Hint -->
-            <div class="flex items-center gap-2 text-on-surface-variant/40">
-                <span class="text-label-sm uppercase tracking-widest">Built for creators by artists</span>
-            </div>
-        </div>
-    </section>
 
-    <!-- Right Panel: Auth Form -->
-    <section class="flex-1 flex items-center justify-center p-6 md:p-12 bg-background relative">
-        <div class="w-full max-w-md relative z-10">
-            <!-- Tabs Container -->
-            <div class="flex items-center justify-center mb-8 gap-8 border-b border-white/10">
-                <button class="pb-3 px-2 font-label-md transition-all duration-300 relative text-primary" id="login-tab" onclick="switchState('login')">
-                    Login
-                    <span class="absolute bottom-0 left-0 w-full h-[2px] bg-primary-container rounded-full" id="login-indicator"></span>
-                </button>
-                <button class="pb-3 px-2 font-label-md transition-all duration-300 relative text-on-surface-variant hover:text-white" id="register-tab" onclick="switchState('register')">
-                    Register
-                    <span class="absolute bottom-0 left-0 w-full h-[2px] bg-primary-container rounded-full scale-x-0 transition-transform duration-300 origin-center" id="register-indicator"></span>
-                </button>
-            </div>
-            
-            <!-- Form Card -->
-            <div class="glass-panel rounded-xl p-8 md:p-10 shadow-2xl">
-                <!-- Login State -->
-                <form action="/auth/login" method="POST" class="space-y-6" id="login-state">
-                    <header>
-                        <h2 class="text-3xl font-bold gradient-text mb-2">Welcome back</h2>
-                        <p class="text-on-surface-variant">Sign in to your SimplyOver account</p>
-                    </header>
-                    
-                    <div class="space-y-4">
-                        <div class="space-y-2">
-                            <label class="text-sm text-on-surface-variant block ml-1">Email Address</label>
-                            <div class="relative">
-                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">mail</span>
-                                <input name="email" class="w-full h-12 pl-12 pr-4 rounded-lg glass-input text-white" placeholder="name@example.com" type="email" required/>
-                            </div>
-                        </div>
-                        <div class="space-y-2">
-                            <div class="flex justify-between items-center px-1">
-                                <label class="text-sm text-on-surface-variant block">Password</label>
-                                <a class="text-sm text-primary hover:underline" href="#">Forgot password?</a>
-                            </div>
-                            <div class="relative">
-                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">lock</span>
-                                <input name="password" class="w-full h-12 pl-12 pr-4 rounded-lg glass-input text-white" placeholder="••••••••" type="password" required/>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <button type="submit" class="w-full h-12 primary-gradient rounded-lg text-white font-semibold shadow-lg shadow-primary-container/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
-                        Sign In
-                    </button>
-                    
-                    <p class="text-center text-sm text-on-surface-variant pt-2">
-                        Don't have an account? 
-                        <button type="button" class="text-primary font-bold hover:underline" onclick="switchState('register')">Register</button>
-                    </p>
-                </form>
+<main class="flex flex-col md:flex-row min-h-screen w-full" id="auth-root">
 
-                <!-- Register State -->
-                <form action="/auth/register" method="POST" class="state-hidden space-y-6" id="register-state">
-                    <header>
-                        <h2 class="text-3xl font-bold gradient-text mb-2">Join SimplyOver</h2>
-                        <p class="text-on-surface-variant">Create your free account</p>
-                    </header>
-                    
-                    <div class="space-y-4">
-                        <div class="space-y-2">
-                            <label class="text-sm text-on-surface-variant block ml-1">Username</label>
-                            <div class="relative">
-                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-primary font-bold">@</span>
-                                <input name="username" class="w-full h-12 pl-10 pr-10 rounded-lg glass-input text-white" placeholder="username" type="text" required/>
-                            </div>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm text-on-surface-variant block ml-1">Email Address</label>
-                            <div class="relative">
-                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">mail</span>
-                                <input name="email" class="w-full h-12 pl-12 pr-4 rounded-lg glass-input text-white" placeholder="name@example.com" type="email" required/>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="space-y-2">
-                                <label class="text-sm text-on-surface-variant block ml-1">Password</label>
-                                <div class="relative">
-                                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">lock</span>
-                                    <input name="password" class="w-full h-12 pl-12 pr-4 rounded-lg glass-input text-white" placeholder="••••••••" type="password" required/>
-                                </div>
-                            </div>
-                            <div class="space-y-2">
-                                <label class="text-sm text-on-surface-variant block ml-1">Confirm</label>
-                                <div class="relative">
-                                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">verified_user</span>
-                                    <input name="confirmPassword" class="w-full h-12 pl-12 pr-4 rounded-lg glass-input text-white" placeholder="••••••••" type="password" required/>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <button type="submit" class="w-full h-12 primary-gradient rounded-lg text-white font-semibold shadow-lg shadow-primary-container/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
-                        Create Account
-                    </button>
-                    
-                    <p class="text-center text-sm text-on-surface-variant pt-2">
-                        Already have an account? 
-                        <button type="button" class="text-primary font-bold hover:underline" onclick="switchState('login')">Sign in</button>
-                    </p>
-                </form>
-            </div>
+  <!-- ═══ Left Panel: Visual / Atmosphere ═══ -->
+  <section class="hidden md:flex relative w-full md:w-[55%] h-full overflow-hidden items-center panel-left" id="left-panel">
+    <!-- BG Gradient dinámico según estado -->
+    <div class="absolute inset-0 z-0 transition-all duration-700" id="bg-gradient"
+         style="background: linear-gradient(135deg, #0D0D14 0%, #13131a 40%, #1a0d2e 100%)"></div>
+    <!-- Imagen de fondo -->
+    <div class="absolute inset-0 z-0 bg-cover bg-center opacity-40 mix-blend-lighten transition-opacity duration-700" id="bg-image"
+         style="background-image: url('https://lh3.googleusercontent.com/aida/AP1WRLv4I8ucRFfhK5bsuHjLuOmsjnXuR40rKcROfKcLAJ5qyPXaEvOBHk6aEebvtU1WZYMxN7nTT2xSQg1nudUj2VMOtGYKRero1CPXYhj0OKw2RDEWGT15iBWVFjPNEQDteUjd6B6QCRFWg3-gZRJM0BNszM186UdqPWJymeqb2sQ8KV_uLXy32m_gR20TpNblsyWJIY25-1Q91ZOvq2Xtm8ce7G4ciwuH1vw9COjgM4wi05-V-AjTDz_03iY')">
+    </div>
+    <!-- Fade Overlay -->
+    <div class="absolute inset-0 z-10 bg-gradient-to-r from-[#0D0D14] via-[#0D0D14]/50 to-transparent"></div>
+    <!-- Partículas decorativas -->
+    <div class="absolute inset-0 z-10 overflow-hidden pointer-events-none">
+      <div class="particle" style="left:10%;top:20%;animation-delay:0s"></div>
+      <div class="particle" style="left:30%;top:60%;animation-delay:1s"></div>
+      <div class="particle" style="left:70%;top:35%;animation-delay:2s"></div>
+      <div class="particle" style="left:85%;top:70%;animation-delay:0.5s"></div>
+    </div>
+
+    <!-- Content -->
+    <div class="relative z-20 px-12 w-full h-full flex flex-col justify-between py-14">
+      <!-- Logo -->
+      <div>
+        <a href="/"><img alt="SimplyOver Logo" class="h-10 w-auto object-contain" src="/img/logo.png"/></a>
+      </div>
+
+      <!-- Estado LOGIN -->
+      <div class="max-w-lg panel-content" id="panel-login-content">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/10 border border-secondary/20 text-secondary text-xs font-semibold mb-6">
+          <span class="material-symbols-outlined text-[14px]">verified</span>
+          Your account, your overlays
         </div>
-    </section>
+        <h1 class="font-headline-xl text-5xl text-white mb-6 leading-tight font-bold">
+          Welcome back to <br/><span class="text-gradient">SimplyOver</span>
+        </h1>
+        <div class="flex flex-wrap gap-3 mt-8">
+          <div class="glass-panel px-5 py-2.5 rounded-full flex items-center gap-2 border border-secondary/10 shadow-lg">
+            <span class="material-symbols-outlined text-secondary text-[18px]">library_music</span>
+            <span class="text-sm text-white font-medium">Your Library</span>
+          </div>
+          <div class="glass-panel px-5 py-2.5 rounded-full flex items-center gap-2 border border-white/5 shadow-lg">
+            <span class="material-symbols-outlined text-primary text-[18px]">dashboard</span>
+            <span class="text-sm text-white font-medium">Your Boards</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estado REGISTER -->
+      <div class="max-w-lg panel-content hidden" id="panel-register-content">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold mb-6">
+          <span class="material-symbols-outlined text-[14px]">auto_awesome</span>
+          Join thousands of creators
+        </div>
+        <h1 class="font-headline-xl text-5xl text-white mb-6 leading-tight font-bold">
+          Start creating on <br/><span class="text-gradient">SimplyOver</span>
+        </h1>
+        <div class="flex flex-wrap gap-3 mt-8">
+          <div class="glass-panel px-5 py-2.5 rounded-full flex items-center gap-2 border border-primary/10 shadow-lg">
+            <span class="material-symbols-outlined text-primary text-[18px]">layers</span>
+            <span class="text-sm text-white font-medium">10k+ Overlays</span>
+          </div>
+          <div class="glass-panel px-5 py-2.5 rounded-full flex items-center gap-2 border border-white/5 shadow-lg">
+            <span class="material-symbols-outlined text-tertiary text-[18px]">palette</span>
+            <span class="text-sm text-white font-medium">3k+ Artists</span>
+          </div>
+          <div class="glass-panel px-5 py-2.5 rounded-full flex items-center gap-2 border border-white/5 shadow-lg">
+            <span class="material-symbols-outlined text-secondary text-[18px]">verified</span>
+            <span class="text-sm text-white font-medium">100% Free to Browse</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom hint -->
+      <div class="flex items-center gap-2 text-on-surface-variant/40">
+        <span class="text-xs uppercase tracking-widest">Built for creators by artists</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ Right Panel: Auth Form ═══ -->
+  <section class="flex-1 flex items-center justify-center p-6 md:p-12 bg-background relative overflow-hidden">
+    <!-- Glow de fondo -->
+    <div class="absolute top-1/4 right-1/4 w-80 h-80 rounded-full blur-[120px] opacity-10 transition-colors duration-700 pointer-events-none" id="form-glow"
+         style="background: #4cd7f6"></div>
+
+    <div class="w-full max-w-md relative z-10">
+
+      <!-- Tabs -->
+      <div class="flex items-center justify-center mb-8 gap-2 p-1.5 rounded-full glass-panel border border-white/5">
+        <button id="login-tab" onclick="switchState('login')"
+                class="flex-1 py-2.5 px-6 rounded-full font-semibold text-sm transition-all duration-300 text-white auth-tab-active" style="background: linear-gradient(45deg,#4cd7f6,#06b6d4)">
+          <span class="material-symbols-outlined text-[16px] align-middle mr-1">login</span>
+          Sign In
+        </button>
+        <button id="register-tab" onclick="switchState('register')"
+                class="flex-1 py-2.5 px-6 rounded-full font-semibold text-sm transition-all duration-300 text-on-surface-variant hover:text-white">
+          <span class="material-symbols-outlined text-[16px] align-middle mr-1">person_add</span>
+          Register
+        </button>
+      </div>
+
+      <!-- Error / Success Alert -->
+      <% if (typeof error !== 'undefined' && error) { %>
+      <div class="mb-6 px-4 py-3 rounded-xl border border-red-500/30 bg-red-500/10 text-red-300 text-sm flex items-center gap-2">
+        <span class="material-symbols-outlined text-[18px]">error</span>
+        <%- ({
+          missing_fields: 'Por favor, completá todos los campos.',
+          password_mismatch: 'Las contraseñas no coinciden.',
+          password_short: 'La contraseña debe tener al menos 6 caracteres.',
+          invalid_username: 'El username solo puede tener letras, números y guiones bajos (3-50 chars).',
+          user_exists: 'Ya existe una cuenta con ese email o username.',
+          invalid_credentials: 'Email o contraseña incorrectos.',
+          account_suspended: 'Tu cuenta ha sido suspendida. Contacta a soporte.',
+          server_error: 'Error del servidor. Intentalo de nuevo.',
+          session_required: 'Iniciá sesión para continuar.',
+          session_expired: 'Tu sesión expiró. Por favor iniciá sesión nuevamente.',
+        }[error] || 'Ocurrió un error. Intentalo de nuevo.') %>
+      </div>
+      <% } %>
+
+      <!-- ── LOGIN FORM ── -->
+      <div class="glass-panel rounded-2xl p-8 shadow-2xl border border-white/5 auth-form" id="login-form">
+        <header class="mb-8">
+          <div class="w-12 h-12 rounded-xl bg-secondary/10 border border-secondary/20 flex items-center justify-center mb-4">
+            <span class="material-symbols-outlined text-secondary text-2xl">lock_open</span>
+          </div>
+          <h2 class="text-2xl font-bold text-white mb-1">Sign in</h2>
+          <p class="text-on-surface-variant text-sm">Access your SimplyOver account</p>
+        </header>
+
+        <form action="/auth/login" method="POST" class="space-y-5" id="login-state">
+          <!-- Email -->
+          <div class="space-y-1.5">
+            <label class="text-xs font-semibold text-secondary uppercase tracking-wider">Email Address</label>
+            <div class="relative group">
+              <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-secondary text-[20px] transition-all group-focus-within:text-secondary">mail</span>
+              <input name="email" type="email" required placeholder="name@example.com"
+                     class="w-full h-12 pl-12 pr-4 rounded-xl bg-surface-container/60 border border-secondary/20 text-white placeholder:text-on-surface-variant/40 focus:outline-none focus:ring-2 focus:ring-secondary/50 focus:border-secondary/50 transition-all"/>
+            </div>
+          </div>
+          <!-- Password -->
+          <div class="space-y-1.5">
+            <div class="flex justify-between items-center">
+              <label class="text-xs font-semibold text-secondary uppercase tracking-wider">Password</label>
+              <a class="text-xs text-secondary/70 hover:text-secondary transition-colors" href="#">Forgot?</a>
+            </div>
+            <div class="relative group">
+              <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-secondary text-[20px]">lock</span>
+              <input name="password" type="password" required placeholder="••••••••"
+                     class="w-full h-12 pl-12 pr-12 rounded-xl bg-surface-container/60 border border-secondary/20 text-white placeholder:text-on-surface-variant/40 focus:outline-none focus:ring-2 focus:ring-secondary/50 focus:border-secondary/50 transition-all" id="login-pwd"/>
+              <button type="button" onclick="togglePwd('login-pwd',this)" class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-secondary transition-colors">
+                <span class="material-symbols-outlined text-[20px]">visibility</span>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="w-full h-12 rounded-xl font-bold text-white transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg"
+                  style="background: linear-gradient(45deg, #4cd7f6, #06b6d4); box-shadow: 0 0 20px rgba(76,215,246,0.25)">
+            <span class="material-symbols-outlined text-[18px] align-middle mr-2">login</span>
+            Sign In
+          </button>
+
+          <p class="text-center text-sm text-on-surface-variant">
+            Don't have an account?
+            <button type="button" class="text-primary font-semibold hover:underline ml-1" onclick="switchState('register')">Register free</button>
+          </p>
+        </form>
+      </div>
+
+      <!-- ── REGISTER FORM ── -->
+      <div class="glass-panel rounded-2xl p-8 shadow-2xl border border-white/5 auth-form hidden" id="register-form">
+        <header class="mb-8">
+          <div class="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-4">
+            <span class="material-symbols-outlined text-primary text-2xl">person_add</span>
+          </div>
+          <h2 class="text-2xl font-bold text-white mb-1">Create Account</h2>
+          <p class="text-on-surface-variant text-sm">Join SimplyOver for free</p>
+        </header>
+
+        <form action="/auth/register" method="POST" class="space-y-4" id="register-state">
+          <!-- Username -->
+          <div class="space-y-1.5">
+            <label class="text-xs font-semibold text-primary uppercase tracking-wider">Username</label>
+            <div class="relative group">
+              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-primary font-bold text-lg">@</span>
+              <input name="username" type="text" required placeholder="your_username"
+                     pattern="[a-zA-Z0-9_]{3,50}" title="3-50 chars: letters, numbers, underscores"
+                     class="w-full h-12 pl-10 pr-4 rounded-xl bg-surface-container/60 border border-primary/20 text-white placeholder:text-on-surface-variant/40 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"/>
+            </div>
+          </div>
+          <!-- Email -->
+          <div class="space-y-1.5">
+            <label class="text-xs font-semibold text-primary uppercase tracking-wider">Email Address</label>
+            <div class="relative group">
+              <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary text-[20px]">mail</span>
+              <input name="email" type="email" required placeholder="name@example.com"
+                     class="w-full h-12 pl-12 pr-4 rounded-xl bg-surface-container/60 border border-primary/20 text-white placeholder:text-on-surface-variant/40 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"/>
+            </div>
+          </div>
+          <!-- Passwords -->
+          <div class="grid grid-cols-2 gap-3">
+            <div class="space-y-1.5">
+              <label class="text-xs font-semibold text-primary uppercase tracking-wider">Password</label>
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-primary text-[18px]">lock</span>
+                <input name="password" type="password" required placeholder="••••••••" id="reg-pwd"
+                       class="w-full h-12 pl-10 pr-3 rounded-xl bg-surface-container/60 border border-primary/20 text-white placeholder:text-on-surface-variant/40 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all text-sm"/>
+              </div>
+            </div>
+            <div class="space-y-1.5">
+              <label class="text-xs font-semibold text-primary uppercase tracking-wider">Confirm</label>
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-primary text-[18px]">verified_user</span>
+                <input name="confirmPassword" type="password" required placeholder="••••••••" id="reg-pwd-confirm"
+                       class="w-full h-12 pl-10 pr-3 rounded-xl bg-surface-container/60 border border-primary/20 text-white placeholder:text-on-surface-variant/40 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all text-sm"/>
+              </div>
+            </div>
+          </div>
+          <!-- Password strength indicator -->
+          <div class="h-1 rounded-full bg-white/5 overflow-hidden">
+            <div class="h-full rounded-full transition-all duration-300" id="pwd-strength-bar" style="width:0%;background:#ef4444"></div>
+          </div>
+
+          <button type="submit" class="w-full h-12 rounded-xl font-bold text-white transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg mt-2"
+                  style="background: linear-gradient(45deg, #7c3aed, #ddb7ff); box-shadow: 0 0 20px rgba(124,58,237,0.25)">
+            <span class="material-symbols-outlined text-[18px] align-middle mr-2">auto_awesome</span>
+            Create Free Account
+          </button>
+
+          <p class="text-center text-sm text-on-surface-variant">
+            Already have an account?
+            <button type="button" class="text-secondary font-semibold hover:underline ml-1" onclick="switchState('login')">Sign in</button>
+          </p>
+        </form>
+      </div>
+
+    </div>
+  </section>
 </main>
 
+<style>
+  .panel-content { transition: opacity 0.4s ease, transform 0.4s ease; }
+  .panel-content.hidden { opacity: 0; transform: translateY(10px); }
+  .auth-form { transition: opacity 0.35s ease, transform 0.35s ease; }
+  .auth-form.hidden { display: none; }
+  .particle {
+    position: absolute;
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: rgba(210,187,255,0.4);
+    animation: float-particle 6s ease-in-out infinite;
+  }
+  @keyframes float-particle {
+    0%,100% { transform: translateY(0) scale(1); opacity: 0.4; }
+    50% { transform: translateY(-30px) scale(1.5); opacity: 0.8; }
+  }
+</style>
+
 <script>
-    function switchState(state) {
-        const loginState = document.getElementById('login-state');
-        const registerState = document.getElementById('register-state');
-        const loginTab = document.getElementById('login-tab');
-        const registerTab = document.getElementById('register-tab');
-        const loginIndicator = document.getElementById('login-indicator');
-        const registerIndicator = document.getElementById('register-indicator');
+  // ── Inicialización desde URL params ──────────────────────────
+  const urlParams = new URLSearchParams(window.location.search);
+  const initTab = urlParams.get('tab') || '<%= typeof tab !== "undefined" ? tab : "login" %>';
+  if (initTab === 'register') switchState('register', false);
 
-        if (state === 'login') {
-            loginState.classList.remove('state-hidden');
-            registerState.classList.add('state-hidden');
-            
-            loginTab.classList.remove('text-on-surface-variant');
-            loginTab.classList.add('text-primary');
-            registerTab.classList.add('text-on-surface-variant');
-            registerTab.classList.remove('text-primary', 'text-white');
+  // ── Switcher de pantalla ──────────────────────────────────────
+  function switchState(state, animate = true) {
+    const loginTab    = document.getElementById('login-tab');
+    const registerTab = document.getElementById('register-tab');
+    const loginForm   = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+    const loginContent    = document.getElementById('panel-login-content');
+    const registerContent = document.getElementById('panel-register-content');
+    const formGlow    = document.getElementById('form-glow');
+    const bgGradient  = document.getElementById('bg-gradient');
 
-            loginIndicator.classList.remove('scale-x-0');
-            registerIndicator.classList.add('scale-x-0');
-        } else {
-            loginState.classList.add('state-hidden');
-            registerState.classList.remove('state-hidden');
-
-            registerTab.classList.remove('text-on-surface-variant');
-            registerTab.classList.add('text-primary');
-            loginTab.classList.add('text-on-surface-variant');
-            loginTab.classList.remove('text-primary');
-
-            registerIndicator.classList.remove('scale-x-0');
-            loginIndicator.classList.add('scale-x-0');
-        }
+    if (state === 'login') {
+      // Tabs
+      loginTab.style.cssText = 'background: linear-gradient(45deg,#4cd7f6,#06b6d4); color: white; flex:1; padding:10px 24px; border-radius:9999px; font-weight:600; font-size:.875rem; transition: all .3s';
+      registerTab.style.cssText = 'background: transparent; color: #ccc3d8; flex:1; padding:10px 24px; border-radius:9999px; font-weight:600; font-size:.875rem; transition: all .3s';
+      // Forms
+      loginForm.classList.remove('hidden');
+      registerForm.classList.add('hidden');
+      // Panel
+      loginContent.classList.remove('hidden');
+      registerContent.classList.add('hidden');
+      // Colors
+      formGlow.style.background = '#4cd7f6';
+      bgGradient.style.background = 'linear-gradient(135deg, #0D0D14 0%, #13131a 40%, #0d1a2e 100%)';
+    } else {
+      loginTab.style.cssText = 'background: transparent; color: #ccc3d8; flex:1; padding:10px 24px; border-radius:9999px; font-weight:600; font-size:.875rem; transition: all .3s';
+      registerTab.style.cssText = 'background: linear-gradient(45deg,#7c3aed,#ddb7ff); color: white; flex:1; padding:10px 24px; border-radius:9999px; font-weight:600; font-size:.875rem; transition: all .3s';
+      loginForm.classList.add('hidden');
+      registerForm.classList.remove('hidden');
+      loginContent.classList.add('hidden');
+      registerContent.classList.remove('hidden');
+      formGlow.style.background = '#7c3aed';
+      bgGradient.style.background = 'linear-gradient(135deg, #0D0D14 0%, #13131a 40%, #1a0d2e 100%)';
     }
+  }
+
+  // ── Toggle password visibility ────────────────────────────────
+  function togglePwd(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const icon = btn.querySelector('.material-symbols-outlined');
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.textContent = 'visibility_off';
+    } else {
+      input.type = 'password';
+      icon.textContent = 'visibility';
+    }
+  }
+
+  // ── Password strength ─────────────────────────────────────────
+  document.getElementById('reg-pwd')?.addEventListener('input', function() {
+    const val = this.value;
+    const bar = document.getElementById('pwd-strength-bar');
+    let strength = 0;
+    if (val.length >= 6) strength += 25;
+    if (val.length >= 10) strength += 25;
+    if (/[A-Z]/.test(val)) strength += 25;
+    if (/[0-9!@#$%^&*]/.test(val)) strength += 25;
+    bar.style.width = strength + '%';
+    bar.style.background = strength < 50 ? '#ef4444' : strength < 75 ? '#f59e0b' : '#22c55e';
+  });
+
+  // ── Confirm password match visual ─────────────────────────────
+  document.getElementById('reg-pwd-confirm')?.addEventListener('input', function() {
+    const pwd = document.getElementById('reg-pwd').value;
+    this.style.borderColor = this.value === pwd ? 'rgba(34,197,94,0.5)' : 'rgba(239,68,68,0.5)';
+  });
 </script>
+
 </body>
 </html>

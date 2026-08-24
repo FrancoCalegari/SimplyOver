@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<%- include('partials/head', {title: 'AI Studio | SimplyOver'}) %>
+<body class="overflow-x-hidden bg-background text-on-background">
+  <%- include('partials/navbar') %>
+
+  <main class="max-w-5xl mx-auto px-5 md:px-8 py-12 pb-24">
+    <!-- Hero -->
+    <section class="text-center mb-12">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold mb-5">
+        <span class="material-symbols-outlined text-[14px]">auto_awesome</span>
+        Powered by SpiderIA
+      </div>
+      <h1 class="text-4xl md:text-5xl font-bold text-white mb-3">AI Template <span class="text-gradient">Generator</span></h1>
+      <p class="text-on-surface-variant max-w-2xl mx-auto">
+        Describe your dream OBS overlay and our AI will generate a complete template specification — ready for the Studio Canvas.
+      </p>
+    </section>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- ── Input Panel ── -->
+      <div class="glass-panel rounded-2xl p-8 border border-white/5">
+        <h2 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary">edit_note</span>
+          Describe Your Overlay
+        </h2>
+
+        <div class="space-y-5">
+          <!-- Prompt -->
+          <div>
+            <label class="text-xs font-semibold text-primary uppercase tracking-wider mb-2 block">Your Prompt *</label>
+            <textarea id="ai-prompt" rows="4" placeholder="e.g. A dark cyberpunk overlay with neon blue accents, animated glitch effects, webcam frame in the bottom left, health bar on the right side..." 
+                      class="w-full bg-surface-container/60 border border-primary/20 rounded-xl px-4 py-3 text-white text-sm focus:ring-2 focus:ring-primary/50 outline-none transition-all resize-none placeholder:text-on-surface-variant/40"></textarea>
+          </div>
+
+          <!-- Style -->
+          <div>
+            <label class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2 block">Style</label>
+            <div class="grid grid-cols-3 gap-2">
+              <% ['Cyberpunk', 'Minimalist', 'Anime', 'Esports', 'Neon', 'Nature'].forEach(function(s) { %>
+              <button type="button" onclick="selectStyle(this, '<%= s.toLowerCase() %>')"
+                      class="style-btn py-2.5 px-3 rounded-lg text-sm font-semibold text-on-surface-variant border border-white/5 bg-surface-container/40 hover:border-primary/30 hover:text-primary transition-all">
+                <%= s %>
+              </button>
+              <% }); %>
+            </div>
+            <input type="hidden" id="selected-style" value="cyberpunk"/>
+          </div>
+
+          <!-- Colors -->
+          <div>
+            <label class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2 block">Color Hints</label>
+            <div class="flex flex-wrap gap-2" id="color-tags">
+              <% ['#7c3aed', '#4cd7f6', '#ddb7ff', '#06b6d4', '#ec4899', '#22c55e'].forEach(function(c) { %>
+              <button type="button" onclick="toggleColor(this, '<%= c %>')"
+                      class="w-8 h-8 rounded-full border-2 border-white/10 hover:border-white/40 transition-all color-swatch"
+                      style="background: <%= c %>" data-color="<%= c %>" title="<%= c %>"></button>
+              <% }); %>
+              <span class="text-xs text-on-surface-variant self-center ml-1">Click to pick colors</span>
+            </div>
+          </div>
+
+          <!-- Format -->
+          <div>
+            <label class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2 block">Resolution</label>
+            <select id="ai-format" class="w-full bg-surface-container/60 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 appearance-none">
+              <option value="1920x1080">1920×1080 (Full HD)</option>
+              <option value="2560x1440">2560×1440 (2K QHD)</option>
+              <option value="3840x2160">3840×2160 (4K UHD)</option>
+              <option value="1280x720">1280×720 (HD)</option>
+            </select>
+          </div>
+
+          <button onclick="generateTemplate()"
+                  class="w-full py-3.5 rounded-xl font-bold text-white transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
+                  style="background: linear-gradient(45deg,#7c3aed,#ddb7ff); box-shadow: 0 0 20px rgba(124,58,237,0.25)"
+                  id="generate-btn">
+            <span class="material-symbols-outlined text-[20px]">auto_awesome</span>
+            Generate Template
+          </button>
+        </div>
+      </div>
+
+      <!-- ── Output Panel ── -->
+      <div class="glass-panel rounded-2xl p-8 border border-white/5 flex flex-col" id="output-panel">
+        <!-- Loading state -->
+        <div class="flex-1 flex flex-col items-center justify-center text-center" id="empty-state">
+          <div class="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+            <span class="material-symbols-outlined text-primary text-4xl">auto_awesome</span>
+          </div>
+          <h3 class="text-lg font-semibold text-white mb-2">Ready to Generate</h3>
+          <p class="text-on-surface-variant text-sm">Fill in your prompt and click Generate to get your AI template specification.</p>
+        </div>
+
+        <!-- Loading spinner -->
+        <div class="flex-1 flex flex-col items-center justify-center hidden" id="loading-state">
+          <div class="ai-spinner mb-4"></div>
+          <p class="text-on-surface-variant text-sm animate-pulse">Generating your overlay concept...</p>
+        </div>
+
+        <!-- Result -->
+        <div class="hidden flex-col gap-5 flex-1" id="result-state">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+              <span id="result-title">Generated Template</span>
+            </h2>
+            <button onclick="copyResult()" class="text-xs text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1">
+              <span class="material-symbols-outlined text-[16px]">content_copy</span> Copy
+            </button>
+          </div>
+
+          <!-- Color scheme -->
+          <div>
+            <p class="text-xs text-on-surface-variant uppercase tracking-wider font-semibold mb-2">Color Palette</p>
+            <div class="flex gap-2" id="result-colors"></div>
+          </div>
+
+          <!-- Description -->
+          <div>
+            <p class="text-xs text-on-surface-variant uppercase tracking-wider font-semibold mb-2">Description</p>
+            <p class="text-sm text-on-background leading-relaxed" id="result-desc"></p>
+          </div>
+
+          <!-- Fonts -->
+          <div id="result-fonts-section">
+            <p class="text-xs text-on-surface-variant uppercase tracking-wider font-semibold mb-2">Recommended Fonts</p>
+            <div class="flex flex-wrap gap-2" id="result-fonts"></div>
+          </div>
+
+          <!-- Elements -->
+          <div>
+            <p class="text-xs text-on-surface-variant uppercase tracking-wider font-semibold mb-2">Components</p>
+            <div class="flex flex-wrap gap-2" id="result-elements"></div>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex gap-3 mt-auto pt-4 border-t border-white/5">
+            <a id="open-studio-btn" href="/studio"
+               class="flex-1 py-2.5 rounded-xl font-semibold text-white text-sm text-center transition-all hover:scale-[1.02]"
+               style="background: linear-gradient(45deg,#4cd7f6,#06b6d4)">
+              <span class="material-symbols-outlined text-[16px] align-middle mr-1">open_in_new</span>
+              Open in Studio
+            </a>
+            <button onclick="generateTemplate()"
+                    class="flex-1 py-2.5 rounded-xl font-semibold text-on-surface-variant text-sm glass-level-1 hover:text-white transition-all">
+              <span class="material-symbols-outlined text-[16px] align-middle mr-1">refresh</span>
+              Regenerate
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Generations -->
+    <section class="mt-16">
+      <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+        <span class="w-1.5 h-7 bg-primary rounded-full"></span>
+        Template Inspiration
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <% [
+          {style:'Cyberpunk HUD', desc:'Neon blue grid with animated scan lines and hexagonal elements', colors:['#4cd7f6','#7c3aed','#0d0d14']},
+          {style:'Minimal Zen', desc:'Clean white space, minimal borders, elegant Japanese typography', colors:['#ffffff','#f1f5f9','#1e293b']},
+          {style:'Anime Arena', desc:'Vibrant pink and purple with kawaii-style icons and animated stars', colors:['#ec4899','#a855f7','#1a0020']},
+        ].forEach(function(ex) { %>
+        <div class="glass-panel rounded-xl p-5 border border-white/5 cursor-pointer hover:border-primary/30 transition-all"
+             onclick="document.getElementById('ai-prompt').value='<%= ex.desc.replace(/'/g,"\\'") %>'; document.querySelector('.style-btn')?.click()">
+          <div class="flex gap-2 mb-3">
+            <% ex.colors.forEach(function(c) { %>
+              <div class="w-5 h-5 rounded-full" style="background:<%= c %>; border: 1px solid rgba(255,255,255,0.1)"></div>
+            <% }); %>
+          </div>
+          <p class="font-semibold text-white text-sm mb-1"><%= ex.style %></p>
+          <p class="text-xs text-on-surface-variant leading-relaxed"><%= ex.desc %></p>
+        </div>
+        <% }); %>
+      </div>
+    </section>
+  </main>
+
+<style>
+  .ai-spinner {
+    width: 48px; height: 48px; border: 3px solid rgba(210,187,255,0.1);
+    border-top-color: #7c3aed; border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .style-btn.selected { background: rgba(210,187,255,0.1); color: #d2bbff; border-color: rgba(210,187,255,0.3); }
+  .color-swatch.selected { border-color: white !important; transform: scale(1.2); box-shadow: 0 0 8px rgba(255,255,255,0.3); }
+</style>
+
+<script>
+  let selectedColors = [];
+  let lastResult = null;
+
+  function selectStyle(btn, style) {
+    document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    document.getElementById('selected-style').value = style;
+  }
+
+  function toggleColor(btn, color) {
+    if (btn.classList.contains('selected')) {
+      btn.classList.remove('selected');
+      selectedColors = selectedColors.filter(c => c !== color);
+    } else {
+      btn.classList.add('selected');
+      selectedColors.push(color);
+    }
+  }
+
+  async function generateTemplate() {
+    const prompt = document.getElementById('ai-prompt').value.trim();
+    if (!prompt) {
+      document.getElementById('ai-prompt').focus();
+      document.getElementById('ai-prompt').style.borderColor = 'rgba(239,68,68,0.5)';
+      setTimeout(() => document.getElementById('ai-prompt').style.borderColor = '', 2000);
+      return;
+    }
+
+    const btn = document.getElementById('generate-btn');
+    btn.disabled = true;
+
+    document.getElementById('empty-state').classList.add('hidden');
+    document.getElementById('result-state').classList.add('hidden');
+    document.getElementById('loading-state').classList.remove('hidden');
+
+    try {
+      const r = await fetch('/api/ai-generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt,
+          style: document.getElementById('selected-style').value,
+          colors: selectedColors,
+          format: document.getElementById('ai-format').value,
+        }),
+      });
+
+      if (!r.ok) throw new Error('Generation failed');
+      const data = await r.json();
+      lastResult = data.template;
+
+      // Mostrar resultado
+      document.getElementById('result-title').textContent = data.template.title || 'Generated Template';
+      document.getElementById('result-desc').textContent = data.template.description || '';
+
+      // Colores
+      const colorsEl = document.getElementById('result-colors');
+      colorsEl.innerHTML = '';
+      const scheme = data.template.colorScheme || {};
+      Object.entries(scheme).forEach(([key, val]) => {
+        if (val) {
+          const div = document.createElement('div');
+          div.className = 'flex flex-col items-center gap-1';
+          div.innerHTML = `<div class="w-8 h-8 rounded-lg border border-white/10 shadow" style="background:${val}" title="${val}"></div>
+                           <span class="text-[9px] text-on-surface-variant">${key}</span>`;
+          colorsEl.appendChild(div);
+        }
+      });
+
+      // Fuentes
+      const fontsEl = document.getElementById('result-fonts');
+      fontsEl.innerHTML = '';
+      (data.template.fonts || []).forEach(f => {
+        const span = document.createElement('span');
+        span.className = 'text-xs px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 font-medium';
+        span.textContent = f;
+        fontsEl.appendChild(span);
+      });
+
+      // Elementos
+      const elemsEl = document.getElementById('result-elements');
+      elemsEl.innerHTML = '';
+      (data.template.elements || []).forEach(e => {
+        const span = document.createElement('span');
+        span.className = 'text-xs px-2.5 py-1 rounded-full glass-level-1 text-on-surface-variant font-medium flex items-center gap-1';
+        span.innerHTML = `<span class="material-symbols-outlined text-[12px]">layers</span>${e}`;
+        elemsEl.appendChild(span);
+      });
+
+      if (data.draftId) {
+        document.getElementById('open-studio-btn').href = '/studio?draft=' + data.draftId;
+      }
+
+      document.getElementById('loading-state').classList.add('hidden');
+      document.getElementById('result-state').classList.remove('hidden');
+      document.getElementById('result-state').classList.add('flex');
+
+    } catch(e) {
+      document.getElementById('loading-state').classList.add('hidden');
+      document.getElementById('empty-state').classList.remove('hidden');
+      alert('Generation failed. Please try again or check your AI configuration.');
+    }
+
+    btn.disabled = false;
+  }
+
+  function copyResult() {
+    if (!lastResult) return;
+    navigator.clipboard.writeText(JSON.stringify(lastResult, null, 2))
+      .then(() => {
+        const btn = event.currentTarget;
+        btn.querySelector('.material-symbols-outlined').textContent = 'check';
+        setTimeout(() => btn.querySelector('.material-symbols-outlined').textContent = 'content_copy', 2000);
+      });
+  }
+</script>
+</body>
+</html>

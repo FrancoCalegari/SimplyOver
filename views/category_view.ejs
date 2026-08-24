@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<%- include('partials/head', {title: title}) %>
+<body class="bg-background text-on-background">
+  <%- include('partials/navbar') %>
+
+  <main class="max-w-screen-2xl mx-auto px-5 md:px-10 pt-10 pb-24">
+
+    <!-- Header de categoría -->
+    <section class="mb-10">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+          <div class="flex items-center gap-3 mb-3">
+            <a href="/" class="text-on-surface-variant hover:text-primary transition-colors text-sm">Home</a>
+            <span class="material-symbols-outlined text-on-surface-variant text-[16px]">chevron_right</span>
+            <span class="text-sm text-primary font-semibold"><%= category.name %></span>
+          </div>
+          <h1 class="text-4xl md:text-5xl font-bold text-white mb-2"><%= category.name %></h1>
+          <% if (category.description) { %>
+            <p class="text-on-surface-variant max-w-2xl"><%= category.description %></p>
+          <% } %>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <span class="text-on-surface-variant text-sm"><%= overlays.length %> overlays</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Filtros -->
+    <form method="GET" action="/category/<%= slug %>" class="mb-10 flex flex-wrap items-center gap-3">
+      <!-- Búsqueda -->
+      <div class="relative flex-1 min-w-[200px] max-w-sm">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary text-[18px]">search</span>
+        <input name="q" type="text" value="<%= filters.q || '' %>" placeholder="Search in <%= category.name %>..."
+               class="w-full bg-surface-container/60 border border-white/10 rounded-full py-2.5 pl-10 pr-4 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"/>
+      </div>
+
+      <!-- Precio -->
+      <div class="flex items-center gap-1 bg-surface-container/40 rounded-full p-1 border border-white/5">
+        <a href="/category/<%= slug %>?q=<%= filters.q||'' %>&sort=<%= filters.sort||'newest' %>"
+           class="filter-pill <%= !filters.price ? 'active' : '' %>">All</a>
+        <a href="/category/<%= slug %>?price=free&q=<%= filters.q||'' %>&sort=<%= filters.sort||'newest' %>"
+           class="filter-pill <%= filters.price === 'free' ? 'active' : '' %>">
+          <span class="material-symbols-outlined text-[14px]">money_off</span> Free
+        </a>
+        <a href="/category/<%= slug %>?price=paid&q=<%= filters.q||'' %>&sort=<%= filters.sort||'newest' %>"
+           class="filter-pill <%= filters.price === 'paid' ? 'active' : '' %>">
+          <span class="material-symbols-outlined text-[14px]">attach_money</span> Premium
+        </a>
+      </div>
+
+      <!-- Ordenamiento -->
+      <select name="sort" onchange="this.form.submit()"
+              class="bg-surface-container/60 border border-white/10 rounded-full px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary/50 appearance-none cursor-pointer">
+        <option value="newest" <%= filters.sort === 'newest' ? 'selected' : '' %>>Newest</option>
+        <option value="popular" <%= filters.sort === 'popular' ? 'selected' : '' %>>Most Popular</option>
+        <option value="rating" <%= filters.sort === 'rating' ? 'selected' : '' %>>Top Rated</option>
+        <option value="price_asc" <%= filters.sort === 'price_asc' ? 'selected' : '' %>>Price: Low → High</option>
+        <option value="price_desc" <%= filters.sort === 'price_desc' ? 'selected' : '' %>>Price: High → Low</option>
+      </select>
+
+      <% if (filters.q || filters.price) { %>
+        <a href="/category/<%= slug %>" class="text-xs text-on-surface-variant hover:text-white transition-colors flex items-center gap-1">
+          <span class="material-symbols-outlined text-[16px]">close</span> Clear filters
+        </a>
+      <% } %>
+    </form>
+
+    <!-- Grid de overlays -->
+    <% if (overlays.length === 0) { %>
+    <div class="flex flex-col items-center justify-center py-24 border-2 border-dashed border-white/5 rounded-3xl">
+      <div class="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6">
+        <span class="material-symbols-outlined text-on-surface-variant text-5xl">search_off</span>
+      </div>
+      <h2 class="text-2xl font-bold text-white mb-2">No overlays found</h2>
+      <p class="text-on-surface-variant mb-6">Try adjusting your filters or search term.</p>
+      <a href="/category/<%= slug %>" class="px-6 py-3 rounded-full glass-level-1 text-primary font-semibold hover:bg-white/10 transition-all">
+        Clear all filters
+      </a>
+    </div>
+    <% } else { %>
+    <div class="masonry-grid" id="overlays-grid">
+      <% overlays.forEach(function(overlay, i) { %>
+        <%
+          let previewUrl = 'https://via.placeholder.com/400x300/13131a/d2bbff?text=Overlay';
+          try {
+            const ids = JSON.parse(overlay.preview_storage_ids || '[]');
+            if (ids[0]) previewUrl = (process.env.SPIDERWEBURL || '') + '/storage/files/' + ids[0];
+          } catch(e) {}
+          const isPremium = parseFloat(overlay.price) > 0;
+          const priceLabel = isPremium ? '$' + parseFloat(overlay.price).toFixed(2) : 'FREE';
+          const priceClass = isPremium ? 'bg-primary-container text-white' : 'bg-secondary-container/20 text-secondary border border-secondary/30';
+        %>
+        <article class="masonry-item group cursor-pointer relative overflow-hidden rounded-xl glass-surface border-white/10 transition-all duration-300 hover:scale-[1.02] hover:border-primary/30"
+                 onclick="window.location.href='/overlay/<%= overlay.slug || overlay.id %>'">
+          <div class="relative overflow-hidden">
+            <img class="w-full object-cover rounded-t-xl transition-transform duration-500 group-hover:scale-105"
+                 src="<%= previewUrl %>"
+                 style="height: <%= [240, 280, 320, 200, 300][i % 5] %>px;"
+                 alt="<%= overlay.name %>"
+                 onerror="this.src='https://via.placeholder.com/400x280/1f1f26/d2bbff?text=<%= encodeURIComponent(overlay.name) %>'"/>
+            <!-- Overlay hover actions -->
+            <div class="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+              <button class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-primary/50 transition-colors"
+                      onclick="event.stopPropagation(); addToFavorite('<%= overlay.id %>', this)" title="Favorite">
+                <span class="material-symbols-outlined text-white text-[18px]">favorite</span>
+              </button>
+              <button class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-secondary/50 transition-colors"
+                      onclick="event.stopPropagation(); addToBoard('<%= overlay.id %>')" title="Save to Board">
+                <span class="material-symbols-outlined text-white text-[18px]">push_pin</span>
+              </button>
+              <a href="/overlay/<%= overlay.slug || overlay.id %>"
+                 class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-primary transition-colors" title="View">
+                <span class="material-symbols-outlined text-white text-[18px]">visibility</span>
+              </a>
+            </div>
+            <!-- Price badge -->
+            <span class="absolute top-3 right-3 px-2.5 py-1 rounded-lg text-xs font-bold <%= priceClass %>">
+              <%= priceLabel %>
+            </span>
+          </div>
+          <div class="p-4">
+            <h3 class="font-semibold text-white text-sm mb-1 truncate"><%= overlay.name %></h3>
+            <div class="flex items-center justify-between">
+              <a href="/artist/<%= overlay.creator_username %>"
+                 class="text-xs text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1.5"
+                 onclick="event.stopPropagation()">
+                <span class="material-symbols-outlined text-[14px]">person</span>
+                <%= overlay.creator_display_name || overlay.creator_username %>
+              </a>
+              <% if (overlay.avg_rating) { %>
+              <div class="flex items-center gap-1 text-tertiary">
+                <span class="material-symbols-outlined text-[14px]" style="font-variation-settings:'FILL' 1">star</span>
+                <span class="text-xs font-semibold"><%= overlay.avg_rating %></span>
+                <% if (overlay.review_count) { %><span class="text-[10px] text-on-surface-variant">(<%= overlay.review_count %>)</span><% } %>
+              </div>
+              <% } %>
+            </div>
+          </div>
+        </article>
+      <% }); %>
+    </div>
+
+    <!-- Paginación -->
+    <% if (pagination.hasMore || pagination.page > 1) { %>
+    <div class="flex justify-center gap-3 mt-16">
+      <% if (pagination.page > 1) { %>
+        <a href="?page=<%= pagination.page - 1 %>&q=<%= filters.q||'' %>&price=<%= filters.price||'' %>&sort=<%= filters.sort||'newest' %>"
+           class="px-6 py-3 rounded-full glass-level-1 text-on-surface-variant hover:text-white transition-all flex items-center gap-2">
+          <span class="material-symbols-outlined text-[18px]">arrow_back</span> Previous
+        </a>
+      <% } %>
+      <% if (pagination.hasMore) { %>
+        <a href="?page=<%= pagination.page + 1 %>&q=<%= filters.q||'' %>&price=<%= filters.price||'' %>&sort=<%= filters.sort||'newest' %>"
+           class="px-6 py-3 rounded-full primary-gradient text-white font-semibold hover:scale-[1.02] transition-all flex items-center gap-2">
+          Load More <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+        </a>
+      <% } %>
+    </div>
+    <% } %>
+    <% } %>
+  </main>
+
+  <%- include('partials/board_selector') %>
+  <%- include('partials/footer') %>
+
+<style>
+  .masonry-grid { columns: 1; column-gap: 1.5rem; }
+  @media (min-width: 640px) { .masonry-grid { columns: 2; } }
+  @media (min-width: 1024px) { .masonry-grid { columns: 3; } }
+  @media (min-width: 1280px) { .masonry-grid { columns: 4; } }
+  .masonry-item { break-inside: avoid; margin-bottom: 1.5rem; display: block; }
+  .filter-pill {
+    padding: 6px 14px; border-radius: 9999px; font-size: 0.8125rem; font-weight: 600;
+    color: #ccc3d8; transition: all 0.2s; display: flex; align-items: center; gap: 4px; cursor: pointer;
+  }
+  .filter-pill.active { background: rgba(210,187,255,0.15); color: #d2bbff; }
+  .filter-pill:hover:not(.active) { background: rgba(255,255,255,0.05); color: white; }
+</style>
+
+<script>
+  function addToFavorite(overlayId, btn) {
+    fetch('/api/favorites', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ overlayId })
+    }).then(r => {
+      if (r.status === 401) return window.location.href = '/login?returnTo=' + encodeURIComponent(window.location.pathname);
+      const icon = btn.querySelector('.material-symbols-outlined');
+      icon.style.fontVariationSettings = "'FILL' 1";
+      icon.style.color = '#ef4444';
+    }).catch(console.error);
+  }
+
+  function addToBoard(overlayId) {
+    if (typeof openBoardSelector === 'function') {
+      openBoardSelector(overlayId);
+    } else {
+      if (!document.cookie.includes('so_token')) return window.location.href = '/login';
+      alert('Board selector unavailable.');
+    }
+  }
+</script>
+</body>
+</html>

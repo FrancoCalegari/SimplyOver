@@ -1,88 +1,175 @@
 <!DOCTYPE html>
 <html class="dark" lang="en">
-<%- include('partials/head', {title: 'SimplyOver | My Library'}) %>
-<body class="overflow-x-hidden">
-    <%- include('partials/navbar') %>
-    <div class="flex min-h-[calc(100vh-80px)]">
-        <%- include('partials/dashboard_sidebar', {activeTab: 'library'}) %>
+<%- include('partials/head', {title: title || 'My Library | SimplyOver'}) %>
+<body class="overflow-x-hidden bg-background text-on-background">
+  <%- include('partials/navbar') %>
+  <div class="flex min-h-[calc(100vh-80px)]">
+    <%- include('partials/dashboard_sidebar', {activeTab: 'library'}) %>
 
-        <!-- Main Content Canvas -->
-        <main class="flex-1 md:ml-[280px] px-5 md:px-12 py-12">
-            <!-- Header Section -->
-            <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-8">
-                <div>
-                    <h1 class="text-5xl font-bold text-white mb-2">My Library</h1>
-                    <p class="text-lg text-on-surface-variant max-w-xl">
-                        Access all your purchased overlays, digital assets, and customized streaming kits. Ready for your next broadcast.
-                    </p>
-                </div>
-                <div class="flex items-center gap-3">
-                    <div class="glass-level-1 flex items-center px-4 py-2.5 rounded-full">
-                        <span class="material-symbols-outlined text-secondary mr-2">search</span>
-                        <input class="bg-transparent border-none focus:ring-0 text-sm font-semibold w-48 placeholder:text-on-surface-variant/50 text-white" placeholder="Search my assets..." type="text"/>
-                    </div>
-                    <button class="glass-level-2 p-2.5 rounded-full text-on-surface-variant hover:text-white transition-colors">
-                        <span class="material-symbols-outlined">sort</span>
-                    </button>
-                </div>
+    <!-- Main Content -->
+    <main class="flex-1 md:ml-[280px] px-5 md:px-10 py-10">
+
+      <!-- Header -->
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
+        <div>
+          <h1 class="text-4xl md:text-5xl font-bold text-white mb-2">My Library</h1>
+          <p class="text-on-surface-variant">
+            <% const total = typeof purchases !== 'undefined' ? purchases.length : 0; %>
+            <%= total %> item<%= total !== 1 ? 's' : '' %> in your collection
+          </p>
+        </div>
+        <div class="flex items-center gap-3 flex-wrap">
+          <!-- Búsqueda -->
+          <form method="GET" action="/dashboard/library" class="flex items-center gap-2">
+            <div class="glass-level-1 flex items-center px-4 py-2.5 rounded-full border border-white/5">
+              <span class="material-symbols-outlined text-secondary mr-2 text-[18px]">search</span>
+              <input name="q" value="<%= typeof filters !== 'undefined' && filters.q ? filters.q : '' %>"
+                     class="bg-transparent border-none focus:ring-0 text-sm font-medium w-40 placeholder:text-on-surface-variant/50 text-white outline-none"
+                     placeholder="Search my library..."/>
+            </div>
+            <!-- Filtro precio -->
+            <select name="price" onchange="this.form.submit()"
+                    class="bg-surface-container/60 border border-white/10 rounded-full px-3 py-2 text-sm text-on-surface-variant focus:outline-none cursor-pointer">
+              <option value="">All types</option>
+              <option value="free" <%= typeof filters !== 'undefined' && filters.price === 'free' ? 'selected' : '' %>>Free</option>
+              <option value="paid" <%= typeof filters !== 'undefined' && filters.price === 'paid' ? 'selected' : '' %>>Premium</option>
+            </select>
+            <!-- Sort -->
+            <select name="sort" onchange="this.form.submit()"
+                    class="bg-surface-container/60 border border-white/10 rounded-full px-3 py-2 text-sm text-on-surface-variant focus:outline-none cursor-pointer">
+              <option value="newest" <%= typeof filters === 'undefined' || filters.sort === 'newest' ? 'selected' : '' %>>Newest first</option>
+              <option value="oldest" <%= typeof filters !== 'undefined' && filters.sort === 'oldest' ? 'selected' : '' %>>Oldest first</option>
+              <option value="name" <%= typeof filters !== 'undefined' && filters.sort === 'name' ? 'selected' : '' %>>Name A-Z</option>
+            </select>
+          </form>
+        </div>
+      </div>
+
+      <!-- Grid de library -->
+      <% if (typeof purchases === 'undefined' || purchases.length === 0) { %>
+      <!-- Empty State -->
+      <div class="flex flex-col items-center justify-center py-24 border-2 border-dashed border-white/5 rounded-3xl">
+        <div class="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6">
+          <span class="material-symbols-outlined text-on-surface-variant text-5xl">library_music</span>
+        </div>
+        <h2 class="text-2xl font-bold text-white mb-2">Your library is empty</h2>
+        <p class="text-on-surface-variant mb-6 text-center max-w-sm">
+          <% if (typeof filters !== 'undefined' && (filters.q || filters.price)) { %>
+            No items match your search. Try different filters.
+          <% } else { %>
+            Start exploring the marketplace to build your collection.
+          <% } %>
+        </p>
+        <a href="/" class="px-8 py-3 rounded-full primary-gradient text-white font-bold hover:scale-[1.02] transition-all">
+          Explore Marketplace
+        </a>
+      </div>
+      <% } else { %>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        <% purchases.forEach(function(item) {
+          let previewUrl = 'https://via.placeholder.com/400x280/1f1f26/d2bbff?text=' + encodeURIComponent(item.name || 'Overlay');
+          try {
+            const ids = JSON.parse(item.preview_storage_ids || '[]');
+            if (ids[0]) previewUrl = (process.env.SPIDERWEBURL || '') + '/storage/files/' + ids[0];
+          } catch(e) {}
+        %>
+        <div class="glass-level-1 rounded-2xl overflow-hidden group hover:border-primary/40 hover:shadow-[0_0_20px_rgba(210,187,255,0.08)] transition-all duration-300 flex flex-col border border-white/5"
+             data-overlay-name="<%= (item.name||'').toLowerCase() %>" id="lib-item-<%= item.purchase_id %>">
+          <!-- Preview -->
+          <div class="relative overflow-hidden aspect-[16/10]">
+            <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                 src="<%= previewUrl %>"
+                 alt="<%= item.name %>"
+                 onerror="this.src='https://via.placeholder.com/400x250/1f1f26/d2bbff?text=<%= encodeURIComponent(item.name||'Overlay') %>'"/>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+              <% if (item.software_version) { %>
+                <span class="text-white text-xs font-semibold bg-primary/20 backdrop-blur-md px-2 py-1 rounded">OBS <%= item.software_version %></span>
+              <% } %>
+            </div>
+            <!-- Downloads badge -->
+            <div class="absolute top-3 right-3 bg-surface-container/80 backdrop-blur-sm px-2 py-1 rounded-lg flex items-center gap-1 text-xs">
+              <span class="material-symbols-outlined text-[12px] text-on-surface-variant">download</span>
+              <span class="text-on-surface-variant"><%= item.download_count || 0 %>/<%= item.download_limit || 5 %></span>
+            </div>
+          </div>
+
+          <!-- Info -->
+          <div class="p-5 flex-1 flex flex-col">
+            <div class="flex justify-between items-start mb-3">
+              <div>
+                <h3 class="text-base font-semibold text-white leading-tight mb-1"><%= item.name %></h3>
+                <p class="text-on-surface-variant text-xs">By <%= item.creator_display_name || item.creator_username %></p>
+              </div>
+              <% if (parseFloat(item.amount_paid) > 0) { %>
+                <span class="bg-primary-container/20 text-primary border border-primary/20 px-2 py-0.5 rounded text-xs font-bold shrink-0">Premium</span>
+              <% } else { %>
+                <span class="bg-secondary-container/20 text-secondary border border-secondary/30 px-2 py-0.5 rounded text-xs font-bold shrink-0">Free</span>
+              <% } %>
             </div>
 
-            <!-- Library Content Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                <!-- Card 1 -->
-                <div class="glass-level-1 rounded-2xl overflow-hidden group hover:border-primary/50 transition-all duration-300 flex flex-col">
-                    <div class="relative overflow-hidden aspect-[16/10]">
-                        <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCX5RjR0aF1A73qywyyEEkHi8zVCi0uVD5fck459lpAc4HIjdAB0SffrBZWUT0Hkd1DjsJCe-Bg3H3llEwV02U9qmCqEQatNAuvdvwwgcTGpFP2XLjwN5EawCTVD0J9i9OQM9Oy7QG6Zq3sBZUUTjPHF_VitFxOpOn8SbLb949-GFG4QyQUWFZf3OpRDZhf-QFzGIskYpy1eNtYA5XqVopYVKah76Kq1JGlvLvjaVJuXY_ACeiH0NXKB1es9272rrSBY4oTudbzmFU"/>
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                            <span class="text-white text-xs font-semibold bg-primary/20 backdrop-blur-md px-2 py-1 rounded">V2.4 Updated</span>
-                        </div>
-                    </div>
-                    <div class="p-5 flex-1 flex flex-col">
-                        <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <h3 class="text-lg font-semibold text-white mb-1">Cyber Drifter Kit</h3>
-                                <p class="text-on-surface-variant text-xs">By StudioX</p>
-                            </div>
-                        </div>
-                        <div class="mt-auto flex items-center justify-between gap-3 pt-4 border-t border-white/5">
-                            <button class="flex-1 py-2 rounded-lg bg-secondary/10 text-secondary font-semibold hover:bg-secondary/20 transition-colors flex items-center justify-center gap-2">
-                                <span class="material-symbols-outlined text-[18px]">download</span> Download
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 2 -->
-                <div class="glass-level-1 rounded-2xl overflow-hidden group hover:border-primary/50 transition-all duration-300 flex flex-col">
-                    <div class="relative overflow-hidden aspect-[4/3]">
-                        <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBVGeklX__73K5trHvCFGWVoVBPcU3CiddLL4itB4g5a9zd-GqaQNgn3NboEvnlz4TvNdSEb8_BUHkK2z30WI7Mu8ejY7YpIFs1mAHCLSK6iaQry1DzLOjjFzpFNaQ74MhOBqqbBzMK04V7a8gmZHntM6w7-VXzMr2plBFQbtubBvi5lxEp2yb4EnSTprM7o-zTG4q-WGrCS4c_12VftHtu2e7x_Ybj1dj1ba1mCzHLNP9F0TaBKdoLyfCI44Xaw2Lp3xHfsa23Wo"/>
-                    </div>
-                    <div class="p-5 flex-1 flex flex-col">
-                        <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <h3 class="text-lg font-semibold text-white mb-1">Zen Garden Stream</h3>
-                                <p class="text-on-surface-variant text-xs">By MochiDesign</p>
-                            </div>
-                        </div>
-                        <div class="mt-auto flex items-center justify-between gap-3 pt-4 border-t border-white/5">
-                            <button class="flex-1 py-2 rounded-lg bg-secondary/10 text-secondary font-semibold hover:bg-secondary/20 transition-colors flex items-center justify-center gap-2">
-                                <span class="material-symbols-outlined text-[18px]">download</span> Download
-                            </button>
-                        </div>
-                    </div>
-                </div>
+            <!-- Meta -->
+            <div class="flex items-center gap-3 mb-4">
+              <% if (item.resolution) { %>
+                <span class="text-[10px] text-on-surface-variant bg-white/5 px-2 py-0.5 rounded flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[12px]">monitor</span>
+                  <%= item.resolution %>
+                </span>
+              <% } %>
+              <span class="text-[10px] text-on-surface-variant">
+                Added <%= new Date(item.purchased_at).toLocaleDateString() %>
+              </span>
             </div>
 
-            <!-- Empty State / Load More -->
-            <div class="mt-16 flex flex-col items-center justify-center py-12 border-2 border-dashed border-white/5 rounded-3xl">
-                <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
-                    <span class="material-symbols-outlined text-on-surface-variant text-4xl">auto_awesome</span>
-                </div>
-                <h3 class="text-2xl font-bold text-white mb-2">Find more assets</h3>
-                <p class="text-on-surface-variant mb-6">Explore thousands of premium OBS overlays and stream packs.</p>
-                <a href="/" class="glass-level-1 px-8 py-3 rounded-full text-primary font-semibold hover:bg-white/10 transition-all">Go to Marketplace</a>
+            <!-- Actions -->
+            <div class="mt-auto flex items-center gap-2 pt-4 border-t border-white/5">
+              <a href="/api/library/<%= item.purchase_id %>/download"
+                 class="flex-1 py-2 rounded-lg bg-secondary/10 text-secondary font-semibold hover:bg-secondary/20 transition-colors flex items-center justify-center gap-2 text-sm">
+                <span class="material-symbols-outlined text-[16px]">download</span> Download
+              </a>
+              <a href="/overlay/<%= item.slug || item.overlay_id %>"
+                 class="p-2 rounded-lg glass-level-2 text-on-surface-variant hover:text-white transition-colors" title="View details">
+                <span class="material-symbols-outlined text-[18px]">visibility</span>
+              </a>
+              <button onclick="deleteLibraryItem('<%= item.purchase_id %>')"
+                      class="p-2 rounded-lg glass-level-2 text-on-surface-variant hover:text-red-400 transition-colors" title="Remove from library">
+                <span class="material-symbols-outlined text-[18px]">delete</span>
+              </button>
             </div>
-        </main>
-    </div>
+          </div>
+        </div>
+        <% }); %>
+      </div>
+      <% } %>
+
+      <!-- Explorar más -->
+      <div class="mt-16 flex flex-col items-center justify-center py-10 border-2 border-dashed border-white/5 rounded-3xl">
+        <h3 class="text-xl font-bold text-white mb-2">Discover more overlays</h3>
+        <p class="text-on-surface-variant mb-5 text-sm">Explore thousands of premium OBS overlays and stream packs.</p>
+        <a href="/" class="glass-level-1 px-8 py-3 rounded-full text-primary font-semibold hover:bg-white/10 transition-all">
+          Go to Marketplace
+        </a>
+      </div>
+    </main>
+  </div>
+
+<script>
+  async function deleteLibraryItem(purchaseId) {
+    if (!confirm('Remove this overlay from your library? This cannot be undone.')) return;
+    try {
+      const r = await fetch(`/api/library/${purchaseId}`, { method: 'DELETE' });
+      if (r.ok) {
+        const el = document.getElementById(`lib-item-${purchaseId}`);
+        el.style.transition = 'all 0.3s ease';
+        el.style.opacity = '0';
+        el.style.transform = 'scale(0.95)';
+        setTimeout(() => el.remove(), 300);
+      } else {
+        alert('Failed to remove item. Please try again.');
+      }
+    } catch(e) {
+      alert('Network error. Please try again.');
+    }
+  }
+</script>
 </body>
 </html>

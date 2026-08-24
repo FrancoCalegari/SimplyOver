@@ -1,25 +1,164 @@
-    <!-- TopNavBar -->
-    <nav class="sticky top-0 w-full z-50 bg-surface/30 backdrop-blur-md border-b border-white/10 shadow-sm flex items-center justify-between px-6 h-20">
-        <div class="flex items-center gap-8 flex-1">
-            <a href="/" class="flex items-center gap-2">
-                <img src="/img/logo.png" alt="SimplyOver Logo" class="h-8 w-auto object-contain" />
+<!-- TopNavBar -->
+<nav class="sticky top-0 w-full z-50 bg-surface/30 backdrop-blur-md border-b border-white/10 shadow-sm flex items-center justify-between px-6 h-20">
+  <!-- Left: Logo + Search -->
+  <div class="flex items-center gap-6 flex-1">
+    <a href="/" class="flex items-center gap-2 shrink-0">
+      <img src="/img/logo.png" alt="SimplyOver Logo" class="h-8 w-auto object-contain" />
+    </a>
+    <div class="hidden lg:flex flex-1 max-w-xl relative">
+      <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-secondary text-[20px]">search</span>
+      <input class="w-full bg-surface-container-highest/50 border border-white/10 rounded-full py-2.5 pl-12 pr-4 focus:ring-2 focus:ring-primary outline-none transition-all text-white text-sm" placeholder="Search overlays, artists, styles..." type="text" id="main-search"/>
+    </div>
+  </div>
+
+  <!-- Center: Category tags -->
+  <div class="hidden xl:flex items-center gap-1 px-6">
+    <a class="nav-tag active" href="/">All</a>
+    <a class="nav-tag" href="/category/anime">Anime</a>
+    <a class="nav-tag" href="/category/esports">Esports</a>
+    <a class="nav-tag" href="/category/neon">Neon</a>
+    <a class="nav-tag" href="/category/gaming">Gaming</a>
+    <a class="nav-tag" href="/category/cyberpunk">Cyberpunk</a>
+    <a class="nav-tag" href="/category/minimal">Minimal</a>
+  </div>
+
+  <!-- Right: Auth buttons / User menu -->
+  <div class="flex items-center gap-3">
+    <% if (typeof user !== 'undefined' && user) { %>
+      <!-- Usuario autenticado -->
+      <a href="/messages" class="relative p-2.5 rounded-full glass-level-1 text-on-surface-variant hover:text-secondary transition-colors" title="Messages">
+        <span class="material-symbols-outlined text-[22px]">mail</span>
+        <!-- Badge de mensajes no leídos (por ahora oculto) -->
+      </a>
+      <div class="relative" id="user-menu-container">
+        <button onclick="document.getElementById('user-dropdown').classList.toggle('hidden')"
+                class="flex items-center gap-2 py-1.5 pl-2 pr-4 rounded-full glass-level-1 border border-white/10 hover:border-primary/30 transition-all group">
+          <div class="w-8 h-8 rounded-full bg-primary-container/20 border-2 border-primary/30 flex items-center justify-center overflow-hidden">
+            <% if (user.avatar_storage_id) { %>
+              <img src="<%= process.env.SPIDERWEBURL %>/storage/files/<%= user.avatar_storage_id %>" class="w-full h-full object-cover" alt="Avatar"/>
+            <% } else { %>
+              <span class="material-symbols-outlined text-primary text-[18px]">person</span>
+            <% } %>
+          </div>
+          <span class="text-sm font-semibold text-white"><%= user.username %></span>
+          <span class="material-symbols-outlined text-on-surface-variant text-[18px] group-hover:rotate-180 transition-transform duration-200">expand_more</span>
+        </button>
+
+        <!-- Dropdown menu -->
+        <div id="user-dropdown" class="hidden absolute right-0 top-[calc(100%+8px)] w-56 glass-panel rounded-xl border border-white/10 shadow-2xl overflow-hidden z-50">
+          <div class="px-4 py-3 border-b border-white/5">
+            <p class="text-white font-semibold text-sm"><%= user.display_name || user.username %></p>
+            <p class="text-on-surface-variant text-xs">@<%= user.username %></p>
+          </div>
+          <nav class="py-2">
+            <a href="/artist/<%= user.username %>" class="flex items-center gap-3 px-4 py-2.5 text-sm text-on-surface-variant hover:text-white hover:bg-white/5 transition-all">
+              <span class="material-symbols-outlined text-[18px]">person</span> My Profile
             </a>
-            <div class="hidden lg:flex flex-1 max-w-xl relative">
-                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-secondary">search</span>
-                <input class="w-full bg-surface-container-highest/50 border border-white/10 rounded-full py-2.5 pl-12 pr-4 focus:ring-2 focus:ring-primary outline-none transition-all text-white" placeholder="Search overlays, streamers, styles..." type="text"/>
+            <a href="/dashboard/library" class="flex items-center gap-3 px-4 py-2.5 text-sm text-on-surface-variant hover:text-white hover:bg-white/5 transition-all">
+              <span class="material-symbols-outlined text-[18px]">library_music</span> My Library
+            </a>
+            <a href="/boards" class="flex items-center gap-3 px-4 py-2.5 text-sm text-on-surface-variant hover:text-white hover:bg-white/5 transition-all">
+              <span class="material-symbols-outlined text-[18px]">dashboard</span> My Boards
+            </a>
+            <a href="/messages" class="flex items-center gap-3 px-4 py-2.5 text-sm text-on-surface-variant hover:text-white hover:bg-white/5 transition-all">
+              <span class="material-symbols-outlined text-[18px]">mail</span> Messages
+            </a>
+            <a href="/studio/ai" class="flex items-center gap-3 px-4 py-2.5 text-sm text-on-surface-variant hover:text-white hover:bg-white/5 transition-all">
+              <span class="material-symbols-outlined text-[18px]">auto_awesome</span> AI Studio
+            </a>
+            <div class="border-t border-white/5 mt-2 pt-2">
+              <a href="/auth/logout" class="flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/5 transition-all">
+                <span class="material-symbols-outlined text-[18px]">logout</span> Logout
+              </a>
             </div>
+          </nav>
         </div>
-        <div class="hidden xl:flex items-center gap-6 px-8">
-            <a class="text-secondary font-bold border-b-2 border-secondary pb-1" href="/">All</a>
-            <a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Anime</a>
-            <a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Esports</a>
-            <a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Neon</a>
-            <a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Gaming</a>
-        </div>
-        <div class="flex items-center gap-4">
-            <a href="/login" class="hidden md:block text-on-surface-variant hover:text-primary transition-colors font-semibold">Login</a>
-            <a href="/dashboard/library" class="primary-gradient text-white px-6 py-2.5 rounded-full font-bold hover:scale-105 transition-transform">
-                Start Creating
-            </a>
-        </div>
-    </nav>
+      </div>
+    <% } else { %>
+      <!-- No autenticado -->
+      <a href="/login" class="hidden md:block text-sm font-semibold text-on-surface-variant hover:text-secondary transition-colors">
+        Sign In
+      </a>
+      <a href="/login?tab=register" class="primary-gradient text-white px-5 py-2.5 rounded-full font-bold text-sm hover:scale-105 transition-transform shadow-lg shadow-primary-container/20">
+        <span class="material-symbols-outlined text-[16px] align-middle mr-1">auto_awesome</span>
+        Start Creating
+      </a>
+    <% } %>
+
+    <!-- Mobile hamburger -->
+    <button class="xl:hidden p-2 rounded-lg glass-level-1 text-on-surface-variant hover:text-white transition-colors" onclick="toggleMobileMenu()">
+      <span class="material-symbols-outlined">menu</span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div id="mobile-menu" class="hidden xl:hidden bg-surface-container/95 backdrop-blur-xl border-b border-white/10 px-6 py-4">
+  <div class="flex flex-col gap-2">
+    <a href="/" class="nav-tag-mobile">All</a>
+    <a href="/category/anime" class="nav-tag-mobile">Anime</a>
+    <a href="/category/esports" class="nav-tag-mobile">Esports</a>
+    <a href="/category/neon" class="nav-tag-mobile">Neon</a>
+    <a href="/category/gaming" class="nav-tag-mobile">Gaming</a>
+    <a href="/category/cyberpunk" class="nav-tag-mobile">Cyberpunk</a>
+    <a href="/category/minimal" class="nav-tag-mobile">Minimal</a>
+  </div>
+</div>
+
+<style>
+  .nav-tag {
+    padding: 6px 14px;
+    border-radius: 9999px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #ccc3d8;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .nav-tag:hover, .nav-tag.active {
+    background: rgba(210,187,255,0.1);
+    color: #d2bbff;
+  }
+  .nav-tag-mobile {
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #ccc3d8;
+    transition: all 0.2s;
+    display: block;
+  }
+  .nav-tag-mobile:hover { background: rgba(255,255,255,0.05); color: white; }
+  #user-dropdown { animation: fadeInDown 0.2s ease; }
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+
+<script>
+  // Cerrar dropdown al hacer click fuera
+  document.addEventListener('click', function(e) {
+    const container = document.getElementById('user-menu-container');
+    const dropdown  = document.getElementById('user-dropdown');
+    if (container && !container.contains(e.target)) {
+      dropdown?.classList.add('hidden');
+    }
+  });
+  function toggleMobileMenu() {
+    document.getElementById('mobile-menu')?.classList.toggle('hidden');
+  }
+
+  // Marcar categoría activa según URL
+  const currentPath = window.location.pathname;
+  document.querySelectorAll('.nav-tag').forEach(tag => {
+    tag.classList.remove('active');
+    if (tag.getAttribute('href') === currentPath ||
+        (currentPath.startsWith('/category/') && tag.getAttribute('href') === currentPath)) {
+      tag.classList.add('active');
+    }
+  });
+  if (currentPath === '/') {
+    document.querySelector('.nav-tag[href="/"]')?.classList.add('active');
+  }
+</script>
