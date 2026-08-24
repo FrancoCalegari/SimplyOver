@@ -401,5 +401,39 @@ ALTER TABLE reviews
     FOREIGN KEY (purchase_id) REFERENCES purchases(id) ON DELETE RESTRICT;
 
 -- ============================================================
+-- MÓDULO 8 — MENSAJERÍA DIRECTA
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS direct_messages (
+    id              UUID            PRIMARY KEY DEFAULT UUID(),
+    sender_id       UUID            NOT NULL,
+    receiver_id     UUID            NOT NULL,
+    content         TEXT            NOT NULL,
+    read_at         TIMESTAMP       NULL,                          -- NULL = no leído
+    created_at      TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_dm_sender   ON direct_messages (sender_id);
+CREATE INDEX IF NOT EXISTS idx_dm_receiver ON direct_messages (receiver_id);
+CREATE INDEX IF NOT EXISTS idx_dm_created  ON direct_messages (created_at DESC);
+
+
+-- ============================================================
+-- MÓDULO 9 — ETIQUETAS DE TABLEROS (BOARD TAGS)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS board_tags (
+    board_id    UUID            NOT NULL,
+    tag         VARCHAR(80)     NOT NULL,
+    PRIMARY KEY (board_id, tag),
+    FOREIGN KEY (board_id) REFERENCES boards(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_board_tags_tag ON board_tags (tag);
+
+
+-- ============================================================
 -- FIN DEL SCRIPT
 -- ============================================================

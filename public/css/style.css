@@ -106,3 +106,98 @@ body {
 .violet-glow {
     box-shadow: 0 0 15px rgba(124, 58, 237, 0.4);
 }
+
+/* ── Masonry Grid ──────────────────────────────────────────── */
+.masonry-grid {
+    column-count: 1;
+    column-gap: 1.5rem;
+}
+@media (min-width: 640px)  { .masonry-grid { column-count: 2; } }
+@media (min-width: 1024px) { .masonry-grid { column-count: 3; } }
+@media (min-width: 1280px) { .masonry-grid { column-count: 4; } }
+.masonry-item {
+    break-inside: avoid;
+    margin-bottom: 1.5rem;
+    display: block;
+}
+
+/* ── Glassmorphism inputs ─────────────────────────────────── */
+.glass-input {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.glass-input:focus {
+    border-color: rgba(210, 187, 255, 0.4);
+    box-shadow: 0 0 0 3px rgba(210, 187, 255, 0.08);
+}
+
+/* ── Violet gradient (boards) ─────────────────────────────── */
+.violet-gradient {
+    background: linear-gradient(45deg, #7c3aed, #ddb7ff);
+}
+.violet-glow-hover:hover {
+    box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);
+}
+
+/* ── Gradient text ────────────────────────────────────────── */
+.gradient-text {
+    background: linear-gradient(45deg, #d2bbff, #4cd7f6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ── State hidden (auth forms) ───────────────────────────── */
+.state-hidden {
+    display: none !important;
+}
+
+/* ── Float animations (login page) ──────────────────────── */
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+@keyframes float-delayed {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+.animate-float { animation: float 4s ease-in-out infinite; }
+.animate-float-delayed { animation: float-delayed 5s ease-in-out infinite; }
+
+/* ── Button scale ─────────────────────────────────────────── */
+.btn-scale {
+    transition: transform 0.2s ease;
+}
+.btn-scale:hover { transform: scale(1.04); }
+.btn-scale:active { transform: scale(0.97); }
+
+/* ── Custom scrollbar (messages) ─────────────────────────── */
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── AI Chat widget enhancements ─────────────────────────── */
+#ai-chat-toggle:hover {
+    transform: scale(1.08);
+    box-shadow: 0 12px 40px rgba(124, 58, 237, 0.55) !important;
+}
+
+/* ── Sidebar transitions ─────────────────────────────────── */
+.sidebar-transition {
+    transition: transform 0.3s ease, width 0.3s ease;
+}
+
+/* ── Glass surface additional ────────────────────────────── */
+.glass-surface {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.glass-surface-hover:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(210, 187, 255, 0.15);
+}

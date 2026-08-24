@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<%- include('partials/head', {title: title || 'Messages | SimplyOver'}) %>
+<body class="overflow-x-hidden bg-background text-on-background">
+  <%- include('partials/navbar') %>
+  <div class="flex h-[calc(100vh-80px)]">
+
+    <!-- Sidebar de conversaciones -->
+    <aside class="w-[320px] shrink-0 border-r border-white/10 bg-surface-container/30 flex flex-col">
+      <div class="px-5 py-5 border-b border-white/10">
+        <h1 class="text-xl font-bold text-white mb-4">Messages</h1>
+        <div class="relative">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary text-[18px]">search</span>
+          <input type="text" id="conv-search" placeholder="Search conversations..." onInput="filterConversations(this.value)"
+                 class="w-full bg-surface-container/60 border border-white/10 rounded-full py-2 pl-9 pr-4 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"/>
+        </div>
+      </div>
+
+      <div class="flex-1 overflow-y-auto custom-scrollbar" id="conversations-list">
+        <% if (typeof conversations === 'undefined' || conversations.length === 0) { %>
+        <div class="flex flex-col items-center justify-center h-full text-center px-6 py-12">
+          <span class="material-symbols-outlined text-5xl text-on-surface-variant/30 mb-4">mail</span>
+          <p class="text-on-surface-variant text-sm">No conversations yet.<br/>Visit an artist's profile to send a message.</p>
+        </div>
+        <% } else { %>
+        <% conversations.forEach(function(conv) { %>
+        <a href="/messages/<%= conv.partner_username %>"
+           class="flex items-center gap-3 px-5 py-4 hover:bg-white/5 transition-colors border-b border-white/5 group
+           <%= typeof activeConversation !== 'undefined' && activeConversation && activeConversation.username === conv.partner_username ? 'bg-primary/10 border-l-2 border-l-primary' : '' %>"
+           data-username="<%= conv.partner_username %>">
+          <div class="w-11 h-11 rounded-full bg-primary-container/20 border border-primary/20 flex items-center justify-center overflow-hidden shrink-0">
+            <span class="material-symbols-outlined text-primary text-[20px]">person</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between mb-0.5">
+              <span class="font-semibold text-white text-sm truncate"><%= conv.partner_display_name || conv.partner_username %></span>
+              <span class="text-[10px] text-on-surface-variant shrink-0 ml-2">
+                <%= new Date(conv.last_message_at).toLocaleDateString() %>
+              </span>
+            </div>
+            <p class="text-xs text-on-surface-variant truncate"><%= conv.last_message || '...' %></p>
+          </div>
+          <% if (conv.unread_count > 0) { %>
+          <span class="shrink-0 w-5 h-5 rounded-full bg-primary flex items-center justify-center text-[10px] text-white font-bold">
+            <%= conv.unread_count %>
+          </span>
+          <% } %>
+        </a>
+        <% }); %>
+        <% } %>
+      </div>
+    </aside>
+
+    <!-- Chat Area -->
+    <div class="flex-1 flex flex-col">
+      <% if (typeof activeConversation !== 'undefined' && activeConversation) { %>
+      <!-- Partner header -->
+      <div class="px-6 py-4 border-b border-white/10 bg-surface-container/20 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <a href="/artist/<%= activeConversation.username %>" class="w-10 h-10 rounded-full bg-primary-container/20 border border-primary/20 flex items-center justify-center overflow-hidden">
+            <span class="material-symbols-outlined text-primary text-[18px]">person</span>
+          </a>
+          <div>
+            <p class="font-semibold text-white text-sm"><%= activeConversation.display_name || activeConversation.username %></p>
+            <a href="/artist/<%= activeConversation.username %>" class="text-xs text-secondary hover:underline">@<%= activeConversation.username %></a>
+          </div>
+        </div>
+        <a href="/artist/<%= activeConversation.username %>" class="text-xs text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1">
+          <span class="material-symbols-outlined text-[16px]">person</span> View Profile
+        </a>
+      </div>
+
+      <!-- Messages -->
+      <div class="flex-1 overflow-y-auto custom-scrollbar px-6 py-6 flex flex-col gap-3" id="messages-container">
+        <% if (typeof messages !== 'undefined' && messages.length > 0) { %>
+          <% messages.forEach(function(msg) {
+            const isOwn = msg.sender_id === (typeof user !== 'undefined' && user ? user.id : '');
+          %>
+          <div class="flex <%= isOwn ? 'justify-end' : 'justify-start' %> message-bubble" id="msg-<%= msg.id %>">
+            <div class="max-w-[70%] px-4 py-2.5 rounded-2xl text-sm
+                 <%= isOwn ? 'text-white rounded-br-sm' : 'glass-level-1 text-on-background rounded-bl-sm' %>"
+                 style="<%= isOwn ? 'background: linear-gradient(45deg,#7c3aed,#d2bbff)' : '' %>">
+              <p><%= msg.content %></p>
+              <p class="text-[10px] mt-1 <%= isOwn ? 'text-white/60' : 'text-on-surface-variant' %> text-right">
+                <%= new Date(msg.created_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) %>
+              </p>
+            </div>
+          </div>
+          <% }); %>
+        <% } else { %>
+        <div class="flex-1 flex flex-col items-center justify-center text-center py-12">
+          <span class="material-symbols-outlined text-5xl text-on-surface-variant/20 mb-4">chat</span>
+          <p class="text-on-surface-variant text-sm">No messages yet. Say hello!</p>
+        </div>
+        <% } %>
+      </div>
+
+      <!-- Message Input -->
+      <div class="px-6 py-4 border-t border-white/10 bg-surface-container/20">
+        <form id="message-form" class="flex items-center gap-3" onsubmit="sendMessage(event)">
+          <div class="flex-1 relative">
+            <input type="text" id="message-input" placeholder="Write a message..."
+                   class="w-full bg-surface-container/60 border border-white/10 rounded-full py-3 px-5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                   autocomplete="off"/>
+          </div>
+          <button type="submit"
+                  class="w-11 h-11 rounded-full flex items-center justify-center text-white transition-all hover:scale-110"
+                  style="background: linear-gradient(45deg,#7c3aed,#d2bbff)">
+            <span class="material-symbols-outlined text-[20px]">send</span>
+          </button>
+        </form>
+      </div>
+
+      <% } else { %>
+      <!-- No active conversation -->
+      <div class="flex-1 flex flex-col items-center justify-center text-center px-8">
+        <div class="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center mb-6">
+          <span class="material-symbols-outlined text-5xl text-on-surface-variant/30">forum</span>
+        </div>
+        <h2 class="text-2xl font-bold text-white mb-2">Your Messages</h2>
+        <p class="text-on-surface-variant max-w-sm">Select a conversation from the sidebar, or visit an artist's profile to start a new one.</p>
+      </div>
+      <% } %>
+    </div>
+  </div>
+
+<style>
+  .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+</style>
+
+<script>
+  // Scroll al último mensaje
+  const container = document.getElementById('messages-container');
+  if (container) container.scrollTop = container.scrollHeight;
+
+  // Filtrar conversaciones
+  function filterConversations(q) {
+    document.querySelectorAll('#conversations-list a[data-username]').forEach(el => {
+      const username = el.dataset.username.toLowerCase();
+      el.style.display = username.includes(q.toLowerCase()) ? '' : 'none';
+    });
+  }
+
+  // Enviar mensaje
+  async function sendMessage(e) {
+    e.preventDefault();
+    const input = document.getElementById('message-input');
+    const content = input.value.trim();
+    if (!content) return;
+
+    const partner = '<%= typeof activeConversation !== "undefined" && activeConversation ? activeConversation.username : "" %>';
+    if (!partner) return;
+
+    input.value = '';
+    input.disabled = true;
+
+    try {
+      const r = await fetch('/messages/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ receiverUsername: partner, content }),
+      });
+
+      if (r.ok) {
+        // Agregar mensaje optimistamente
+        const bubble = document.createElement('div');
+        bubble.className = 'flex justify-end message-bubble';
+        bubble.innerHTML = `
+          <div class="max-w-[70%] px-4 py-2.5 rounded-2xl rounded-br-sm text-sm text-white" style="background: linear-gradient(45deg,#7c3aed,#d2bbff)">
+            <p>${content.replace(/</g,'&lt;')}</p>
+            <p class="text-[10px] mt-1 text-white/60 text-right">${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</p>
+          </div>`;
+        container.appendChild(bubble);
+        container.scrollTop = container.scrollHeight;
+      }
+    } catch(e) { console.error(e); }
+    input.disabled = false;
+    input.focus();
+  }
+
+  // Polling de mensajes nuevos cada 5s
+  <% if (typeof activeConversation !== 'undefined' && activeConversation) { %>
+  let lastMsgTime = '<%= typeof messages !== "undefined" && messages.length > 0 ? messages[messages.length-1].created_at : new Date().toISOString() %>';
+  setInterval(async () => {
+    const partner = '<%= activeConversation.username %>';
+    try {
+      const r = await fetch(`/messages/api/poll/${partner}?since=${lastMsgTime}`);
+      const data = await r.json();
+      if (data.messages && data.messages.length > 0) {
+        const myId = '<%= typeof user !== "undefined" && user ? user.id : "" %>';
+        data.messages.forEach(msg => {
+          if (msg.sender_id === myId) return; // ya lo mostramos optimistamente
+          const bubble = document.createElement('div');
+          bubble.className = 'flex justify-start message-bubble';
+          bubble.innerHTML = `
+            <div class="max-w-[70%] px-4 py-2.5 rounded-2xl rounded-bl-sm text-sm glass-level-1">
+              <p>${msg.content.replace(/</g,'&lt;')}</p>
+              <p class="text-[10px] mt-1 text-on-surface-variant text-right">${new Date(msg.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</p>
+            </div>`;
+          container.appendChild(bubble);
+          container.scrollTop = container.scrollHeight;
+          lastMsgTime = msg.created_at;
+        });
+      }
+    } catch(e) {}
+  }, 5000);
+  <% } %>
+</script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!-- ═══ Modal: Add to Board ═══ -->
+<div class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4" id="board-selector-modal">
+  <div class="absolute inset-0 bg-background/80 backdrop-blur-md" onclick="document.getElementById('board-selector-modal').classList.add('hidden')"></div>
+  <div class="glass-surface p-6 rounded-2xl w-full max-w-sm relative shadow-2xl border border-white/10 z-10">
+    <h2 class="text-xl font-bold text-white mb-4 flex items-center gap-3">
+      <span class="material-symbols-outlined text-secondary">push_pin</span>
+      Save to Board
+    </h2>
+    <input type="hidden" id="board-target-overlay-id"/>
+    
+    <div id="board-selector-loading" class="flex flex-col items-center justify-center py-6">
+      <div class="w-8 h-8 border-2 border-secondary/20 border-t-secondary rounded-full animate-spin mb-3"></div>
+      <p class="text-sm text-on-surface-variant">Loading boards...</p>
+    </div>
+
+    <div id="board-selector-content" class="hidden">
+      <div id="board-list" class="flex flex-col gap-2 max-h-[300px] overflow-y-auto custom-scrollbar mb-4 pr-1">
+        <!-- Generado dinámicamente -->
+      </div>
+      <button onclick="window.location.href='/boards'" class="w-full py-2.5 rounded-xl border border-white/10 text-on-surface-variant text-sm font-semibold hover:bg-white/5 transition-all flex items-center justify-center gap-2">
+        <span class="material-symbols-outlined text-[16px]">add</span> Create New Board
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openBoardSelector(overlayId) {
+    if (!document.cookie.includes('so_token')) {
+      return window.location.href = '/login?returnTo=' + encodeURIComponent(window.location.pathname);
+    }
+    document.getElementById('board-target-overlay-id').value = overlayId;
+    document.getElementById('board-selector-modal').classList.remove('hidden');
+    document.getElementById('board-selector-loading').classList.remove('hidden');
+    document.getElementById('board-selector-content').classList.add('hidden');
+
+    fetch('/boards/api/list')
+      .then(res => res.json())
+      .then(data => {
+        const list = document.getElementById('board-list');
+        list.innerHTML = '';
+        if (data.boards && data.boards.length > 0) {
+          data.boards.forEach(board => {
+            const btn = document.createElement('button');
+            btn.className = 'w-full text-left px-4 py-3 rounded-xl bg-surface-container/40 hover:bg-white/5 border border-white/5 hover:border-secondary/30 transition-all flex justify-between items-center group';
+            btn.innerHTML = `
+              <div>
+                <p class="text-sm font-semibold text-white leading-tight">${board.name.replace(/</g, '&lt;')}</p>
+                <p class="text-[11px] text-on-surface-variant">${board.visibility === 'public' ? 'Public' : 'Private'} • ${board.item_count} items</p>
+              </div>
+              <span class="material-symbols-outlined text-secondary opacity-0 group-hover:opacity-100 transition-opacity">add_circle</span>
+            `;
+            btn.onclick = () => saveToBoard(board.id);
+            list.appendChild(btn);
+          });
+        } else {
+          list.innerHTML = `<p class="text-center text-sm text-on-surface-variant py-4">You don't have any boards yet.</p>`;
+        }
+        document.getElementById('board-selector-loading').classList.add('hidden');
+        document.getElementById('board-selector-content').classList.remove('hidden');
+      })
+      .catch(() => {
+        document.getElementById('board-list').innerHTML = `<p class="text-center text-sm text-red-400 py-4">Error loading boards.</p>`;
+        document.getElementById('board-selector-loading').classList.add('hidden');
+        document.getElementById('board-selector-content').classList.remove('hidden');
+      });
+  }
+
+  function saveToBoard(boardId) {
+    const overlayId = document.getElementById('board-target-overlay-id').value;
+    fetch('/boards/api/add-item', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ boardId, overlayId })
+    })
+    .then(r => r.json())
+    .then(data => {
+      document.getElementById('board-selector-modal').classList.add('hidden');
+      if (data.success) {
+        // Podrías mostrar un toast notification aquí
+      } else {
+        alert(data.error || 'Could not add to board');
+      }
+    }).catch(err => alert('Network error'));
+  }
+</script>
