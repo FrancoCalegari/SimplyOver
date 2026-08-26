@@ -85,7 +85,7 @@
           let previewUrl = 'https://via.placeholder.com/400x300/13131a/d2bbff?text=Overlay';
           try {
             const ids = JSON.parse(overlay.preview_storage_ids || '[]');
-            if (ids[0]) previewUrl = (process.env.SPIDERWEBURL || '') + '/storage/files/' + ids[0];
+            if (ids[0]) previewUrl = '/api/files/' + ids[0];
           } catch(e) {}
           const isPremium = parseFloat(overlay.price) > 0;
           const priceLabel = isPremium ? '$' + parseFloat(overlay.price).toFixed(2) : 'FREE';

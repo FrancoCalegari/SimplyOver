@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<%- include('partials/head', {title: title || 'Profile Settings | SimplyOver'}) %>
+<%
+  const _u   = (typeof profileUser !== 'undefined' && profileUser) ? profileUser : {};
+  const _sw  = (typeof spiderwebUrl !== 'undefined') ? spiderwebUrl : (process.env.SPIDERWEBURL || '');
+  const _flr = (typeof followers !== 'undefined') ? followers : 0;
+  const _fng = (typeof following !== 'undefined') ? following : 0;
+  const avatarUrl = _u.avatar_storage_id ? `/api/files/${_u.avatar_storage_id}` : null;
+  const bannerUrl = _u.banner_storage_id ? `/api/files/${_u.banner_storage_id}` : null;
+  let artistTags = [];
+  try { artistTags = JSON.parse(_u.artist_tags || '[]'); } catch(e) {}
+%>
+<body class="bg-background text-on-background min-h-screen">
+  <%- include('partials/navbar') %>
+
+  <div class="px-5 md:px-10 py-10 max-w-4xl mx-auto">
+
+    <!-- Header -->
+    <div class="flex items-center gap-4 mb-10">
+      <a href="/artist/<%= _u.username || '' %>" class="text-on-surface-variant hover:text-primary transition-colors">
+        <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+      </a>
+      <div>
+        <h1 class="text-3xl font-bold text-white">Profile Settings</h1>
+        <p class="text-on-surface-variant text-sm mt-0.5">Customize how you appear to other users</p>
+      </div>
+    </div>
+
+    <!-- Avatar & Banner Preview -->
+    <div class="glass-surface rounded-2xl border border-white/10 overflow-hidden mb-8">
+      <!-- Banner -->
+      <div class="relative h-40 overflow-hidden group" id="banner-preview-area">
+        <% if (bannerUrl) { %>
+        <img src="<%= bannerUrl %>" alt="Banner" class="w-full h-full object-cover brightness-75" id="banner-preview-img"/>
+        <% } else { %>
+        <div class="w-full h-full" id="banner-preview-img"
+             style="background: linear-gradient(135deg, #1a0a2e 0%, #16213e 40%, #0d1117 100%);">
+          <div class="w-full h-full" style="background-image: radial-gradient(circle at 20% 50%, rgba(124,58,237,0.3) 0%, transparent 50%);"></div>
+        </div>
+        <% } %>
+        <label for="banner-file"
+               class="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+          <span class="material-symbols-outlined text-white text-4xl">add_a_photo</span>
+          <span class="text-white text-sm font-semibold">Upload Banner</span>
+          <input type="file" id="banner-file" class="hidden" accept="image/*" onchange="previewAndUploadBanner(this)"/>
+        </label>
+        <div id="banner-upload-progress" class="hidden absolute inset-0 bg-black/70 flex items-center justify-center">
+          <div class="text-white text-center">
+            <div class="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin mb-2 mx-auto"></div>
+            <span class="text-sm">Uploading...</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Avatar + nombre dentro de la tarjeta -->
+      <div class="px-6 pb-6 -mt-12">
+        <div class="flex items-end gap-5">
+          <div class="relative group shrink-0">
+            <div class="w-24 h-24 rounded-full border-4 border-background overflow-hidden ring-2 ring-primary/30 bg-surface-container">
+              <% if (avatarUrl) { %>
+              <img src="<%= avatarUrl %>" alt="Avatar" class="w-full h-full object-cover" id="avatar-preview-img"/>
+              <% } else { %>
+              <div id="avatar-preview-img" class="w-full h-full bg-primary/10 flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary text-4xl">person</span>
+              </div>
+              <% } %>
+            </div>
+            <label for="avatar-file"
+                   class="absolute inset-0 rounded-full cursor-pointer flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="material-symbols-outlined text-white text-2xl">photo_camera</span>
+              <input type="file" id="avatar-file" class="hidden" accept="image/*" onchange="previewAndUploadAvatar(this)"/>
+            </label>
+          </div>
+          <div class="pb-2">
+            <p class="text-xl font-bold text-white"><%= _u.display_name || _u.username || 'Your Name' %></p>
+            <p class="text-on-surface-variant text-sm">@<%= _u.username || '' %></p>
+            <div class="flex gap-4 mt-2 text-sm text-on-surface-variant">
+              <span><strong class="text-white"><%= _flr %></strong> Followers</span>
+              <span><strong class="text-white"><%= _fng %></strong> Following</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div id="toast" class="hidden fixed top-6 right-6 z-50 px-5 py-3 rounded-xl font-semibold text-sm shadow-xl flex items-center gap-2">
+      <span class="material-symbols-outlined text-[18px]" id="toast-icon">check_circle</span>
+      <span id="toast-msg">Saved!</span>
+    </div>
+
+    <!-- Form -->
+    <div class="glass-surface rounded-2xl border border-white/10 p-8 space-y-8">
+
+      <!-- Basic Info -->
+      <div>
+        <h2 class="text-lg font-bold text-white mb-5 flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary">person</span> Basic Information
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div>
+            <label class="block text-xs font-semibold text-primary uppercase tracking-wider mb-2">Display Name</label>
+            <input id="f-display-name" value="<%= _u.display_name || '' %>"
+                   class="w-full bg-surface-container/60 border border-primary/20 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-primary/50 outline-none transition-all"
+                   placeholder="Your public name" maxlength="60"/>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Username</label>
+            <input value="@<%= _u.username || '' %>" disabled
+                   class="w-full bg-surface-container/30 border border-white/5 rounded-xl px-4 py-3 text-on-surface-variant cursor-not-allowed"/>
+            <p class="text-[11px] text-on-surface-variant/50 mt-1">Username cannot be changed.</p>
+          </div>
+        </div>
+        <div class="mt-5">
+          <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Bio</label>
+          <textarea id="f-bio" rows="4" maxlength="500"
+                    class="w-full bg-surface-container/60 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-primary/50 outline-none transition-all resize-none"
+                    placeholder="Tell the community about yourself and your style..."><%= _u.bio || '' %></textarea>
+          <p class="text-[11px] text-on-surface-variant/50 mt-1">Max 500 characters.</p>
+        </div>
+        <div class="mt-5">
+          <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">
+            Artist Tags <span class="font-normal">(comma separated)</span>
+          </label>
+          <input id="f-artist-tags" value="<%= artistTags.join(', ') %>"
+                 class="w-full bg-surface-container/60 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-primary/50 outline-none transition-all"
+                 placeholder="cyberpunk, neon, minimalist"/>
+        </div>
+      </div>
+
+      <div class="border-t border-white/5"></div>
+
+      <!-- Social Links -->
+      <div>
+        <h2 class="text-lg font-bold text-white mb-5 flex items-center gap-2">
+          <span class="material-symbols-outlined text-secondary">link</span> Social Links
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div class="flex items-center gap-3 bg-surface-container/40 rounded-xl border border-white/5 overflow-hidden">
+            <div class="px-4 py-3 bg-[#9146FF]/10 text-[#9146FF] shrink-0">
+              <span class="material-symbols-outlined text-[20px]">videocam</span>
+            </div>
+            <input id="f-twitch" value="<%= _u.link_twitch || '' %>"
+                   class="flex-1 bg-transparent py-3 pr-4 text-white outline-none text-sm"
+                   placeholder="https://twitch.tv/username"/>
+          </div>
+          <div class="flex items-center gap-3 bg-surface-container/40 rounded-xl border border-white/5 overflow-hidden">
+            <div class="px-4 py-3 bg-[#53FC18]/10 text-[#53FC18] shrink-0">
+              <span class="material-symbols-outlined text-[20px]">bolt</span>
+            </div>
+            <input id="f-kick" value="<%= _u.link_kick || '' %>"
+                   class="flex-1 bg-transparent py-3 pr-4 text-white outline-none text-sm"
+                   placeholder="https://kick.com/username"/>
+          </div>
+          <div class="flex items-center gap-3 bg-surface-container/40 rounded-xl border border-white/5 overflow-hidden">
+            <div class="px-4 py-3 bg-[#E4405F]/10 text-[#E4405F] shrink-0">
+              <span class="material-symbols-outlined text-[20px]">photo_camera</span>
+            </div>
+            <input id="f-instagram" value="<%= _u.link_instagram || '' %>"
+                   class="flex-1 bg-transparent py-3 pr-4 text-white outline-none text-sm"
+                   placeholder="https://instagram.com/username"/>
+          </div>
+          <div class="flex items-center gap-3 bg-surface-container/40 rounded-xl border border-white/5 overflow-hidden">
+            <div class="px-4 py-3 bg-white/5 text-white shrink-0">
+              <span class="material-symbols-outlined text-[20px]">music_note</span>
+            </div>
+            <input id="f-tiktok" value="<%= _u.link_tiktok || '' %>"
+                   class="flex-1 bg-transparent py-3 pr-4 text-white outline-none text-sm"
+                   placeholder="https://tiktok.com/@username"/>
+          </div>
+          <div class="flex items-center gap-3 bg-surface-container/40 rounded-xl border border-white/5 overflow-hidden">
+            <div class="px-4 py-3 bg-white/5 text-white shrink-0">
+              <span class="material-symbols-outlined text-[20px]">language</span>
+            </div>
+            <input id="f-web" value="<%= _u.link_web || '' %>"
+                   class="flex-1 bg-transparent py-3 pr-4 text-white outline-none text-sm"
+                   placeholder="https://yourwebsite.com"/>
+          </div>
+          <div class="flex items-center gap-3 bg-surface-container/40 rounded-xl border border-white/5 overflow-hidden">
+            <div class="px-4 py-3 bg-white/5 text-white shrink-0">
+              <span class="material-symbols-outlined text-[20px]">mail</span>
+            </div>
+            <input id="f-email-link" value="<%= _u.link_email || '' %>"
+                   class="flex-1 bg-transparent py-3 pr-4 text-white outline-none text-sm"
+                   placeholder="contact@youremail.com" type="email"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- Save -->
+      <div class="flex items-center justify-between pt-4 border-t border-white/5">
+        <p class="text-on-surface-variant text-sm">Changes are saved immediately.</p>
+        <button onclick="saveProfile()"
+                class="flex items-center gap-2 px-8 py-3 rounded-xl font-bold text-background hover:opacity-90 hover:scale-[1.02] transition-all"
+                style="background: linear-gradient(45deg,#7c3aed,#ddb7ff)" id="save-btn">
+          <span class="material-symbols-outlined text-[18px]">save</span> Save Changes
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+<script>
+  // ── Save Profile ─────────────────────────────────────────────
+  async function saveProfile() {
+    const btn = document.getElementById('save-btn');
+    btn.disabled = true;
+    btn.textContent = 'Saving...';
+
+    const payload = {
+      display_name:   document.getElementById('f-display-name').value.trim(),
+      bio:            document.getElementById('f-bio').value.trim(),
+      artist_tags:    document.getElementById('f-artist-tags').value.trim(),
+      link_twitch:    document.getElementById('f-twitch').value.trim(),
+      link_kick:      document.getElementById('f-kick').value.trim(),
+      link_instagram: document.getElementById('f-instagram').value.trim(),
+      link_tiktok:    document.getElementById('f-tiktok').value.trim(),
+      link_web:       document.getElementById('f-web').value.trim(),
+      link_email:     document.getElementById('f-email-link').value.trim(),
+    };
+
+    try {
+      const r = await fetch('/profile/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const d = await r.json();
+      showToast(d.success ? 'Profile saved!' : (d.error || 'Error'), d.success ? 'success' : 'error');
+      if (d.success) setTimeout(() => window.location.reload(), 1000);
+    } catch(e) {
+      showToast('Network error', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">save</span> Save Changes';
+    }
+  }
+
+  function showToast(msg, type = 'success') {
+    const toast = document.getElementById('toast');
+    const icon  = document.getElementById('toast-icon');
+    const msgEl = document.getElementById('toast-msg');
+    toast.className = `fixed top-6 right-6 z-50 px-5 py-3 rounded-xl font-semibold text-sm shadow-xl flex items-center gap-2 transition-all ${
+      type === 'success' ? 'bg-secondary/20 border border-secondary/30 text-secondary' : 'bg-red-500/20 border border-red-500/30 text-red-400'
+    }`;
+    icon.textContent = type === 'success' ? 'check_circle' : 'error';
+    msgEl.textContent = msg;
+    toast.classList.remove('hidden');
+    setTimeout(() => toast.classList.add('hidden'), 3000);
+  }
+
+  // ── Avatar Upload ─────────────────────────────────────────────
+  async function previewAndUploadAvatar(input) {
+    if (!input.files[0]) return;
+    // Preview inmediato
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = document.getElementById('avatar-preview-img');
+      if (img.tagName === 'IMG') {
+        img.src = e.target.result;
+      } else {
+        const parent = img.parentElement;
+        const newImg = document.createElement('img');
+        newImg.src = e.target.result;
+        newImg.id = 'avatar-preview-img';
+        newImg.className = 'w-full h-full object-cover';
+        parent.replaceChild(newImg, img);
+      }
+    };
+    reader.readAsDataURL(input.files[0]);
+
+    // Upload real
+    const formData = new FormData();
+    formData.append('avatar', input.files[0]);
+    try {
+      const r = await fetch('/profile/avatar', { method: 'POST', body: formData });
+      const d = await r.json();
+      showToast(d.success ? 'Avatar updated!' : (d.error || 'Upload failed'), d.success ? 'success' : 'error');
+      if (d.success) setTimeout(() => window.location.reload(), 1000);
+    } catch(e) {
+      showToast('Upload error', 'error');
+    }
+  }
+
+  // ── Banner Upload ─────────────────────────────────────────────
+  async function previewAndUploadBanner(input) {
+    if (!input.files[0]) return;
+    const prog = document.getElementById('banner-upload-progress');
+    prog.classList.remove('hidden');
+
+    const reader = new FileReader();
+    reader.onload = e => {
+      let img = document.getElementById('banner-preview-img');
+      if (img.tagName === 'IMG') {
+        img.src = e.target.result;
+      } else {
+        const area = document.getElementById('banner-preview-area');
+        const newImg = document.createElement('img');
+        newImg.src = e.target.result;
+        newImg.id = 'banner-preview-img';
+        newImg.className = 'w-full h-full object-cover brightness-75';
+        area.insertBefore(newImg, area.firstChild);
+      }
+    };
+    reader.readAsDataURL(input.files[0]);
+
+    const formData = new FormData();
+    formData.append('banner', input.files[0]);
+    try {
+      const r = await fetch('/profile/banner', { method: 'POST', body: formData });
+      const d = await r.json();
+      showToast(d.success ? 'Banner updated!' : (d.error || 'Upload failed'), d.success ? 'success' : 'error');
+      if (d.success) setTimeout(() => window.location.reload(), 1000);
+    } catch(e) {
+      showToast('Upload error', 'error');
+    } finally {
+      prog.classList.add('hidden');
+    }
+  }
+</script>
+</body>
+</html>

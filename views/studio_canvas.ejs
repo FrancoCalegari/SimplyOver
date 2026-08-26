@@ -29,9 +29,9 @@
                 <span>Saved</span>
             </div>
             <button class="px-3 py-1.5 glass-panel rounded-lg text-xs hover:bg-surface-variant/20 transition-all">Preview</button>
-            <button class="px-4 py-1.5 primary-gradient text-white rounded-lg text-xs font-bold shadow-lg hover:brightness-110 transition-all">Submit for Review</button>
+            <button id="btnPublish" class="px-4 py-1.5 primary-gradient text-white rounded-lg text-xs font-bold shadow-lg hover:brightness-110 transition-all">Submit for Review</button>
             <a href="/dashboard/library" class="ml-2 w-8 h-8 rounded-full overflow-hidden border border-outline-variant block">
-                <img alt="User" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrFdhVgd9ziYzOXp764trrcWDjCGONiTc9reL7UKD0N2AI2nGZJewLO6ftTokDQoEwy6qtL8AXn4NMXINj85Do2dwHC71fRoEYqVIxnvb4trelsu96XiN0UiNuMS0NELpdmFNO4BFSEsrHEe9dRYEgjjYA4yfbjc9xkYNLVzNuJbAhgQD_wuMaPsEAH850tr62A2KDe4oy3WcNRndNunVLsHmREmcCKTJ6RjpHmOASpZmBQ4fI9aHOC5GNBHqtXn7bOjNDhKYiV-k"/>
+                <img alt="User" class="w-full h-full object-cover" src="<%= typeof user !== 'undefined' && user.avatar_storage_id ? '/api/files/' + user.avatar_storage_id : 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + (typeof user !== 'undefined' ? user.username : 'Guest') %>"/>
             </a>
         </div>
     </header>
@@ -298,7 +298,146 @@
     </div>
     
     <script>
+    <!-- Publish Modal -->
+    <div id="publishModal" class="fixed inset-0 bg-black/80 z-[100] hidden items-center justify-center p-4 backdrop-blur-sm">
+        <div class="glass-surface border border-white/10 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl transform scale-95 opacity-0 transition-all duration-300" id="publishModalContent">
+            
+            <div class="px-6 py-4 border-b border-white/10 flex justify-between items-center bg-surface-container-highest/50">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">cloud_upload</span>
+                    Publish to SimplyOver
+                </h3>
+                <button id="btnCloseModal" class="text-on-surface-variant hover:text-white transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <form action="/studio/publish" method="POST" enctype="multipart/form-data" class="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="col-span-2 sm:col-span-1">
+                        <label class="block text-sm font-medium text-on-surface-variant mb-2">Overlay Name <span class="text-red-400">*</span></label>
+                        <input type="text" name="name" required class="w-full bg-surface-container-high border border-white/10 rounded-xl px-4 py-2.5 text-white focus:border-primary transition-colors focus:outline-none" placeholder="e.g. Neon Stream Pack">
+                    </div>
+                    <div class="col-span-2 sm:col-span-1">
+                        <label class="block text-sm font-medium text-on-surface-variant mb-2">Price (USD) <span class="text-red-400">*</span></label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">$</span>
+                            <input type="number" step="0.01" min="0" name="price" value="0.00" required class="w-full bg-surface-container-high border border-white/10 rounded-xl pl-8 pr-4 py-2.5 text-white focus:border-primary transition-colors focus:outline-none">
+                        </div>
+                        <p class="text-[10px] text-on-surface-variant mt-1">Set 0.00 for free</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="col-span-2 sm:col-span-1">
+                        <label class="block text-sm font-medium text-on-surface-variant mb-2">Category <span class="text-red-400">*</span></label>
+                        <select name="category_id" required class="w-full bg-surface-container-high border border-white/10 rounded-xl px-4 py-2.5 text-white focus:border-primary transition-colors focus:outline-none">
+                            <option value="">Select Category</option>
+                            <% if (typeof categories !== 'undefined' && categories.length > 0) { %>
+                                <% categories.forEach(cat => { %>
+                                    <option value="<%= cat.id %>"><%= cat.name %></option>
+                                <% }) %>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="col-span-2 sm:col-span-1">
+                        <label class="block text-sm font-medium text-on-surface-variant mb-2">Tags</label>
+                        <input type="text" name="tags" class="w-full bg-surface-container-high border border-white/10 rounded-xl px-4 py-2.5 text-white focus:border-primary transition-colors focus:outline-none" placeholder="gaming, neon, retro">
+                        <p class="text-[10px] text-on-surface-variant mt-1">Comma separated</p>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-on-surface-variant mb-2">Description</label>
+                    <textarea name="description" rows="3" class="w-full bg-surface-container-high border border-white/10 rounded-xl px-4 py-2.5 text-white focus:border-primary transition-colors focus:outline-none resize-none" placeholder="Describe your overlay pack..."></textarea>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6 border-t border-white/5 pt-6">
+                    <div class="col-span-2 sm:col-span-1">
+                        <label class="block text-sm font-medium text-on-surface-variant mb-2">Preview Image <span class="text-red-400">*</span></label>
+                        <div class="border-2 border-dashed border-white/20 rounded-xl p-4 text-center hover:border-primary/50 transition-colors bg-surface-container/30 relative">
+                            <input type="file" name="previewImage" accept="image/png, image/jpeg, image/webp" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="previewFileLabel(this, 'previewLabel')">
+                            <span class="material-symbols-outlined text-3xl text-primary mb-2">image</span>
+                            <p class="text-xs text-on-surface-variant" id="previewLabel">Click or drag image (PNG, JPG)</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-span-2 sm:col-span-1">
+                        <label class="block text-sm font-medium text-on-surface-variant mb-2">Overlay Package (ZIP) <span class="text-red-400">*</span></label>
+                        <div class="border-2 border-dashed border-white/20 rounded-xl p-4 text-center hover:border-primary/50 transition-colors bg-surface-container/30 relative">
+                            <input type="file" name="zipFile" accept=".zip" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="previewFileLabel(this, 'zipLabel')">
+                            <span class="material-symbols-outlined text-3xl text-secondary mb-2">folder_zip</span>
+                            <p class="text-xs text-on-surface-variant" id="zipLabel">Click or drag ZIP file</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-6 border-t border-white/5 flex justify-end gap-3">
+                    <button type="button" id="btnCancel" class="px-5 py-2.5 rounded-xl font-bold text-on-surface-variant hover:bg-white/5 transition-colors">Cancel</button>
+                    <button type="submit" class="px-6 py-2.5 primary-gradient rounded-xl font-bold text-white shadow-lg shadow-primary/25 hover:brightness-110 hover:scale-105 transition-all flex items-center gap-2" id="btnSubmitForm">
+                        <span class="material-symbols-outlined text-sm">rocket_launch</span>
+                        Publish to Review
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Modal Logic
+        const modal = document.getElementById('publishModal');
+        const modalContent = document.getElementById('publishModalContent');
+        const btnPublish = document.getElementById('btnPublish');
+        const btnClose = document.getElementById('btnCloseModal');
+        const btnCancel = document.getElementById('btnCancel');
+
+        const openModal = () => {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            // Timeout to allow display:flex to apply before transition
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        };
+
+        const closeModal = () => {
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        };
+
+        btnPublish.addEventListener('click', openModal);
+        btnClose.addEventListener('click', closeModal);
+        btnCancel.addEventListener('click', closeModal);
+
+        // Close on backdrop click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        // File label updater
+        function previewFileLabel(input, labelId) {
+            const label = document.getElementById(labelId);
+            if (input.files && input.files[0]) {
+                label.textContent = input.files[0].name;
+                label.classList.add('text-primary');
+                label.classList.remove('text-on-surface-variant');
+            }
+        }
+        
+        // Show loading state on form submit
+        document.querySelector('form').addEventListener('submit', function() {
+            const btn = document.getElementById('btnSubmitForm');
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">progress_activity</span> Uploading...';
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+        });
+
         // Generate timeline markers
+
         const markersContainer = document.getElementById('timeline-markers');
         if (markersContainer) {
             let html = '';

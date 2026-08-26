@@ -439,10 +439,231 @@ CREATE INDEX IF NOT EXISTS idx_board_tags_tag ON board_tags (tag);
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS site_settings (
+);
+
+CREATE INDEX IF NOT EXISTS idx_purchases_buyer      ON purchases (buyer_id);
+CREATE INDEX IF NOT EXISTS idx_purchases_overlay    ON purchases (overlay_id);
+CREATE INDEX IF NOT EXISTS idx_purchases_creator    ON purchases (creator_id);
+CREATE INDEX IF NOT EXISTS idx_purchases_status     ON purchases (status);
+CREATE INDEX IF NOT EXISTS idx_purchases_mp_id      ON purchases (mp_payment_id);
+CREATE INDEX IF NOT EXISTS idx_purchases_token      ON purchases (download_token);
+
+
+-- ============================================================
+-- MÓDULO 5 — ESTUDIO DE CREACIÓN (DESIGNER / CANVAS)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS canvas_drafts (
+    id              UUID            PRIMARY KEY DEFAULT UUID(),
+    creator_id      UUID            NOT NULL,
+    name            VARCHAR(200)    NOT NULL DEFAULT 'Sin título',
+    canvas_data     JSON,                                                 -- estado serializado del canvas (JSON)
+    thumbnail_storage_id VARCHAR(100),                                    -- preview generado
+
+    -- Relación con overlay (si ya se publicó)
+    overlay_id      UUID            NULL,
+
+    status          VARCHAR(20)     NOT NULL DEFAULT 'DRAFT'
+                    CHECK (status IN ('DRAFT', 'PUBLISHED', 'ARCHIVED')),
+
+    created_at      TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (overlay_id) REFERENCES overlays(id) ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_canvas_creator ON canvas_drafts (creator_id);
+CREATE INDEX IF NOT EXISTS idx_canvas_status  ON canvas_drafts (status);
+
+
+-- ============================================================
+-- MÓDULO 5 (cont.) — INTERACCIONES CON SpiderIA
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS ia_sessions (
+    id           UUID        PRIMARY KEY DEFAULT UUID(),
+    user_id      UUID        NOT NULL,
+    draft_id     UUID        NULL,
+    model_id     VARCHAR(100) NOT NULL,
+    messages     JSON        NOT NULL,                                    -- historial completo de mensajes
+    created_at   TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at   TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (draft_id) REFERENCES canvas_drafts(id) ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_ia_sessions_user  ON ia_sessions (user_id);
+CREATE INDEX IF NOT EXISTS idx_ia_sessions_draft ON ia_sessions (draft_id);
+
+
+-- ============================================================
+-- MÓDULO 7 — ADMIN DASHBOARD
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS admin_audit_log (
+    id           UUID            PRIMARY KEY DEFAULT UUID(),
+    admin_id     UUID            NOT NULL,
+    action       VARCHAR(100)    NOT NULL,                                -- 'APPROVE_OVERLAY', 'BAN_USER', etc.
+    entity_type  VARCHAR(50)     NOT NULL,                                -- 'overlay', 'user', 'purchase', etc.
+    entity_id    UUID            NOT NULL,
+    detail       JSON,                                                    -- datos adicionales / diff del cambio
+    ip_address   VARCHAR(45),
+    created_at   TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (admin_id) REFERENCES users(id) ON DELETE RESTRICT
+);
+
+CREATE INDEX IF NOT EXISTS idx_audit_admin      ON admin_audit_log (admin_id);
+CREATE INDEX IF NOT EXISTS idx_audit_entity     ON admin_audit_log (entity_type, entity_id);
+CREATE INDEX IF NOT EXISTS idx_audit_created    ON admin_audit_log (created_at DESC);
+
+
+-- ============================================================
+-- VISTAS ÚTILES PARA EL FRONTEND
+-- ============================================================
+
+-- Vista: overlays con rating promedio y conteo de reviews
+CREATE OR REPLACE VIEW overlay_ratings AS
+SELECT
+    o.id,
+    o.name,
+    o.slug,
+    o.price,
+    o.status,
+    o.creator_id,
+    o.tags,
+    o.preview_storage_ids,
+    o.is_featured,
+    o.view_count,
+    o.download_count,
+    o.published_at,
+    ROUND(AVG(r.rating), 2)  AS avg_rating,
+    COUNT(r.id)              AS review_count,
+    COUNT(f.user_id)         AS favorite_count
+FROM overlays o
+LEFT JOIN reviews  r ON r.overlay_id = o.id
+LEFT JOIN favorites f ON f.overlay_id = o.id
+GROUP BY o.id, o.name, o.slug, o.price, o.status, o.creator_id, o.tags, o.preview_storage_ids, o.is_featured, o.view_count, o.download_count, o.published_at;
+
+-- Vista: historial de compras con detalles del producto y creador
+CREATE OR REPLACE VIEW purchase_history AS
+SELECT
+    p.id             AS purchase_id,
+    p.buyer_id,
+    p.status         AS purchase_status,
+    p.amount_paid,
+    p.currency,
+    p.mp_status,
+    p.download_token,
+    p.download_count,
+    p.download_limit,
+    p.completed_at,
+    p.created_at     AS purchased_at,
+    o.id             AS overlay_id,
+    o.name           AS overlay_name,
+    o.slug           AS overlay_slug,
+    o.zip_storage_id,
+    u.id             AS creator_id,
+    u.username       AS creator_username,
+    u.display_name   AS creator_display_name
+FROM purchases   p
+JOIN overlays    o ON o.id = p.overlay_id
+JOIN users       u ON u.id = p.creator_id;
+
+-- Vista: tableros con conteo de items y datos del owner
+CREATE OR REPLACE VIEW board_details AS
+SELECT
+    b.id,
+    b.name,
+    b.description,
+    b.visibility,
+    b.cover_storage_id,
+    b.created_at,
+    b.owner_id,
+    u.username       AS owner_username,
+    u.avatar_storage_id AS owner_avatar,
+    COUNT(bi.overlay_id) AS item_count
+FROM boards b
+JOIN users  u  ON u.id = b.owner_id
+LEFT JOIN board_items bi ON bi.board_id = b.id
+GROUP BY b.id, b.name, b.description, b.visibility, b.cover_storage_id, b.created_at, b.owner_id, u.username, u.avatar_storage_id;
+
+
+-- ============================================================
+-- FK diferida: reviews → purchases (evita dependencia circular)
+-- ============================================================
+ALTER TABLE reviews
+    ADD CONSTRAINT fk_reviews_purchase
+    FOREIGN KEY (purchase_id) REFERENCES purchases(id) ON DELETE RESTRICT;
+
+-- ============================================================
+-- MÓDULO 8 — MENSAJERÍA DIRECTA
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS direct_messages (
+    id              UUID            PRIMARY KEY DEFAULT UUID(),
+    sender_id       UUID            NOT NULL,
+    receiver_id     UUID            NOT NULL,
+    content         TEXT            NOT NULL,
+    read_at         TIMESTAMP       NULL,                          -- NULL = no leído
+    created_at      TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_dm_sender   ON direct_messages (sender_id);
+CREATE INDEX IF NOT EXISTS idx_dm_receiver ON direct_messages (receiver_id);
+CREATE INDEX IF NOT EXISTS idx_dm_created  ON direct_messages (created_at DESC);
+
+
+-- ============================================================
+-- MÓDULO 9 — ETIQUETAS DE TABLEROS (BOARD TAGS)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS board_tags (
+    board_id    UUID            NOT NULL,
+    tag         VARCHAR(80)     NOT NULL,
+    PRIMARY KEY (board_id, tag),
+    FOREIGN KEY (board_id) REFERENCES boards(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_board_tags_tag ON board_tags (tag);
+
+
+-- ============================================================
+-- MÓDULO 10 — CONFIGURACIONES DEL SITIO
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS site_settings (
     setting_key VARCHAR(100) PRIMARY KEY,
     setting_value JSON,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
+-- ============================================================
+-- MÓDULO 11 — SISTEMA DE FOLLOWS (SEGUIDORES DE ARTISTAS)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS user_follows (
+    follower_id  UUID        NOT NULL,
+    following_id UUID        NOT NULL,
+    created_at   TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (follower_id, following_id),
+    FOREIGN KEY (follower_id)  REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (following_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_follows_follower  ON user_follows (follower_id);
+CREATE INDEX IF NOT EXISTS idx_follows_following ON user_follows (following_id);
+
+
+-- ============================================================
+-- MÓDULO 12 — VERIFICACIÓN DE EMAIL Y TOKENS
+-- ============================================================
+
+ALTER TABLE users
+    ADD COLUMN IF NOT EXISTS email_verified    BOOLEAN      NOT NULL DEFAULT FALSE,
+    ADD COLUMN IF NOT EXISTS verification_token VARCHAR(255) NULL,
+    ADD COLUMN IF NOT EXISTS token_expires_at   TIMESTAMP    NULL;
 
 -- ============================================================
 -- FIN DEL SCRIPT

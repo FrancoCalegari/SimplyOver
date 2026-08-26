@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<%- include('partials/head', {title: title || 'Board | SimplyOver'}) %>
+<%
+  const _board = (typeof board !== 'undefined') ? board : {};
+  const _items = (typeof items !== 'undefined') ? items : [];
+  const _sw    = process.env.SPIDERWEBURL || '';
+%>
+<body class="bg-background text-on-background">
+  <%- include('partials/navbar') %>
+  <div class="flex min-h-[calc(100vh-80px)]">
+    <%- include('partials/dashboard_sidebar', {activeTab: 'boards'}) %>
+
+    <main class="flex-1 md:ml-[280px] px-5 md:px-10 py-10">
+
+      <!-- Breadcrumb -->
+      <div class="flex items-center gap-2 text-sm mb-8">
+        <a href="/boards" class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1">
+          <span class="material-symbols-outlined text-[16px]">arrow_back</span> My Boards
+        </a>
+        <span class="text-on-surface-variant/40">→</span>
+        <span class="text-primary font-semibold"><%= _board.name || 'Board' %></span>
+      </div>
+
+      <!-- Board Header -->
+      <div class="mb-10">
+        <div class="flex flex-col md:flex-row md:items-start justify-between gap-6">
+          <div>
+            <div class="flex items-center gap-3 mb-3">
+              <h1 class="text-4xl font-bold text-white"><%= _board.name || 'Board' %></h1>
+              <span class="px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1
+                <%= _board.visibility === 'public' ? 'bg-secondary/10 text-secondary border border-secondary/30' : 'bg-white/5 text-on-surface-variant border border-white/10' %>">
+                <span class="material-symbols-outlined text-[14px]"><%= _board.visibility === 'public' ? 'public' : 'lock' %></span>
+                <%= _board.visibility === 'public' ? 'Public' : 'Private' %>
+              </span>
+            </div>
+            <% if (_board.description) { %>
+            <p class="text-on-surface-variant max-w-2xl mb-4"><%= _board.description %></p>
+            <% } %>
+
+            <!-- Tags del board -->
+            <% if (_board.tags && _board.tags.length > 0) { %>
+            <div class="flex flex-wrap gap-2 mb-4">
+              <% _board.tags.forEach(function(tag) { %>
+              <span class="px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20">
+                #<%= tag %>
+              </span>
+              <% }); %>
+            </div>
+            <% } %>
+
+            <p class="text-on-surface-variant text-sm">
+              <span class="font-semibold text-white"><%= _items.length %></span> overlay<%= _items.length !== 1 ? 's' : '' %>
+            </p>
+          </div>
+
+          <!-- Actions -->
+          <% if (typeof user !== 'undefined' && user && _board.owner_id === user.id) { %>
+          <div class="flex items-center gap-3 shrink-0">
+            <button onclick="openEditBoardModal()"
+                    class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-on-surface-variant hover:text-white hover:bg-white/10 transition-all text-sm font-semibold">
+              <span class="material-symbols-outlined text-[18px]">edit</span> Edit Board
+            </button>
+          </div>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Overlays Grid -->
+      <% if (_items.length === 0) { %>
+      <div class="flex flex-col items-center justify-center py-24 border-2 border-dashed border-white/5 rounded-3xl">
+        <div class="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6">
+          <span class="material-symbols-outlined text-on-surface-variant text-5xl">push_pin</span>
+        </div>
+        <h2 class="text-2xl font-bold text-white mb-2">No overlays saved yet</h2>
+        <p class="text-on-surface-variant mb-6">Browse overlays and pin them to this board.</p>
+        <a href="/" class="px-6 py-3 rounded-full bg-primary/10 border border-primary/30 text-primary font-semibold hover:bg-primary/20 transition-all">
+          Browse Overlays
+        </a>
+      </div>
+      <% } else { %>
+      <div class="masonry-grid">
+        <% _items.forEach(function(item, i) { %>
+        <%
+          let previewUrl = 'https://via.placeholder.com/400x280/13131a/d2bbff?text=Overlay';
+          try {
+            const ids = JSON.parse(item.preview_storage_ids || '[]');
+            if (ids[0]) previewUrl = '/api/files/' + ids[0];
+          } catch(e) {}
+          const isPremium = parseFloat(item.price) > 0;
+          const priceLabel = isPremium ? '$' + parseFloat(item.price).toFixed(2) : 'FREE';
+          const priceClass = isPremium ? 'bg-primary-container text-white' : 'bg-secondary-container/20 text-secondary border border-secondary/30';
+          const heights = [240, 280, 200, 320, 260];
+          const h = heights[i % 5];
+        %>
+        <article class="masonry-item group relative overflow-hidden rounded-xl glass-surface border border-white/10 hover:border-primary/30 transition-all duration-300 hover:scale-[1.02] cursor-pointer"
+                 onclick="window.location.href='/overlay/<%= item.slug || item.id %>'">
+          <div class="relative overflow-hidden">
+            <img class="w-full object-cover rounded-t-xl transition-transform duration-500 group-hover:scale-105"
+                 src="<%= previewUrl %>"
+                 style="height: <%= h %>px;"
+                 alt="<%= item.name %>"
+                 onerror="this.src='https://via.placeholder.com/400x280/1f1f26/d2bbff?text=Overlay'"/>
+
+            <span class="absolute top-3 right-3 px-2.5 py-1 rounded-lg text-xs font-bold <%= priceClass %>">
+              <%= priceLabel %>
+            </span>
+
+            <!-- Hover actions -->
+            <div class="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+              <a href="/overlay/<%= item.slug || item.id %>"
+                 class="px-4 py-2 rounded-lg bg-primary text-background text-sm font-semibold hover:bg-primary/90 transition-colors"
+                 onclick="event.stopPropagation()">
+                <span class="material-symbols-outlined text-[16px]">visibility</span> View
+              </a>
+              <% if (typeof user !== 'undefined' && user && _board.owner_id === user.id) { %>
+              <button class="w-9 h-9 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-red-500/50 transition-colors"
+                      onclick="event.stopPropagation(); removeFromBoard('<%= item.id %>')"
+                      title="Remove from board">
+                <span class="material-symbols-outlined text-white text-[16px]">remove_circle</span>
+              </button>
+              <% } %>
+            </div>
+          </div>
+          <div class="p-4">
+            <h3 class="font-semibold text-white text-sm mb-1 truncate"><%= item.name %></h3>
+            <div class="flex items-center justify-between">
+              <a href="/artist/<%= item.creator_username %>"
+                 class="text-xs text-on-surface-variant hover:text-primary transition-colors"
+                 onclick="event.stopPropagation()">
+                <%= item.creator_username %>
+              </a>
+              <% if (item.note) { %>
+              <span class="text-[10px] text-on-surface-variant italic truncate max-w-[120px]" title="<%= item.note %>">
+                📝 <%= item.note %>
+              </span>
+              <% } %>
+            </div>
+            <p class="text-[10px] text-on-surface-variant/50 mt-1">Added <%= new Date(item.added_at).toLocaleDateString() %></p>
+          </div>
+        </article>
+        <% }); %>
+      </div>
+      <% } %>
+    </main>
+  </div>
+
+  <%- include('partials/footer') %>
+
+  <!-- Edit Board Modal -->
+  <div class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4" id="edit-board-modal">
+    <div class="absolute inset-0 bg-background/80 backdrop-blur-md" onclick="document.getElementById('edit-board-modal').classList.add('hidden')"></div>
+    <div class="glass-surface p-8 rounded-2xl w-full max-w-lg relative shadow-2xl border border-white/10 z-10">
+      <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+        <span class="material-symbols-outlined text-primary">edit</span>
+        Edit Board
+      </h2>
+      <div class="space-y-5">
+        <div>
+          <label class="block text-xs font-semibold text-primary uppercase tracking-wider mb-2">Board Name *</label>
+          <input id="edit-name" value="<%= _board.name || '' %>"
+                 class="w-full bg-surface-container/60 border border-primary/20 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-primary/50 outline-none transition-all"/>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Description</label>
+          <textarea id="edit-desc" class="w-full bg-surface-container/60 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-primary/50 outline-none transition-all resize-none" rows="3"><%= _board.description || '' %></textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Tags <span class="font-normal">(comma separated)</span></label>
+          <input id="edit-tags" value="<%= (_board.tags || []).join(', ') %>"
+                 class="w-full bg-surface-container/60 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-primary/50 outline-none transition-all"
+                 placeholder="cyberpunk, neon, gaming"/>
+        </div>
+        <div class="flex items-center justify-between py-1">
+          <p class="font-semibold text-white text-sm">Make Public</p>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="edit-public" <%= _board.visibility === 'public' ? 'checked' : '' %> class="sr-only peer"/>
+            <div class="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+          </label>
+        </div>
+        <div class="flex gap-3 pt-2">
+          <button onclick="document.getElementById('edit-board-modal').classList.add('hidden')"
+                  class="flex-1 bg-white/5 hover:bg-white/10 text-white font-semibold py-3 rounded-xl transition-colors text-sm">Cancel</button>
+          <button onclick="saveBoard()"
+                  class="flex-1 font-bold py-3 rounded-xl text-white"
+                  style="background: linear-gradient(45deg,#7c3aed,#ddb7ff)">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<style>
+  .masonry-grid { columns: 1; column-gap: 1.5rem; }
+  @media (min-width: 640px)  { .masonry-grid { columns: 2; } }
+  @media (min-width: 1024px) { .masonry-grid { columns: 3; } }
+  @media (min-width: 1280px) { .masonry-grid { columns: 4; } }
+  .masonry-item { break-inside: avoid; margin-bottom: 1.5rem; display: block; }
+</style>
+
+<script>
+  function openEditBoardModal() {
+    document.getElementById('edit-board-modal').classList.remove('hidden');
+  }
+
+  async function saveBoard() {
+    const payload = {
+      name: document.getElementById('edit-name').value.trim(),
+      description: document.getElementById('edit-desc').value.trim(),
+      tags: document.getElementById('edit-tags').value.trim(),
+      visibility: document.getElementById('edit-public').checked ? 'public' : 'private',
+    };
+    if (!payload.name) return alert('Board name is required.');
+    try {
+      const r = await fetch('/boards/<%= _board.id %>', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (r.ok) { window.location.reload(); }
+      else { alert('Failed to update board.'); }
+    } catch(e) { alert('Network error.'); }
+  }
+
+  async function removeFromBoard(overlayId) {
+    if (!confirm('Remove this overlay from the board?')) return;
+    try {
+      const r = await fetch('/boards/<%= _board.id %>/items/' + overlayId, { method: 'DELETE' });
+      if (r.ok) { window.location.reload(); }
+      else { alert('Could not remove overlay.'); }
+    } catch(e) { alert('Network error.'); }
+  }
+</script>
+</body>
+</html>
