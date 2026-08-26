@@ -1,15 +1,21 @@
         <!-- SideNavBar (Left) -->
         <aside class="fixed left-0 h-full w-[280px] bg-surface-container/40 backdrop-blur-xl border-r border-white/10 flex flex-col py-8 z-40 hidden md:flex">
             <div class="px-8 mb-10">
-                <div class="flex items-center gap-4 mb-8">
-                    <div class="w-12 h-12 rounded-full border-2 border-primary overflow-hidden">
-                        <img alt="Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBeOc3lzebNG534uqNyyuebhVk4d4lpx8KgQbJxIHh0SQoqPjzHbYNNp54XddEIjtDjQhsBPs1LbIYJ7g5n3Ethfd77x8igz1aCS_tG4VwTv288cOj5DQ5Y-roJLqNiRGZD9LZWF4tA2rKH3zFMP_LI8MzH9A92O_5RoMTfLlAXu26aHoV8C_mx8rX-VAD1aMlqQDw8ygIjQiNSbjWz4RphaEg3_5v_Rj8zWirP6h7waIrfDX21pxtZvhPyrdc9eZi1ziOQ-JCLoOw"/>
+                <% const _sideUser = (typeof user !== 'undefined' && user) ? user : null; %>
+                <% const _sideSwUrl = (typeof spiderwebUrl !== 'undefined') ? spiderwebUrl : (process.env.SPIDERWEBURL || ''); %>
+                <a href="/artist/<%= _sideUser?.username || '' %>" class="flex items-center gap-4 mb-8 hover:opacity-80 transition-opacity group">
+                    <div class="w-12 h-12 rounded-full border-2 border-primary overflow-hidden bg-surface-container flex items-center justify-center shrink-0">
+                        <% if (_sideUser?.avatar_storage_id) { %>
+                        <img alt="Avatar" class="w-full h-full object-cover" src="/api/files/<%= _sideUser.avatar_storage_id %>"/>
+                        <% } else { %>
+                        <span class="material-symbols-outlined text-primary text-2xl">person</span>
+                        <% } %>
                     </div>
-                    <div>
-                        <p class="font-semibold text-white">NeonOver</p>
-                        <p class="text-xs text-on-surface-variant">Pro Designer</p>
+                    <div class="min-w-0">
+                        <p class="font-semibold text-white truncate"><%= _sideUser?.display_name || _sideUser?.username || 'My Account' %></p>
+                        <p class="text-xs text-on-surface-variant truncate">@<%= _sideUser?.username || '' %></p>
                     </div>
-                </div>
+                </a>
                 <h2 class="text-2xl font-bold text-primary mb-1">My Dashboard</h2>
             </div>
             <nav class="flex-1 space-y-1">
@@ -17,9 +23,19 @@
                     <span class="material-symbols-outlined">library_music</span>
                     <span class="font-semibold">My Library</span>
                 </a>
-                <a class="flex items-center gap-4 px-8 py-4 <%= typeof activeTab !== 'undefined' && activeTab === 'boards' ? 'border-l-4 border-primary bg-primary/10 text-primary' : 'text-on-surface-variant hover:bg-white/5' %> transition-all duration-300" href="/dashboard/boards">
+                <a class="flex items-center gap-4 px-8 py-4 <%= typeof activeTab !== 'undefined' && activeTab === 'boards' ? 'border-l-4 border-primary bg-primary/10 text-primary' : 'text-on-surface-variant hover:bg-white/5' %> transition-all duration-300" href="/boards">
                     <span class="material-symbols-outlined">dashboard</span>
                     <span class="font-semibold">My Boards</span>
                 </a>
+                <a class="flex items-center gap-4 px-8 py-4 text-on-surface-variant hover:bg-white/5 transition-all duration-300" href="/studio">
+                    <span class="material-symbols-outlined">draw</span>
+                    <span class="font-semibold">Studio</span>
+                </a>
             </nav>
+            <div class="px-8">
+                <a href="/auth/logout" class="flex items-center gap-3 text-on-surface-variant hover:text-red-400 transition-colors text-sm">
+                    <span class="material-symbols-outlined text-[18px]">logout</span> Sign Out
+                </a>
+            </div>
         </aside>
+

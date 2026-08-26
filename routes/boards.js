@@ -246,4 +246,23 @@ router.post('/api/add-item', requireAuth, async (req, res) => {
   }
 })
 
+// ─── DELETE /boards/:id/items/:overlayId ─────────────────────────────────────
+router.delete('/:id/items/:overlayId', requireAuth, async (req, res) => {
+  const { id, overlayId } = req.params
+  const userId = req.user.id
+
+  try {
+    const board = await queryOne('SELECT id FROM boards WHERE id = ? AND owner_id = ?', [id, userId])
+    if (!board) return res.status(404).json({ error: 'Board not found or not owner' })
+
+    await query('DELETE FROM board_items WHERE board_id = ? AND overlay_id = ?', [id, overlayId])
+    await query('UPDATE boards SET updated_at = NOW() WHERE id = ?', [id])
+
+    res.json({ success: true })
+  } catch (err) {
+    console.error('[Boards/RemoveItem]', err)
+    res.status(500).json({ error: 'Server error' })
+  }
+})
+
 export default router

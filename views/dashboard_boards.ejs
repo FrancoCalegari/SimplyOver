@@ -110,7 +110,12 @@
 
           <!-- Hover Actions -->
           <div class="absolute inset-0 bg-background/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-            <button onclick="event.stopPropagation(); openEditBoard('<%= board.id %>', '<%= board.name.replace(/'/g,\"\\\\'\") %>', '<%= (board.description||'').replace(/'/g,\"\\\\'\") %>', '<%= board.visibility %>', '<%= (board.tags||[]).join(',') %>')"
+            <button onclick="event.stopPropagation(); openEditBoard(this)"
+                    data-board-id="<%= board.id %>"
+                    data-board-name="<%= board.name %>"
+                    data-board-desc="<%= board.description || '' %>"
+                    data-board-visibility="<%= board.visibility %>"
+                    data-board-tags="<%= (board.tags||[]).join(',') %>"
                     class="bg-surface-container-high p-3 rounded-full hover:bg-primary/20 transition-colors" title="Edit">
               <span class="material-symbols-outlined text-primary">edit</span>
             </button>
@@ -239,12 +244,13 @@
     } catch(e) { alert('Network error.'); }
   }
 
-  function openEditBoard(id, name, desc, visibility, tags) {
-    document.getElementById('edit-board-id').value = id;
-    document.getElementById('edit-board-name').value = name;
-    document.getElementById('edit-board-desc').value = desc;
-    document.getElementById('edit-board-tags').value = tags;
-    document.getElementById('edit-board-public').checked = visibility === 'public';
+  function openEditBoard(btn) {
+    const d = btn.dataset;
+    document.getElementById('edit-board-id').value       = d.boardId;
+    document.getElementById('edit-board-name').value     = d.boardName;
+    document.getElementById('edit-board-desc').value     = d.boardDesc;
+    document.getElementById('edit-board-tags').value     = d.boardTags;
+    document.getElementById('edit-board-public').checked = d.boardVisibility === 'public';
     document.getElementById('edit-modal').classList.remove('hidden');
   }
 

@@ -55,4 +55,29 @@ router.post('/settings/ia', async (req, res) => {
   }
 });
 
+// ─── POST /admin/notify ───────────────────────────────────────────────────────
+router.post('/notify', async (req, res) => {
+  const { subject, message } = req.body;
+  if (!subject || !message) return res.status(400).send('Faltan campos obligatorios');
+
+  try {
+    const { sendNotificationEmail } = await import('../lib/email.js');
+    
+    // Obtener todos los usuarios con email verificado (o todos, si prefieres)
+    // Para no saturar el SMTP en desarrollo, limitaremos a usuarios reales
+    const users = await query(`SELECT email FROM users WHERE email IS NOT NULL`);
+    
+    if (users && users.length > 0) {
+      const emails = users.map(u => u.email);
+      // Enviar en background
+      sendNotificationEmail(emails, subject, message, message).catch(err => console.error(err));
+    }
+
+    res.redirect('/admin/settings?success=true');
+  } catch (err) {
+    console.error('[Admin Notify Error]', err);
+    res.status(500).send('Error enviando notificaciones');
+  }
+});
+
 export default router;
