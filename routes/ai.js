@@ -5,30 +5,10 @@
 
 import { Router } from 'express'
 import { optionalAuth, requireAuth } from '../lib/authExpress.js'
-import { query, generateUUID } from '../lib/db.js'
+import { query, queryOne, generateUUID } from '../lib/db.js'
+import { spiderWeb } from '../lib/SpiderWebService.js'
 
 const router = Router()
-
-const SPIDERIA_BASE = process.env.SPIDERWEBURL ?? 'http://190.220.229.45:7256/api/v1'
-const API_KEY = process.env.SPIDERWEBAPIKEY ?? ''
-
-async function callSpiderIA(messages, modelId = 1) {
-  const response = await fetch(`${SPIDERIA_BASE}/ia/chat`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-API-KEY': API_KEY,
-    },
-    body: JSON.stringify({ model_id: modelId, messages }),
-  })
-
-  if (!response.ok) {
-    const err = await response.text()
-    throw new Error(`SpiderIA error ${response.status}: ${err}`)
-  }
-
-  return response.json()
-}
 
 // ─── POST /api/ai-chat ────────────────────────────────────────────────────────
 // Chat flotante asistente del marketplace
@@ -36,15 +16,18 @@ router.post('/ai-chat', optionalAuth, async (req, res) => {
   const { message, history = [] } = req.body
   if (!message?.trim()) return res.status(400).json({ error: 'Missing message' })
 
-  const systemPrompt = `Eres el asistente de SimplyOver, el marketplace número uno de overlays para OBS. 
-Tu rol es ayudar a los usuarios a:
-- Encontrar overlays por categoría, estilo o precio
-- Navegar el marketplace (categorías: Anime, Esports, Neon, Gaming, Cyberpunk, Minimalista)
-- Crear y gestionar boards y listas de favoritos
-- Entender cómo funciona el sistema de compras y descargas
-- Resolver dudas sobre el studio de creación y generación con IA
-Responde siempre en el idioma del usuario. Sé amigable, conciso y útil.
-Si el usuario pregunta por un overlay específico, sugiérele buscar en las categorías del navbar o usar el buscador.`
+  const systemPrompt = `Eres el asistente virtual de SimplyOver, el marketplace número uno de overlays para OBS. 
+Tu rol principal es actuar como asistente de soporte, analista de contenido y guía de la plataforma.
+
+Reglas y Funciones:
+- Ayuda a los usuarios a encontrar contenido (anime, gaming, arte, esports, etc.) a través de las categorías o el buscador.
+- Explica el sistema de compras, favoritos y tableros.
+- IMPORTANTE: Las funciones de crear/generar overlays con IA (AI Studio) todavía NO están implementadas, pero indícale al usuario que están previstas como un módulo futuro próximo.
+- Utiliza siempre formato Markdown en tus respuestas para decorarlas. Usa **negrita** para resaltar preguntas, conceptos importantes o títulos, y *cursiva* para ejemplos o aclaraciones breves.
+
+Ejemplo de tu tono y formato de respuesta:
+¡Hola! Esta es una excelente web. ¿En qué se encuentra? **¿Qué tipo de contenido ofrece?** *(Por ejemplo: anime, gaming, arte, etc.)* **¿Cómo puedo encontrarlo?** *(Por ejemplo: navegar por las categorías, usar el buscador, etc.)* **¿Cuál es mi rol?** *(Por ejemplo: asistente de soporte, analista de contenido, etc.)* Si tienes alguna pregunta sobre el estilo o el precio de un overlay, dime y te ayudo.`
+
 
   const messages = [
     { role: 'system', content: systemPrompt },
@@ -53,9 +36,16 @@ Si el usuario pregunta por un overlay específico, sugiérele buscar en las cate
   ]
 
   try {
-    const result = await callSpiderIA(messages)
+    const modelsData = await spiderWeb.getIAModels()
+    const fallbackModelId = modelsData?.models?.[0]?.id || 1
+
+    const settingRow = await queryOne(`SELECT setting_value FROM site_settings WHERE setting_key = 'ai_model_id'`);
+    const adminModelId = settingRow ? JSON.parse(settingRow.setting_value) : null;
+    const modelId = adminModelId || fallbackModelId;
+
+    const result = await spiderWeb.iaChat(modelId, messages)
     const reply = result?.choices?.[0]?.message?.content
-      ?? result?.message
+      ?? result?.message?.content
       ?? result?.content
       ?? '¡Hola! Estoy aquí para ayudarte en SimplyOver. ¿Qué estás buscando?'
 
@@ -116,8 +106,15 @@ Responde en JSON con la estructura: { title, description, colorScheme: { primary
   ]
 
   try {
-    const result = await callSpiderIA(messages, 'gpt-4o')
-    let content = result?.choices?.[0]?.message?.content ?? result?.content ?? '{}'
+    const modelsData = await spiderWeb.getIAModels()
+    const fallbackModelId = modelsData?.models?.[0]?.id || 1
+
+    const settingRow = await queryOne(`SELECT setting_value FROM site_settings WHERE setting_key = 'ai_model_id'`);
+    const adminModelId = settingRow ? JSON.parse(settingRow.setting_value) : null;
+    const modelId = adminModelId || fallbackModelId;
+
+    const result = await spiderWeb.iaChat(modelId, messages)
+    let content = result?.choices?.[0]?.message?.content ?? result?.message?.content ?? result?.content ?? '{}'
 
     // Intentar parsear como JSON
     let parsed

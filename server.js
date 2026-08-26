@@ -35,6 +35,7 @@ import boardsRouter    from './routes/boards.js';
 import messagesRouter  from './routes/messages.js';
 import aiRouter        from './routes/ai.js';
 import favoritesRouter from './routes/favorites.js';
+import adminRouter     from './routes/admin.js';
 
 app.use('/auth',        authRouter);
 app.use('/category',    categoriesRouter);
@@ -43,6 +44,7 @@ app.use('/boards',      boardsRouter);
 app.use('/messages',    messagesRouter);
 app.use('/api',         aiRouter);
 app.use('/api/favorites', favoritesRouter);
+app.use('/admin',       adminRouter);
 
 // /studio/ai handled by aiRouter's GET /studio/ai route
 app.get('/studio/ai', async (req, res, next) => {

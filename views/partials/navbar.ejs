@@ -66,6 +66,11 @@
             <a href="/studio/ai" class="flex items-center gap-3 px-4 py-2.5 text-sm text-on-surface-variant hover:text-white hover:bg-white/5 transition-all">
               <span class="material-symbols-outlined text-[18px]">auto_awesome</span> AI Studio
             </a>
+            <% if (user.role === 'admin') { %>
+            <a href="/admin/settings" class="flex items-center gap-3 px-4 py-2.5 text-sm text-primary hover:text-white hover:bg-white/5 transition-all">
+              <span class="material-symbols-outlined text-[18px]">admin_panel_settings</span> Admin Settings
+            </a>
+            <% } %>
             <div class="border-t border-white/5 mt-2 pt-2">
               <a href="/auth/logout" class="flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/5 transition-all">
                 <span class="material-symbols-outlined text-[18px]">logout</span> Logout

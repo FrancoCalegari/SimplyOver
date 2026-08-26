@@ -9,7 +9,7 @@
 -- MÓDULO 1 — USUARIOS, AUTENTICACIÓN Y PERFILES
 -- ============================================================
 
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id                   UUID            PRIMARY KEY DEFAULT UUID(),
     username             VARCHAR(50)     NOT NULL UNIQUE,
     email                VARCHAR(255)    NOT NULL UNIQUE,
@@ -43,17 +43,17 @@ CREATE TABLE users (
 );
 
 -- Índices de búsqueda de usuarios
-CREATE INDEX idx_users_username     ON users (username);
-CREATE INDEX idx_users_email        ON users (email);
-CREATE INDEX idx_users_role         ON users (role);
-CREATE INDEX idx_users_status       ON users (status);
+CREATE INDEX IF NOT EXISTS idx_users_username     ON users (username);
+CREATE INDEX IF NOT EXISTS idx_users_email        ON users (email);
+CREATE INDEX IF NOT EXISTS idx_users_role         ON users (role);
+CREATE INDEX IF NOT EXISTS idx_users_status       ON users (status);
 
 
 -- ============================================================
 -- MÓDULO 2 — CATÁLOGO DE OVERLAYS
 -- ============================================================
 
-CREATE TABLE categories (
+CREATE TABLE IF NOT EXISTS categories (
     id          INT             AUTO_INCREMENT PRIMARY KEY,
     slug        VARCHAR(80)     NOT NULL UNIQUE,
     name        VARCHAR(100)    NOT NULL,
@@ -62,7 +62,7 @@ CREATE TABLE categories (
     created_at  TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO categories (slug, name, description) VALUES
+INSERT IGNORE INTO categories (slug, name, description) VALUES
     ('stream-alerts',   'Stream Alerts',        'Overlays de alertas para streams'),
     ('facecam-frames',  'Facecam Frames',        'Marcos para cámara de cara'),
     ('panels',          'Panels',                'Paneles de información'),
@@ -73,7 +73,7 @@ INSERT INTO categories (slug, name, description) VALUES
     ('bundles',         'Bundles',               'Paquetes combinados');
 
 
-CREATE TABLE overlays (
+CREATE TABLE IF NOT EXISTS overlays (
     id                   UUID            PRIMARY KEY DEFAULT UUID(),
     creator_id           UUID            NOT NULL,
     name                 VARCHAR(200)    NOT NULL,
@@ -112,15 +112,15 @@ CREATE TABLE overlays (
 );
 
 -- Índices overlay
-CREATE INDEX idx_overlays_creator      ON overlays (creator_id);
-CREATE INDEX idx_overlays_status       ON overlays (status);
-CREATE INDEX idx_overlays_price        ON overlays (price);
-CREATE INDEX idx_overlays_featured     ON overlays (is_featured);
-CREATE INDEX idx_overlays_published    ON overlays (published_at DESC);
+CREATE INDEX IF NOT EXISTS idx_overlays_creator      ON overlays (creator_id);
+CREATE INDEX IF NOT EXISTS idx_overlays_status       ON overlays (status);
+CREATE INDEX IF NOT EXISTS idx_overlays_price        ON overlays (price);
+CREATE INDEX IF NOT EXISTS idx_overlays_featured     ON overlays (is_featured);
+CREATE INDEX IF NOT EXISTS idx_overlays_published    ON overlays (published_at DESC);
 
 
 -- Relación N:M Overlays ↔ Categorías
-CREATE TABLE overlay_categories (
+CREATE TABLE IF NOT EXISTS overlay_categories (
     overlay_id    UUID     NOT NULL,
     category_id   INT      NOT NULL,
     PRIMARY KEY (overlay_id, category_id),
@@ -133,7 +133,7 @@ CREATE TABLE overlay_categories (
 -- MÓDULO 2 (cont.) — RESEÑAS Y RATINGS
 -- ============================================================
 
-CREATE TABLE reviews (
+CREATE TABLE IF NOT EXISTS reviews (
     id           UUID            PRIMARY KEY DEFAULT UUID(),
     overlay_id   UUID            NOT NULL,
     user_id      UUID            NOT NULL,
@@ -148,16 +148,16 @@ CREATE TABLE reviews (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-CREATE INDEX idx_reviews_overlay ON reviews (overlay_id);
-CREATE INDEX idx_reviews_user    ON reviews (user_id);
-CREATE INDEX idx_reviews_rating  ON reviews (rating);
+CREATE INDEX IF NOT EXISTS idx_reviews_overlay ON reviews (overlay_id);
+CREATE INDEX IF NOT EXISTS idx_reviews_user    ON reviews (user_id);
+CREATE INDEX IF NOT EXISTS idx_reviews_rating  ON reviews (rating);
 
 
 -- ============================================================
 -- MÓDULO 3 — INTERACCIÓN SOCIAL: FAVORITOS (LIKES)
 -- ============================================================
 
-CREATE TABLE favorites (
+CREATE TABLE IF NOT EXISTS favorites (
     user_id     UUID        NOT NULL,
     overlay_id  UUID        NOT NULL,
     created_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -166,15 +166,15 @@ CREATE TABLE favorites (
     FOREIGN KEY (overlay_id) REFERENCES overlays(id) ON DELETE CASCADE
 );
 
-CREATE INDEX idx_favorites_overlay ON favorites (overlay_id);
-CREATE INDEX idx_favorites_user    ON favorites (user_id);
+CREATE INDEX IF NOT EXISTS idx_favorites_overlay ON favorites (overlay_id);
+CREATE INDEX IF NOT EXISTS idx_favorites_user    ON favorites (user_id);
 
 
 -- ============================================================
 -- MÓDULO 3 (cont.) — INTERACCIÓN SOCIAL: TABLEROS (BOARDS)
 -- ============================================================
 
-CREATE TABLE boards (
+CREATE TABLE IF NOT EXISTS boards (
     id           UUID            PRIMARY KEY DEFAULT UUID(),
     owner_id     UUID            NOT NULL,
     name         VARCHAR(150)    NOT NULL,
@@ -187,12 +187,12 @@ CREATE TABLE boards (
     FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-CREATE INDEX idx_boards_owner      ON boards (owner_id);
-CREATE INDEX idx_boards_visibility ON boards (visibility);
+CREATE INDEX IF NOT EXISTS idx_boards_owner      ON boards (owner_id);
+CREATE INDEX IF NOT EXISTS idx_boards_visibility ON boards (visibility);
 
 
 -- Tabla intermedia: overlays guardados dentro de un tablero
-CREATE TABLE board_items (
+CREATE TABLE IF NOT EXISTS board_items (
     board_id    UUID        NOT NULL,
     overlay_id  UUID        NOT NULL,
     note        TEXT,                                                     -- nota personal del usuario
@@ -202,14 +202,14 @@ CREATE TABLE board_items (
     FOREIGN KEY (overlay_id) REFERENCES overlays(id) ON DELETE CASCADE
 );
 
-CREATE INDEX idx_board_items_overlay ON board_items (overlay_id);
+CREATE INDEX IF NOT EXISTS idx_board_items_overlay ON board_items (overlay_id);
 
 
 -- ============================================================
 -- MÓDULO 6 — WORKFLOW DE COMPRA Y POST-VENTA
 -- ============================================================
 
-CREATE TABLE purchases (
+CREATE TABLE IF NOT EXISTS purchases (
     id                  UUID            PRIMARY KEY DEFAULT UUID(),
     buyer_id            UUID            NOT NULL,
     overlay_id          UUID            NOT NULL,
@@ -246,19 +246,19 @@ CREATE TABLE purchases (
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE RESTRICT
 );
 
-CREATE INDEX idx_purchases_buyer      ON purchases (buyer_id);
-CREATE INDEX idx_purchases_overlay    ON purchases (overlay_id);
-CREATE INDEX idx_purchases_creator    ON purchases (creator_id);
-CREATE INDEX idx_purchases_status     ON purchases (status);
-CREATE INDEX idx_purchases_mp_id      ON purchases (mp_payment_id);
-CREATE INDEX idx_purchases_token      ON purchases (download_token);
+CREATE INDEX IF NOT EXISTS idx_purchases_buyer      ON purchases (buyer_id);
+CREATE INDEX IF NOT EXISTS idx_purchases_overlay    ON purchases (overlay_id);
+CREATE INDEX IF NOT EXISTS idx_purchases_creator    ON purchases (creator_id);
+CREATE INDEX IF NOT EXISTS idx_purchases_status     ON purchases (status);
+CREATE INDEX IF NOT EXISTS idx_purchases_mp_id      ON purchases (mp_payment_id);
+CREATE INDEX IF NOT EXISTS idx_purchases_token      ON purchases (download_token);
 
 
 -- ============================================================
 -- MÓDULO 5 — ESTUDIO DE CREACIÓN (DESIGNER / CANVAS)
 -- ============================================================
 
-CREATE TABLE canvas_drafts (
+CREATE TABLE IF NOT EXISTS canvas_drafts (
     id              UUID            PRIMARY KEY DEFAULT UUID(),
     creator_id      UUID            NOT NULL,
     name            VARCHAR(200)    NOT NULL DEFAULT 'Sin título',
@@ -277,15 +277,15 @@ CREATE TABLE canvas_drafts (
     FOREIGN KEY (overlay_id) REFERENCES overlays(id) ON DELETE SET NULL
 );
 
-CREATE INDEX idx_canvas_creator ON canvas_drafts (creator_id);
-CREATE INDEX idx_canvas_status  ON canvas_drafts (status);
+CREATE INDEX IF NOT EXISTS idx_canvas_creator ON canvas_drafts (creator_id);
+CREATE INDEX IF NOT EXISTS idx_canvas_status  ON canvas_drafts (status);
 
 
 -- ============================================================
 -- MÓDULO 5 (cont.) — INTERACCIONES CON SpiderIA
 -- ============================================================
 
-CREATE TABLE ia_sessions (
+CREATE TABLE IF NOT EXISTS ia_sessions (
     id           UUID        PRIMARY KEY DEFAULT UUID(),
     user_id      UUID        NOT NULL,
     draft_id     UUID        NULL,
@@ -297,15 +297,15 @@ CREATE TABLE ia_sessions (
     FOREIGN KEY (draft_id) REFERENCES canvas_drafts(id) ON DELETE SET NULL
 );
 
-CREATE INDEX idx_ia_sessions_user  ON ia_sessions (user_id);
-CREATE INDEX idx_ia_sessions_draft ON ia_sessions (draft_id);
+CREATE INDEX IF NOT EXISTS idx_ia_sessions_user  ON ia_sessions (user_id);
+CREATE INDEX IF NOT EXISTS idx_ia_sessions_draft ON ia_sessions (draft_id);
 
 
 -- ============================================================
 -- MÓDULO 7 — ADMIN DASHBOARD
 -- ============================================================
 
-CREATE TABLE admin_audit_log (
+CREATE TABLE IF NOT EXISTS admin_audit_log (
     id           UUID            PRIMARY KEY DEFAULT UUID(),
     admin_id     UUID            NOT NULL,
     action       VARCHAR(100)    NOT NULL,                                -- 'APPROVE_OVERLAY', 'BAN_USER', etc.
@@ -317,9 +317,9 @@ CREATE TABLE admin_audit_log (
     FOREIGN KEY (admin_id) REFERENCES users(id) ON DELETE RESTRICT
 );
 
-CREATE INDEX idx_audit_admin      ON admin_audit_log (admin_id);
-CREATE INDEX idx_audit_entity     ON admin_audit_log (entity_type, entity_id);
-CREATE INDEX idx_audit_created    ON admin_audit_log (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_admin      ON admin_audit_log (admin_id);
+CREATE INDEX IF NOT EXISTS idx_audit_entity     ON admin_audit_log (entity_type, entity_id);
+CREATE INDEX IF NOT EXISTS idx_audit_created    ON admin_audit_log (created_at DESC);
 
 
 -- ============================================================
@@ -433,6 +433,16 @@ CREATE TABLE IF NOT EXISTS board_tags (
 
 CREATE INDEX IF NOT EXISTS idx_board_tags_tag ON board_tags (tag);
 
+
+-- ============================================================
+-- MÓDULO 10 — CONFIGURACIONES DEL SITIO
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS site_settings (
+    setting_key VARCHAR(100) PRIMARY KEY,
+    setting_value JSON,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
 
 -- ============================================================
 -- FIN DEL SCRIPT
