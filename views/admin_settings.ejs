@@ -75,7 +75,16 @@
                         <input type="radio" name="modelId" value="<%= model.id %>" <%= (currentModelId && currentModelId == model.id) ? 'checked' : '' %> class="text-primary"/>
                         <div>
                           <div class="font-semibold text-white text-sm"><%= model.display_name || model.model_name %></div>
-                          <div class="text-xs text-on-surface-variant"><%= model.provider_name %></div>
+                          <div class="text-xs text-on-surface-variant flex gap-2 items-center">
+                            <span><strong class="text-secondary">Provider:</strong> <%= model.provider_name %></span>
+                            <span class="w-1 h-1 bg-white/20 rounded-full"></span>
+                            <span><strong class="text-secondary">Type:</strong> <span class="uppercase tracking-wider"><%= model.provider_type %></span></span>
+                            <span class="w-1 h-1 bg-white/20 rounded-full"></span>
+                            <span><strong class="text-secondary">Model ID:</strong> <%= model.id %></span>
+                          </div>
+                          <% if (model.description) { %>
+                          <div class="text-xs text-on-surface-variant mt-1 italic opacity-80"><%= model.description %></div>
+                          <% } %>
                         </div>
                         <% if (currentModelId && currentModelId == model.id) { %>
                         <span class="ml-auto px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary/20 text-primary border border-primary/30">ACTIVE</span>

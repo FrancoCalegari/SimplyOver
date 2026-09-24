@@ -152,7 +152,20 @@
     sendAIMessage();
   };
 
+  const IS_LOGGED_IN = <%= (typeof user !== 'undefined' && user) ? 'true' : 'false' %>;
+
   async function sendAIMessage() {
+    if (!IS_LOGGED_IN) {
+      let count = parseInt(localStorage.getItem('ai_chat_count') || '0');
+      if (count >= 10) {
+         // Block and show modal/alert
+         alert('Has alcanzado el límite de 10 mensajes gratuitos. ¡Por favor regístrate para continuar usando nuestra IA y descubrir todo el potencial de SimplyOver!');
+         window.location.href = '/login';
+         return;
+      }
+      localStorage.setItem('ai_chat_count', count + 1);
+    }
+
     const input = document.getElementById('ai-chat-input');
     const content = input.value.trim();
     if (!content) return;
@@ -174,7 +187,7 @@
 
       if (r.ok) {
         const data = await r.json();
-        appendMessage('bot', data.reply);
+        appendMessage('bot', data.reply, data.carousel);
         aiChatHistory.push({ role: 'assistant', content: data.reply });
       } else {
         appendMessage('bot', 'Ups, tuve un problema. ¿Podés intentarlo de nuevo?');
@@ -185,24 +198,44 @@
     }
   };
 
-  function appendMessage(role, text) {
+  function appendMessage(role, text, carouselItems = null) {
     const container = document.getElementById('ai-messages');
     const isBot = role === 'bot';
     const div = document.createElement('div');
     div.style.cssText = `display:flex;align-items:flex-end;gap:8px;${isBot ? '' : 'flex-direction:row-reverse;'}`;
 
-    // Basic markdown parsing for bold and italic
+    // Basic markdown parsing for bold, italic, and action buttons
     const parsedText = text.replace(/</g, '&lt;')
+                           .replace(/&lt;br>/g, '<br>')
                            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                           .replace(/\*(.*?)\*/g, '<em>$1</em>');
+                           .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                           .replace(/\[BTN:WEB_EDITOR\]/g, '<br><a href="/studio/canvas" style="display:inline-block;margin-top:8px;padding:6px 12px;background:#4cd7f6;color:#1f1f26;border-radius:8px;text-decoration:none;font-weight:bold;font-size:12px;">Abrir Web Editor</a>')
+                           .replace(/\[BTN:PUBLISH\]/g, '<br><a href="/studio" style="display:inline-block;margin-top:8px;padding:6px 12px;background:#7c3aed;color:white;border-radius:8px;text-decoration:none;font-weight:bold;font-size:12px;">Publicar Proyecto</a>')
+                           .replace(/\[BTN:AI_STUDIO\]/g, '<br><a href="/studio/ai" style="display:inline-block;margin-top:8px;padding:6px 12px;background:linear-gradient(135deg,#7c3aed,#4cd7f6);color:white;border-radius:8px;text-decoration:none;font-weight:bold;font-size:12px;">Generar con IA</a>');
 
     if (isBot) {
+      let carouselHtml = '';
+      if (carouselItems && carouselItems.length > 0) {
+        carouselHtml = `<div style="display:flex;gap:8px;overflow-x:auto;padding-top:12px;padding-bottom:4px;scrollbar-width:none;width:100%;max-width:280px;margin-top:8px;">`;
+        carouselItems.forEach(item => {
+          carouselHtml += `
+            <a href="${item.url}" style="text-decoration:none;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:8px;flex:0 0 140px;display:block;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+              <div style="width:100%;aspect-ratio:16/9;background:url('${item.image}') center/cover;border-radius:4px;margin-bottom:8px;"></div>
+              <p style="color:white;font-size:12px;font-weight:600;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.name}</p>
+              <p style="color:#4cd7f6;font-size:11px;margin:2px 0 0 0;">${item.price}</p>
+            </a>
+          `;
+        });
+        carouselHtml += `</div>`;
+      }
+
       div.innerHTML = `
         <div style="width:28px;height:28px;border-radius:9999px;background:linear-gradient(135deg,#7c3aed,#4cd7f6);flex-shrink:0;display:flex;align-items:center;justify-content:center;">
           <span class="material-symbols-outlined" style="font-size:14px;color:white;">auto_awesome</span>
         </div>
-        <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.06);border-radius:16px;border-bottom-left-radius:4px;padding:10px 14px;max-width:80%;">
+        <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.06);border-radius:16px;border-bottom-left-radius:4px;padding:10px 14px;max-width:80%;overflow:hidden;">
           <p style="color:#e4e1ec;font-size:13px;margin:0;line-height:1.5;">${parsedText}</p>
+          ${carouselHtml}
         </div>`;
     } else {
       div.innerHTML = `

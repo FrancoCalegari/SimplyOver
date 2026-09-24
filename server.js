@@ -272,12 +272,21 @@ app.get('/overlay/:slug', async (req, res) => {
               u.avatar_storage_id AS creator_avatar, u.id AS creator_id_val
        FROM overlays o
        JOIN users u ON u.id = o.creator_id
-       WHERE o.slug = ? AND o.status = 'APPROVED'`,
+       WHERE o.slug = ?`,
       [req.params.slug]
     );
 
     if (!overlay) {
       return res.status(404).render('error', { title: '404 | SimplyOver', message: 'Overlay no encontrado' });
+    }
+
+    // Control de acceso para overlays no aprobados
+    if (overlay.status !== 'APPROVED') {
+      const isCreator = req.user && req.user.id === overlay.creator_id_val;
+      const isAdmin = req.user && req.user.role === 'admin';
+      if (!isCreator && !isAdmin) {
+        return res.status(404).render('error', { title: '404 | SimplyOver', message: 'Overlay no encontrado o no disponible.' });
+      }
     }
 
     // Reviews reales

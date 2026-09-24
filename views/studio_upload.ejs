@@ -112,8 +112,22 @@
                             <input type="text" name="resolution" value="1920x1080" class="w-full bg-surface-container-high border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary transition-colors focus:outline-none">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-on-surface-variant mb-2">Software (OBS/Streamlabs)</label>
-                            <input type="text" name="software_version" class="w-full bg-surface-container-high border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary transition-colors focus:outline-none" placeholder="e.g. OBS Studio 28+">
+                            <label class="block text-sm font-medium text-on-surface-variant mb-2">Compatible Software & Version</label>
+                            <div class="flex gap-2 relative">
+                                <select id="software_type" class="w-1/2 bg-surface-container-high border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary transition-colors focus:outline-none cursor-pointer appearance-none">
+                                    <option value="OBS Studio">OBS Studio</option>
+                                    <option value="Streamlabs Desktop">Streamlabs Desktop</option>
+                                </select>
+                                <span class="material-symbols-outlined absolute left-[45%] top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-[18px]">expand_more</span>
+                                
+                                <select id="software_version_select" class="w-1/2 bg-surface-container-high border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary transition-colors focus:outline-none cursor-pointer appearance-none pl-4">
+                                    <option value="v27.2.4+">v27.2.4+ (Loading...)</option>
+                                </select>
+                                <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-[18px]">expand_more</span>
+                                
+                                <input type="hidden" name="software_version" id="software_version_hidden" value="OBS Studio v27.2.4+">
+                            </div>
+                            <p class="text-xs text-on-surface-variant mt-2">Latest versions are fetched automatically from GitHub.</p>
                         </div>
                     </div>
                 </section>
@@ -177,6 +191,69 @@
             btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">progress_activity</span> Uploading... Please wait.';
             btn.classList.add('opacity-75', 'cursor-not-allowed');
         });
+
+        // Software Version Fetching
+        const softType = document.getElementById('software_type');
+        const softVer = document.getElementById('software_version_select');
+        const softHidden = document.getElementById('software_version_hidden');
+
+        let obsVersions = ['v27.2.4+'];
+        let slVersions = ['v1.0.0+'];
+
+        async function fetchVersions() {
+            try {
+                // Fetch OBS
+                const obsRes = await fetch('https://api.github.com/repos/obsproject/obs-studio/releases');
+                if (obsRes.ok) {
+                    const data = await obsRes.json();
+                    let fetchedObs = data.map(r => r.tag_name || r.name).filter(v => v && !v.toLowerCase().includes('rc') && !v.toLowerCase().includes('beta')).map(v => v + '+');
+                    if (fetchedObs.length > 0) obsVersions = fetchedObs;
+                    if (!obsVersions.includes('v27.2.4+')) obsVersions.push('v27.2.4+');
+                }
+                
+                // Fetch Streamlabs Tags
+                const slRes = await fetch('https://api.github.com/repos/streamlabs/desktop/tags');
+                if (slRes.ok) {
+                    const data = await slRes.json();
+                    let fetchedSl = data.map(r => r.name).filter(n => !n.includes('preview') && !n.includes('mac') && !n.includes('beta')).map(v => v + '+');
+                    if (fetchedSl.length > 0) slVersions = fetchedSl;
+                    if (!slVersions.includes('v1.0.0+')) slVersions.push('v1.0.0+');
+                }
+            } catch (e) {
+                console.warn('Could not fetch software versions', e);
+            }
+            updateVersionDropdown();
+        }
+
+        function updateVersionDropdown() {
+            const isObs = softType.value === 'OBS Studio';
+            const versions = isObs ? obsVersions : slVersions;
+            
+            softVer.innerHTML = '';
+            versions.forEach(v => {
+                const opt = document.createElement('option');
+                opt.value = v;
+                opt.textContent = v;
+                softVer.appendChild(opt);
+            });
+            
+            const defaultVer = isObs ? 'v27.2.4+' : 'v1.0.0+';
+            if (versions.includes(defaultVer)) {
+                softVer.value = defaultVer;
+            } else if (versions.length > 0) {
+                softVer.value = versions[0];
+            }
+            updateHidden();
+        }
+
+        function updateHidden() {
+            softHidden.value = `${softType.value} ${softVer.value}`;
+        }
+
+        softType.addEventListener('change', updateVersionDropdown);
+        softVer.addEventListener('change', updateHidden);
+        
+        fetchVersions();
     </script>
 </body>
 </html>
