@@ -4,7 +4,8 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { query as dbQuery, queryOne } from './lib/db.js';
+import { query as dbQuery, queryOne, generateUUID } from './lib/db.js';
+import { loadCategories } from './middleware/categories.js';
 
 // ── Config ────────────────────────────────────────────────────
 dotenv.config();
@@ -27,6 +28,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 // ── Auth middleware global (no bloquea, solo expone req.user) ─
 import { optionalAuth } from './lib/authExpress.js';
 app.use(optionalAuth);
+
+// ── Categorías globales para navbar ───────────────────────────
+app.use(loadCategories);
 
 // ── Proxy de Archivos de SpiderWeb ────────────────────────────
 // Permite cargar imágenes en el frontend ya que SpiderWeb requiere X-API-KEY
@@ -63,17 +67,21 @@ import favoritesRouter from './routes/favorites.js';
 import adminRouter     from './routes/admin.js';
 import profileRouter   from './routes/profile.js';
 import studioRouter    from './routes/studio.js';
+import downloadRouter  from './routes/download.js';
+import friendsRouter   from './routes/friends.js';
 
-app.use('/auth',        authRouter);
-app.use('/category',    categoriesRouter);
+app.use('/auth',          authRouter);
+app.use('/category',      categoriesRouter);
 app.use('/dashboard/library', libraryRouter);
-app.use('/boards',      boardsRouter);
-app.use('/messages',    messagesRouter);
-app.use('/api',         aiRouter);
+app.use('/boards',        boardsRouter);
+app.use('/messages',      messagesRouter);
+app.use('/api',           aiRouter);
 app.use('/api/favorites', favoritesRouter);
-app.use('/admin',       adminRouter);
-app.use('/profile',     profileRouter);
-app.use('/studio',      studioRouter);
+app.use('/api/friends',   friendsRouter);
+app.use('/admin',         adminRouter);
+app.use('/profile',       profileRouter);
+app.use('/studio',        studioRouter);
+app.use('/download',      downloadRouter);
 
 // /studio/ai handled by aiRouter's GET /studio/ai route
 app.get('/studio/ai', async (req, res, next) => {
@@ -83,7 +91,7 @@ app.get('/studio/ai', async (req, res, next) => {
 
 // ── Frontend Routes ───────────────────────────────────────────
 app.get('/', async (req, res) => {
-  const { category: catSlug, price, sort = 'newest', page = 1 } = req.query;
+  const { category: catSlug, price, sort = 'newest', page = 1, q } = req.query;
   const perPage = 24;
   const offset = (parseInt(page) - 1) * perPage;
 
@@ -106,6 +114,12 @@ app.get('/', async (req, res) => {
       WHERE o.status = 'APPROVED'
     `;
     const params = [];
+
+    // Búsqueda por texto
+    if (q && q.trim().length > 0) {
+      sql += ' AND (o.name LIKE ? OR o.short_description LIKE ? OR o.tags LIKE ?)';
+      params.push(`%${q.trim()}%`, `%${q.trim()}%`, `%${q.trim()}%`);
+    }
 
     // Filtro por categoría
     if (catSlug) {
@@ -137,10 +151,10 @@ app.get('/', async (req, res) => {
     const overlays = await dbQuery(sql, params);
 
     res.render('index', {
-      title: 'SimplyOver | High-Performance OBS Overlay Marketplace',
+      title: q ? `"${q}" — SimplyOver` : 'SimplyOver | High-Performance OBS Overlay Marketplace',
       overlays,
       categories,
-      filters: { category: catSlug, price, sort },
+      filters: { category: catSlug, price, sort, q: q || '' },
       pagination: { page: parseInt(page), perPage, hasMore: overlays.length === perPage },
       spiderwebUrl: process.env.SPIDERWEBURL || '',
     });
@@ -150,7 +164,7 @@ app.get('/', async (req, res) => {
       title: 'SimplyOver | High-Performance OBS Overlay Marketplace',
       overlays: [],
       categories: [],
-      filters: { category: catSlug, price, sort },
+      filters: { category: catSlug, price, sort, q: q || '' },
       pagination: { page: 1, perPage, hasMore: false },
       spiderwebUrl: process.env.SPIDERWEBURL || '',
     });
@@ -239,8 +253,104 @@ app.get('/artist/:username', async (req, res) => {
   }
 });
 
-app.get('/overlay/:id', async (req, res) => {
-  res.render('overlay_details', { title: 'Overlay Details | SimplyOver' });
+app.get('/overlay/:slug', async (req, res) => {
+  try {
+    const overlay = await queryOne(
+      `SELECT o.*, u.username AS creator_username, u.display_name AS creator_display_name,
+              u.avatar_storage_id AS creator_avatar, u.id AS creator_id_val
+       FROM overlays o
+       JOIN users u ON u.id = o.creator_id
+       WHERE o.slug = ? AND o.status = 'APPROVED'`,
+      [req.params.slug]
+    );
+
+    if (!overlay) {
+      return res.status(404).render('error', { title: '404 | SimplyOver', message: 'Overlay no encontrado' });
+    }
+
+    // Reviews reales
+    const reviews = await dbQuery(
+      `SELECT r.id, r.rating, r.title, r.body, r.created_at,
+              u.username, u.display_name, u.avatar_storage_id
+       FROM reviews r
+       JOIN users u ON u.id = r.user_id
+       WHERE r.overlay_id = ?
+       ORDER BY r.created_at DESC LIMIT 20`,
+      [overlay.id]
+    );
+
+    // Categorías del overlay
+    const overlayCategories = await dbQuery(
+      `SELECT c.name, c.slug FROM overlay_categories oc
+       JOIN categories c ON c.id = oc.category_id
+       WHERE oc.overlay_id = ?`,
+      [overlay.id]
+    );
+
+    // Estado de favorito del usuario actual
+    let isFavorite = false;
+    let userPurchase = null;
+    if (req.user) {
+      const fav = await queryOne(
+        'SELECT 1 FROM favorites WHERE user_id = ? AND overlay_id = ? LIMIT 1',
+        [req.user.id, overlay.id]
+      );
+      isFavorite = !!fav;
+
+      userPurchase = await queryOne(
+        `SELECT id, download_token, download_count, download_limit, status
+         FROM purchases WHERE buyer_id = ? AND overlay_id = ? AND status = 'COMPLETED' LIMIT 1`,
+        [req.user.id, overlay.id]
+      );
+    }
+
+    // Incrementar view_count
+    await dbQuery('UPDATE overlays SET view_count = view_count + 1 WHERE id = ?', [overlay.id]);
+
+    // Parsear preview_storage_ids
+    let previewIds = [];
+    try { previewIds = JSON.parse(overlay.preview_storage_ids || '[]'); } catch(e) {}
+
+    // Parsear tags
+    let tags = [];
+    try { tags = JSON.parse(overlay.tags || '[]'); } catch(e) {}
+
+    res.render('overlay_details', {
+      title: `${overlay.name} | SimplyOver`,
+      overlay: { ...overlay, previewIds, tags },
+      reviews,
+      overlayCategories,
+      isFavorite,
+      userPurchase,
+      spiderwebUrl: process.env.SPIDERWEBURL || '',
+    });
+  } catch (err) {
+    console.error('[Overlay Details]', err);
+    res.status(500).render('error', { title: 'Error | SimplyOver', message: 'Error cargando el overlay.' });
+  }
+});
+
+// ── API: Búsqueda de usuarios ─────────────────────────────────
+app.get('/api/users/search', optionalAuth, async (req, res) => {
+  const { q } = req.query;
+  if (!q || q.trim().length < 2) return res.json({ users: [] });
+  try {
+    const users = await dbQuery(
+      `SELECT username, display_name, avatar_storage_id FROM users
+       WHERE (username LIKE ? OR display_name LIKE ?) AND status = 'active'
+       ORDER BY username ASC LIMIT 10`,
+      [`%${q.trim()}%`, `%${q.trim()}%`]
+    );
+    res.json({ users });
+  } catch (err) {
+    res.json({ users: [] });
+  }
+});
+
+// ── API: Adquirir overlay gratuito (redirect a download) ──────
+app.post('/api/purchase/free', async (req, res) => {
+  // Delegado a downloadRouter
+  res.redirect(307, '/download/purchase/free');
 });
 
 

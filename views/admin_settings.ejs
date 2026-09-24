@@ -1,75 +1,160 @@
 <!DOCTYPE html>
 <html class="dark" lang="en">
-<%- include('partials/head', {title}) %>
+<%- include('partials/head', {title: 'Admin Settings | SimplyOver'}) %>
 <body class="bg-background text-on-background">
     <%- include('partials/navbar') %>
 
-    <main class="max-w-4xl mx-auto px-5 pt-24 pb-24">
-        <div class="mb-10">
-            <h1 class="text-3xl font-bold text-white mb-2">Admin Settings</h1>
-            <p class="text-on-surface-variant">Global platform configurations.</p>
+    <main class="max-w-5xl mx-auto px-5 pt-24 pb-24">
+        <!-- Header -->
+        <div class="mb-10 flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-white mb-1">Admin Settings</h1>
+                <p class="text-on-surface-variant">Global platform configuration — SimplyOver</p>
+            </div>
+            <a href="/admin/overlays" class="flex items-center gap-2 px-5 py-2.5 rounded-full border border-primary/30 text-primary font-semibold hover:bg-primary/10 transition-all text-sm">
+              <span class="material-symbols-outlined text-[16px]">rate_review</span>
+              Moderate Overlays
+              <% if (typeof stats !== 'undefined' && stats.pending > 0) { %>
+              <span class="w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center"><%= stats.pending %></span>
+              <% } %>
+            </a>
         </div>
 
-        <% if (success) { %>
-            <div class="bg-green-500/10 border border-green-500/50 text-green-400 px-4 py-3 rounded-xl mb-8 flex items-center gap-3">
-                <span class="material-symbols-outlined">check_circle</span>
-                <p>Settings saved successfully.</p>
-            </div>
+        <!-- Alerts -->
+        <% if (typeof success !== 'undefined' && success) { %>
+        <div class="bg-green-500/10 border border-green-500/30 text-green-400 px-5 py-4 rounded-2xl mb-8 flex items-center gap-3">
+            <span class="material-symbols-outlined">check_circle</span>
+            <p class="font-semibold">Changes saved successfully.</p>
+        </div>
+        <% } %>
+        <% if (typeof error !== 'undefined' && error) { %>
+        <div class="bg-red-500/10 border border-red-500/30 text-red-400 px-5 py-4 rounded-2xl mb-8 flex items-center gap-3">
+            <span class="material-symbols-outlined">error</span>
+            <p class="font-semibold"><% const errs = {missing_model:'Please select a model.',save_failed:'Error saving settings.',missing_fields:'Subject and message are required.',email_failed:'Error sending email. Check SMTP config.',no_email:'Admin email not found.'}; %><%= errs[error] || error %></p>
+        </div>
         <% } %>
 
-        <div class="glass-surface border border-white/10 rounded-2xl p-8 mb-10">
+        <!-- Stats Row -->
+        <% if (typeof stats !== 'undefined') { %>
+        <div class="grid grid-cols-3 gap-4 mb-10">
+          <div class="glass-panel rounded-2xl p-5 text-center">
+            <div class="text-3xl font-bold text-white mb-1"><%= stats.users || 0 %></div>
+            <div class="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">Total Users</div>
+          </div>
+          <div class="glass-panel rounded-2xl p-5 text-center">
+            <div class="text-3xl font-bold text-secondary mb-1"><%= stats.overlays || 0 %></div>
+            <div class="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">Approved Overlays</div>
+          </div>
+          <div class="glass-panel rounded-2xl p-5 text-center border <%= (stats.pending || 0) > 0 ? 'border-red-500/30' : 'border-white/10' %>">
+            <div class="text-3xl font-bold <%= (stats.pending || 0) > 0 ? 'text-red-400' : 'text-white' %> mb-1"><%= stats.pending || 0 %></div>
+            <div class="text-xs text-on-surface-variant font-semibold uppercase tracking-wider">Pending Review</div>
+          </div>
+        </div>
+        <% } %>
+
+        <!-- AI Models -->
+        <div class="glass-surface border border-white/10 rounded-2xl p-8 mb-8">
             <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
                 <span class="material-symbols-outlined text-primary">auto_awesome</span>
                 Artificial Intelligence (SpiderIA)
             </h2>
-            
+
+            <% if (typeof models !== 'undefined' && models.length > 0) { %>
             <form action="/admin/settings/ia" method="POST" class="space-y-6">
                 <div>
-                    <label for="modelId" class="block text-sm font-medium text-on-surface-variant mb-2">Default AI Model</label>
-                    <select id="modelId" name="modelId" class="w-full bg-surface-container border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors">
-                        <% if (models && models.length > 0) { %>
-                            <% models.forEach(model => { %>
-                                <option value="<%= model.id %>" <%= currentModelId == model.id ? 'selected' : '' %>>
-                                    <%= model.display_name || model.model_name %> (<%= model.provider_name %>)
-                                </option>
-                            <% }) %>
-                        <% } else { %>
-                            <option value="">No models available from SpiderWeb API</option>
+                    <label for="modelId" class="block text-sm font-medium text-on-surface-variant mb-3">Active AI Model</label>
+                    <div class="grid gap-3">
+                      <% models.forEach(model => { %>
+                      <label class="flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all hover:border-primary/30 <%= (currentModelId && currentModelId == model.id) ? 'border-primary/50 bg-primary/5' : 'border-white/10 bg-surface-container/30' %>">
+                        <input type="radio" name="modelId" value="<%= model.id %>" <%= (currentModelId && currentModelId == model.id) ? 'checked' : '' %> class="text-primary"/>
+                        <div>
+                          <div class="font-semibold text-white text-sm"><%= model.display_name || model.model_name %></div>
+                          <div class="text-xs text-on-surface-variant"><%= model.provider_name %></div>
+                        </div>
+                        <% if (currentModelId && currentModelId == model.id) { %>
+                        <span class="ml-auto px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary/20 text-primary border border-primary/30">ACTIVE</span>
                         <% } %>
-                    </select>
-                    <p class="text-xs text-on-surface-variant mt-2">
-                        This model will be used across the platform for the floating AI assistant and the Canvas AI generator.
+                      </label>
+                      <% }) %>
+                    </div>
+                    <p class="text-xs text-on-surface-variant mt-3 flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[14px]">info</span>
+                      This model powers the floating chat assistant and the AI Overlay Generator.
                     </p>
                 </div>
-
                 <div class="pt-4 border-t border-white/5">
-                    <button type="submit" class="bg-primary text-on-primary font-bold py-3 px-8 rounded-xl hover:bg-primary/90 hover:scale-105 transition-all">
-                        Save AI Settings
+                    <button type="submit" onclick="return confirm('Change the active AI model?')"
+                            class="bg-primary text-background font-bold py-3 px-8 rounded-xl hover:bg-primary/90 hover:scale-105 transition-all flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[18px]">save</span> Save AI Settings
                     </button>
                 </div>
             </form>
+            <% } else { %>
+            <div class="flex items-center gap-3 p-5 rounded-xl border border-yellow-500/20 bg-yellow-500/5">
+              <span class="material-symbols-outlined text-yellow-400">warning</span>
+              <div>
+                <p class="text-yellow-300 font-semibold text-sm">SpiderIA unavailable</p>
+                <p class="text-on-surface-variant text-xs mt-0.5">Could not connect to SpiderIA to load models. Check your SPIDERWEBURL and SPIDERWEBAPIKEY in .env</p>
+              </div>
+            </div>
+            <% } %>
         </div>
 
-        <div class="glass-surface border border-white/10 rounded-2xl p-8">
-            <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                <span class="material-symbols-outlined text-primary">mail</span>
-                System Notifications (Email)
-            </h2>
-            
-            <form action="/admin/notify" method="POST" class="space-y-6">
+        <!-- Email System -->
+        <div class="glass-surface border border-white/10 rounded-2xl p-8 mb-8">
+            <div class="flex items-center justify-between mb-6">
+              <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                  <span class="material-symbols-outlined text-secondary">mail</span>
+                  Email System
+              </h2>
+              <a href="/admin/settings/test-email"
+                 onclick="return confirm('Send a test email to your account?')"
+                 class="flex items-center gap-2 px-4 py-2 rounded-xl border border-secondary/30 text-secondary hover:bg-secondary/10 transition-all text-sm font-semibold">
+                <span class="material-symbols-outlined text-[16px]">send</span>
+                Test Email
+              </a>
+            </div>
+
+            <!-- SMTP Config Info (solo nombres, no valores sensibles) -->
+            <div class="grid grid-cols-2 gap-3 mb-6 text-sm">
+              <div class="p-3 rounded-xl bg-surface-container/40 border border-white/5">
+                <div class="text-xs text-on-surface-variant mb-1">SMTP Host</div>
+                <div class="text-white font-mono text-xs">$SMTP_HOST</div>
+              </div>
+              <div class="p-3 rounded-xl bg-surface-container/40 border border-white/5">
+                <div class="text-xs text-on-surface-variant mb-1">SMTP Port</div>
+                <div class="text-white font-mono text-xs">$SMTP_PORT</div>
+              </div>
+              <div class="p-3 rounded-xl bg-surface-container/40 border border-white/5">
+                <div class="text-xs text-on-surface-variant mb-1">From Address</div>
+                <div class="text-white font-mono text-xs">$SMTP_FROM</div>
+              </div>
+              <div class="p-3 rounded-xl bg-surface-container/40 border border-white/5">
+                <div class="text-xs text-on-surface-variant mb-1">TLS</div>
+                <div class="text-white font-mono text-xs">$SMTP_SECURE</div>
+              </div>
+            </div>
+
+            <form action="/admin/notify" method="POST" class="space-y-5">
                 <div>
                     <label for="subject" class="block text-sm font-medium text-on-surface-variant mb-2">Email Subject</label>
-                    <input type="text" id="subject" name="subject" required placeholder="e.g. Platform Update v2.0" class="w-full bg-surface-container border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors">
+                    <input type="text" id="subject" name="subject" required
+                           placeholder="e.g. New features on SimplyOver!"
+                           class="w-full bg-surface-container border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-secondary/50 transition-colors">
                 </div>
                 <div>
-                    <label for="message" class="block text-sm font-medium text-on-surface-variant mb-2">Message Content (HTML allowed)</label>
-                    <textarea id="message" name="message" required rows="5" placeholder="Write your message here..." class="w-full bg-surface-container border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors resize-none"></textarea>
+                    <label for="message" class="block text-sm font-medium text-on-surface-variant mb-2">Message Content <span class="text-on-surface-variant/50">(HTML allowed)</span></label>
+                    <textarea id="message" name="message" required rows="5"
+                              placeholder="Write your announcement here..."
+                              class="w-full bg-surface-container border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-secondary/50 transition-colors resize-none"></textarea>
                 </div>
-                
-                <div class="pt-4 border-t border-white/5">
-                    <button type="submit" class="bg-primary text-on-primary font-bold py-3 px-8 rounded-xl hover:bg-primary/90 hover:scale-105 transition-all flex items-center gap-2" onclick="return confirm('Send email to ALL verified users? This cannot be undone.');">
+                <div class="pt-4 border-t border-white/5 flex items-center gap-3">
+                    <button type="submit"
+                            onclick="return confirm('Send this email to ALL active users? This cannot be undone.')"
+                            class="flex items-center gap-2 bg-secondary text-background font-bold py-3 px-8 rounded-xl hover:bg-secondary/90 hover:scale-105 transition-all">
                         <span class="material-symbols-outlined">send</span> Send Mass Email
                     </button>
+                    <p class="text-xs text-on-surface-variant">Will be sent to all active users with email.</p>
                 </div>
             </form>
         </div>

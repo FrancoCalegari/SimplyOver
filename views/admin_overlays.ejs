@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<%- include('partials/head', {title: 'Overlay Moderation | SimplyOver'}) %>
+<body class="bg-background text-on-background">
+    <%- include('partials/navbar') %>
+
+    <main class="max-w-6xl mx-auto px-5 pt-24 pb-24">
+        <div class="flex items-center justify-between mb-10">
+          <div>
+            <h1 class="text-3xl font-bold text-white mb-1">Overlay Moderation</h1>
+            <p class="text-on-surface-variant">Review and approve submitted overlays.</p>
+          </div>
+          <a href="/admin/settings" class="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-on-surface-variant hover:text-white hover:bg-white/5 transition-all text-sm font-semibold">
+            <span class="material-symbols-outlined text-[16px]">arrow_back</span> Back to Settings
+          </a>
+        </div>
+
+        <!-- Pending Section -->
+        <section class="mb-16">
+          <div class="flex items-center gap-3 mb-6">
+            <h2 class="text-xl font-bold text-white">Pending Review</h2>
+            <span class="px-3 py-1 rounded-full text-xs font-bold <%= pending.length > 0 ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-white/5 text-on-surface-variant' %>">
+              <%= pending.length %>
+            </span>
+          </div>
+
+          <% if (pending.length === 0) { %>
+          <div class="flex flex-col items-center justify-center py-20 border-2 border-dashed border-white/5 rounded-3xl">
+            <span class="material-symbols-outlined text-5xl text-on-surface-variant/20 mb-4">check_circle</span>
+            <p class="text-on-surface-variant font-semibold">No overlays pending review. All clear!</p>
+          </div>
+          <% } else { %>
+          <div class="space-y-5">
+            <% pending.forEach(function(ov) {
+              let previewUrl = 'https://via.placeholder.com/480x270/13131a/d2bbff?text=No+Preview';
+              try {
+                const ids = JSON.parse(ov.preview_storage_ids || '[]');
+                if (ids[0]) previewUrl = '/api/files/' + ids[0];
+              } catch(e) {}
+              let tags = [];
+              try { tags = JSON.parse(ov.tags || '[]'); } catch(e) {}
+            %>
+            <div class="glass-panel rounded-2xl p-6 border border-white/10" id="pending-<%= ov.id %>">
+              <div class="flex gap-6 items-start">
+                <!-- Preview -->
+                <div class="w-48 aspect-video rounded-xl overflow-hidden shrink-0 bg-surface-container/50">
+                  <img src="<%= previewUrl %>" alt="<%= ov.name %>" class="w-full h-full object-cover"
+                       onerror="this.src='https://via.placeholder.com/192x108/1f1f26/d2bbff?text=No+Preview'"/>
+                </div>
+                <!-- Info -->
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-start justify-between gap-4 mb-2">
+                    <h3 class="font-bold text-white text-lg"><%= ov.name %></h3>
+                    <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 shrink-0">PENDING</span>
+                  </div>
+                  <p class="text-on-surface-variant text-sm mb-2">
+                    By <a href="/artist/<%= ov.creator_username %>" class="text-secondary hover:underline" target="_blank">@<%= ov.creator_username %></a>
+                    · <% if (parseFloat(ov.price) > 0) { %><span class="text-primary font-semibold">$<%= parseFloat(ov.price).toFixed(2) %></span><% } else { %><span class="text-secondary font-semibold">FREE</span><% } %>
+                  </p>
+                  <% if (ov.description) { %>
+                  <p class="text-on-surface-variant text-sm leading-relaxed mb-3 line-clamp-2"><%= ov.description %></p>
+                  <% } %>
+                  <% if (tags.length > 0) { %>
+                  <div class="flex flex-wrap gap-1 mb-4">
+                    <% tags.slice(0,5).forEach(t => { %><span class="px-2 py-0.5 rounded-full text-[10px] bg-white/5 border border-white/10 text-on-surface-variant"><%= t %></span><% }) %>
+                  </div>
+                  <% } %>
+                  <p class="text-xs text-on-surface-variant mb-4">Submitted: <%= new Date(ov.created_at).toLocaleDateString() %></p>
+                  <!-- Actions -->
+                  <div class="flex items-center gap-3">
+                    <button onclick="approveOverlay('<%= ov.id %>')"
+                            class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30 transition-all">
+                      <span class="material-symbols-outlined text-[16px]">check_circle</span> Approve
+                    </button>
+                    <button onclick="rejectOverlay('<%= ov.id %>')"
+                            class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-all">
+                      <span class="material-symbols-outlined text-[16px]">cancel</span> Reject
+                    </button>
+                    <a href="/overlay/<%= ov.slug %>" target="_blank"
+                       class="flex items-center gap-1 text-xs text-on-surface-variant hover:text-primary transition-colors ml-auto">
+                      <span class="material-symbols-outlined text-[14px]">open_in_new</span> Preview
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <% }); %>
+          </div>
+          <% } %>
+        </section>
+
+        <!-- Recently Approved -->
+        <section>
+          <h2 class="text-xl font-bold text-white mb-6">Recently Approved</h2>
+          <% if (approved.length === 0) { %>
+          <p class="text-on-surface-variant">No approved overlays yet.</p>
+          <% } else { %>
+          <div class="glass-surface border border-white/10 rounded-2xl overflow-hidden">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-white/5 text-on-surface-variant text-xs uppercase tracking-wider">
+                  <th class="px-6 py-4 text-left font-semibold">Overlay</th>
+                  <th class="px-6 py-4 text-left font-semibold">Creator</th>
+                  <th class="px-6 py-4 text-left font-semibold">Price</th>
+                  <th class="px-6 py-4 text-left font-semibold">Downloads</th>
+                  <th class="px-6 py-4 text-left font-semibold">Published</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% approved.forEach(function(ov) { %>
+                <tr class="border-b border-white/5 hover:bg-white/2 transition-colors">
+                  <td class="px-6 py-4">
+                    <a href="/overlay/<%= ov.slug %>" class="text-white font-semibold hover:text-primary transition-colors"><%= ov.name %></a>
+                  </td>
+                  <td class="px-6 py-4 text-on-surface-variant">@<%= ov.creator_username %></td>
+                  <td class="px-6 py-4">
+                    <% if (parseFloat(ov.price) > 0) { %>
+                    <span class="text-primary font-semibold">$<%= parseFloat(ov.price).toFixed(2) %></span>
+                    <% } else { %>
+                    <span class="text-secondary font-semibold">FREE</span>
+                    <% } %>
+                  </td>
+                  <td class="px-6 py-4 text-on-surface-variant"><%= ov.download_count || 0 %></td>
+                  <td class="px-6 py-4 text-on-surface-variant"><%= ov.published_at ? new Date(ov.published_at).toLocaleDateString() : '—' %></td>
+                </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+          <% } %>
+        </section>
+    </main>
+
+<script>
+  async function approveOverlay(id) {
+    if (!confirm('Approve this overlay? It will be visible on the marketplace.')) return;
+    const r = await fetch(`/admin/overlays/${id}/approve`, { method: 'POST' });
+    const data = await r.json();
+    if (data.success) {
+      const el = document.getElementById(`pending-${id}`);
+      el.style.transition = 'all 0.4s ease';
+      el.style.opacity = '0';
+      el.style.transform = 'scale(0.95)';
+      setTimeout(() => {
+        el.remove();
+        const badge = document.querySelector('span.px-3.py-1.rounded-full');
+        if (badge) {
+          const count = parseInt(badge.textContent) - 1;
+          badge.textContent = count;
+          if (count === 0) badge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-white/5 text-on-surface-variant';
+        }
+      }, 400);
+    } else {
+      alert('Error approving overlay. Try again.');
+    }
+  }
+
+  async function rejectOverlay(id) {
+    const reason = prompt('Reason for rejection (optional, will be logged):');
+    if (reason === null) return; // Cancelled
+    const r = await fetch(`/admin/overlays/${id}/reject`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reason })
+    });
+    const data = await r.json();
+    if (data.success) {
+      const el = document.getElementById(`pending-${id}`);
+      el.style.transition = 'all 0.4s ease';
+      el.style.opacity = '0';
+      setTimeout(() => el.remove(), 400);
+    } else {
+      alert('Error rejecting overlay. Try again.');
+    }
+  }
+</script>
+</body>
+</html>

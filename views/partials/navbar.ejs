@@ -1,5 +1,5 @@
 <!-- TopNavBar -->
-<nav class="sticky top-0 w-full z-50 bg-surface/30 backdrop-blur-md border-b border-white/10 shadow-sm flex items-center justify-between px-6 h-20">
+<nav class="sticky top-0 w-full z-50 border-b border-white/10 shadow-sm flex items-center justify-between px-6 h-20" style="background: rgba(19,19,26,0.85); backdrop-filter: blur(16px);">
   <!-- Left: Logo + Search -->
   <div class="flex items-center gap-6 flex-1">
     <a href="/" class="flex items-center gap-2 shrink-0">
@@ -7,32 +7,34 @@
     </a>
     <div class="hidden lg:flex flex-1 max-w-xl relative">
       <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-secondary text-[20px]">search</span>
-      <input class="w-full bg-surface-container-highest/50 border border-white/10 rounded-full py-2.5 pl-12 pr-4 focus:ring-2 focus:ring-primary outline-none transition-all text-white text-sm" placeholder="Search overlays, artists, styles..." type="text" id="main-search"/>
+      <input class="w-full bg-surface-container-highest/50 border border-white/10 rounded-full py-2.5 pl-12 pr-4 focus:ring-2 focus:ring-primary outline-none transition-all text-white text-sm" placeholder="Search overlays, artists, styles..." type="text" id="main-search" autocomplete="off"/>
+      <!-- Autocomplete dropdown -->
+      <div id="search-dropdown" class="hidden absolute top-full left-0 right-0 mt-2 rounded-xl border border-white/10 shadow-2xl overflow-hidden z-50" style="background: rgba(19,19,26,0.98); backdrop-filter: blur(20px);"></div>
     </div>
   </div>
 
-  <!-- Center: Category tags -->
+  <!-- Center: Category tags (dinámico desde DB) -->
   <div class="hidden xl:flex items-center gap-1 px-6">
-    <a class="nav-tag active" href="/">All</a>
-    <a class="nav-tag" href="/category/anime">Anime</a>
-    <a class="nav-tag" href="/category/esports">Esports</a>
-    <a class="nav-tag" href="/category/neon">Neon</a>
-    <a class="nav-tag" href="/category/gaming">Gaming</a>
-    <a class="nav-tag" href="/category/cyberpunk">Cyberpunk</a>
-    <a class="nav-tag" href="/category/minimal">Minimal</a>
+    <a class="nav-tag <%= !locals.filters || !locals.filters.category ? 'active' : '' %>" href="/">All</a>
+    <% if (typeof categories !== 'undefined' && categories && categories.length > 0) { %>
+      <% categories.slice(0, 6).forEach(function(cat) { %>
+      <a class="nav-tag <%= (locals.filters && locals.filters.category === cat.slug) ? 'active' : '' %>"
+         href="/?category=<%= cat.slug %>"><%= cat.name %></a>
+      <% }); %>
+    <% } %>
   </div>
 
   <!-- Right: Auth buttons / User menu -->
   <div class="flex items-center gap-3">
     <% if (typeof user !== 'undefined' && user) { %>
       <!-- Usuario autenticado -->
-      <a href="/messages" class="relative p-2.5 rounded-full glass-level-1 text-on-surface-variant hover:text-secondary transition-colors" title="Messages">
+      <a href="/messages" class="relative p-2.5 rounded-full text-on-surface-variant hover:text-secondary transition-colors" style="background: rgba(255,255,255,0.05);" title="Messages">
         <span class="material-symbols-outlined text-[22px]">mail</span>
-        <!-- Badge de mensajes no leídos (por ahora oculto) -->
       </a>
       <div class="relative" id="user-menu-container">
         <button onclick="document.getElementById('user-dropdown').classList.toggle('hidden')"
-                class="flex items-center gap-2 py-1.5 pl-2 pr-4 rounded-full glass-level-1 border border-white/10 hover:border-primary/30 transition-all group">
+                class="flex items-center gap-2 py-1.5 pl-2 pr-4 rounded-full border border-white/10 hover:border-primary/30 transition-all group"
+                style="background: rgba(255,255,255,0.05);">
           <div class="w-8 h-8 rounded-full bg-primary-container/20 border-2 border-primary/30 flex items-center justify-center overflow-hidden">
             <% if (user.avatar_storage_id) { %>
               <img src="/api/files/<%= user.avatar_storage_id %>" class="w-full h-full object-cover" alt="Avatar"/>
@@ -44,8 +46,9 @@
           <span class="material-symbols-outlined text-on-surface-variant text-[18px] group-hover:rotate-180 transition-transform duration-200">expand_more</span>
         </button>
 
-        <!-- Dropdown menu -->
-        <div id="user-dropdown" class="hidden absolute right-0 top-[calc(100%+8px)] w-56 glass-panel rounded-xl border border-white/10 shadow-2xl overflow-hidden z-50">
+        <!-- Dropdown menu — fondo sólido con alta opacidad -->
+        <div id="user-dropdown" class="hidden absolute right-0 top-[calc(100%+8px)] w-64 rounded-xl border border-white/10 shadow-2xl overflow-hidden z-50"
+             style="background: rgba(18,15,28,0.97); backdrop-filter: blur(24px);">
           <div class="px-4 py-3 border-b border-white/5">
             <p class="text-white font-semibold text-sm"><%= user.display_name || user.username %></p>
             <p class="text-on-surface-variant text-xs">@<%= user.username %></p>
@@ -69,6 +72,11 @@
             <a href="/studio/ai" class="flex items-center gap-3 px-4 py-2.5 text-sm text-on-surface-variant hover:text-white hover:bg-white/5 transition-all">
               <span class="material-symbols-outlined text-[18px]">auto_awesome</span> AI Studio
             </a>
+            <% if (user.role === 'creator' || user.role === 'admin') { %>
+            <a href="/studio" class="flex items-center gap-3 px-4 py-2.5 text-sm text-secondary hover:text-white hover:bg-white/5 transition-all">
+              <span class="material-symbols-outlined text-[18px]">add_circle</span> Publish Overlay
+            </a>
+            <% } %>
             <% if (user.role === 'admin') { %>
             <a href="/admin/settings" class="flex items-center gap-3 px-4 py-2.5 text-sm text-primary hover:text-white hover:bg-white/5 transition-all">
               <span class="material-symbols-outlined text-[18px]">admin_panel_settings</span> Admin Settings
@@ -94,22 +102,21 @@
     <% } %>
 
     <!-- Mobile hamburger -->
-    <button class="xl:hidden p-2 rounded-lg glass-level-1 text-on-surface-variant hover:text-white transition-colors" onclick="toggleMobileMenu()">
+    <button class="xl:hidden p-2 rounded-lg text-on-surface-variant hover:text-white transition-colors" style="background: rgba(255,255,255,0.05);" onclick="toggleMobileMenu()">
       <span class="material-symbols-outlined">menu</span>
     </button>
   </div>
 </nav>
 
 <!-- Mobile Menu -->
-<div id="mobile-menu" class="hidden xl:hidden bg-surface-container/95 backdrop-blur-xl border-b border-white/10 px-6 py-4">
-  <div class="flex flex-col gap-2">
+<div id="mobile-menu" class="hidden xl:hidden border-b border-white/10 px-6 py-4" style="background: rgba(31,31,38,0.98); backdrop-filter: blur(20px);">
+  <div class="flex flex-col gap-1">
     <a href="/" class="nav-tag-mobile">All</a>
-    <a href="/category/anime" class="nav-tag-mobile">Anime</a>
-    <a href="/category/esports" class="nav-tag-mobile">Esports</a>
-    <a href="/category/neon" class="nav-tag-mobile">Neon</a>
-    <a href="/category/gaming" class="nav-tag-mobile">Gaming</a>
-    <a href="/category/cyberpunk" class="nav-tag-mobile">Cyberpunk</a>
-    <a href="/category/minimal" class="nav-tag-mobile">Minimal</a>
+    <% if (typeof categories !== 'undefined' && categories) { %>
+      <% categories.forEach(function(cat) { %>
+      <a href="/?category=<%= cat.slug %>" class="nav-tag-mobile"><%= cat.name %></a>
+      <% }); %>
+    <% } %>
   </div>
 </div>
 
@@ -142,6 +149,7 @@
     from { opacity: 0; transform: translateY(-8px); }
     to { opacity: 1; transform: translateY(0); }
   }
+  #search-dropdown a:hover { background: rgba(255,255,255,0.05); }
 </style>
 
 <script>
@@ -152,21 +160,85 @@
     if (container && !container.contains(e.target)) {
       dropdown?.classList.add('hidden');
     }
+    // Cerrar search dropdown
+    const searchInput = document.getElementById('main-search');
+    const searchDropdown = document.getElementById('search-dropdown');
+    if (searchInput && !searchInput.contains(e.target) && searchDropdown && !searchDropdown.contains(e.target)) {
+      searchDropdown?.classList.add('hidden');
+    }
   });
+
   function toggleMobileMenu() {
     document.getElementById('mobile-menu')?.classList.toggle('hidden');
   }
 
-  // Marcar categoría activa según URL
-  const currentPath = window.location.pathname;
-  document.querySelectorAll('.nav-tag').forEach(tag => {
-    tag.classList.remove('active');
-    if (tag.getAttribute('href') === currentPath ||
-        (currentPath.startsWith('/category/') && tag.getAttribute('href') === currentPath)) {
-      tag.classList.add('active');
+  // ── Búsqueda con autocompletar ──────────────────────────────────
+  let searchTimer;
+  const searchInput = document.getElementById('main-search');
+  const searchDropdown = document.getElementById('search-dropdown');
+
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      clearTimeout(searchTimer);
+      const q = this.value.trim();
+      if (q.length < 2) {
+        searchDropdown.classList.add('hidden');
+        return;
+      }
+      searchTimer = setTimeout(() => performSearch(q), 300);
+    });
+
+    searchInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const q = this.value.trim();
+        if (q) window.location.href = '/?q=' + encodeURIComponent(q);
+      }
+    });
+  }
+
+  async function performSearch(q) {
+    try {
+      const [overlayRes, userRes] = await Promise.all([
+        fetch(`/?q=${encodeURIComponent(q)}&format=json`).catch(() => null),
+        fetch(`/api/users/search?q=${encodeURIComponent(q)}`)
+      ]);
+      const userData = await userRes.json();
+
+      let html = '';
+      if (userData.users && userData.users.length > 0) {
+        html += `<div class="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/50 border-b border-white/5">Artists</div>`;
+        userData.users.forEach(u => {
+          html += `<a href="/artist/${u.username}" class="flex items-center gap-3 px-4 py-3 text-sm text-white transition-colors">
+            <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden shrink-0">
+              ${u.avatar_storage_id ? `<img src="/api/files/${u.avatar_storage_id}" class="w-full h-full object-cover"/>` : '<span class="material-symbols-outlined text-primary text-[14px]">person</span>'}
+            </div>
+            <div>
+              <div class="font-semibold">${escHtml(u.display_name || u.username)}</div>
+              <div class="text-xs text-on-surface-variant">@${escHtml(u.username)}</div>
+            </div>
+          </a>`;
+        });
+      }
+
+      // Siempre agregar opción de buscar en marketplace
+      html += `<a href="/?q=${encodeURIComponent(q)}" class="flex items-center gap-3 px-4 py-3 text-sm text-secondary transition-colors border-t border-white/5">
+        <span class="material-symbols-outlined text-[16px]">search</span>
+        Search "<strong>${escHtml(q)}</strong>" in marketplace
+      </a>`;
+
+      if (html) {
+        searchDropdown.innerHTML = html;
+        searchDropdown.classList.remove('hidden');
+      } else {
+        searchDropdown.classList.add('hidden');
+      }
+    } catch(e) {
+      searchDropdown.classList.add('hidden');
     }
-  });
-  if (currentPath === '/') {
-    document.querySelector('.nav-tag[href="/"]')?.classList.add('active');
+  }
+
+  function escHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 </script>

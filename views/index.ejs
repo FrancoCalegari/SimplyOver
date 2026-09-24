@@ -142,7 +142,54 @@
                 <% } %>
             </section>
 
-            <!-- Grid de Overlays Dinámico -->
+            <!-- Filtros Horizontales (debajo del hero) -->
+            <div class="mb-8 flex items-center gap-3 flex-wrap">
+              <!-- Búsqueda activa chip -->
+              <% if (_f.q) { %>
+              <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary text-sm font-semibold">
+                <span class="material-symbols-outlined text-[16px]">search</span>
+                &ldquo;<%= _f.q %>&rdquo;
+                <a href="/<%= [_f.category?'?category='+_f.category:'',_f.price?'price='+_f.price:''].filter(Boolean).join('&').replace(/^([^?])/,'?$1') %>" class="hover:text-white ml-1">
+                  <span class="material-symbols-outlined text-[14px]">close</span>
+                </a>
+              </span>
+              <% } %>
+
+              <!-- Precio -->
+              <div class="flex items-center gap-1 bg-surface-container/50 border border-white/10 rounded-full p-1">
+                <a href="/?<%= [_f.category?'category='+_f.category:'',_f.sort&&_f.sort!=='newest'?'sort='+_f.sort:'',_f.q?'q='+encodeURIComponent(_f.q):''].filter(Boolean).join('&') %>"
+                   class="px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all <%= !_f.price ? 'bg-white/10 text-white' : 'text-on-surface-variant hover:text-white' %>">All</a>
+                <a href="/?price=free<%= _f.category?'&category='+_f.category:'' %><%= _f.sort&&_f.sort!=='newest'?'&sort='+_f.sort:'' %><%= _f.q?'&q='+encodeURIComponent(_f.q):'' %>"
+                   class="px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all <%= _f.price==='free' ? 'bg-secondary/20 text-secondary' : 'text-on-surface-variant hover:text-white' %>">Free</a>
+                <a href="/?price=paid<%= _f.category?'&category='+_f.category:'' %><%= _f.sort&&_f.sort!=='newest'?'&sort='+_f.sort:'' %><%= _f.q?'&q='+encodeURIComponent(_f.q):'' %>"
+                   class="px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all <%= _f.price==='paid' ? 'bg-primary/20 text-primary' : 'text-on-surface-variant hover:text-white' %>">Premium</a>
+              </div>
+
+              <!-- Sort -->
+              <div class="flex items-center gap-1 bg-surface-container/50 border border-white/10 rounded-full p-1">
+                <a href="/?sort=newest<%= _f.category?'&category='+_f.category:'' %><%= _f.price?'&price='+_f.price:'' %><%= _f.q?'&q='+encodeURIComponent(_f.q):'' %>"
+                   class="px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1 <%= !_f.sort||_f.sort==='newest' ? 'bg-white/10 text-white' : 'text-on-surface-variant hover:text-white' %>">
+                  <span class="material-symbols-outlined text-[14px]">schedule</span>New
+                </a>
+                <a href="/?sort=popular<%= _f.category?'&category='+_f.category:'' %><%= _f.price?'&price='+_f.price:'' %><%= _f.q?'&q='+encodeURIComponent(_f.q):'' %>"
+                   class="px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1 <%= _f.sort==='popular' ? 'bg-white/10 text-white' : 'text-on-surface-variant hover:text-white' %>">
+                  <span class="material-symbols-outlined text-[14px]">local_fire_department</span>Popular
+                </a>
+                <a href="/?sort=trending<%= _f.category?'&category='+_f.category:'' %><%= _f.price?'&price='+_f.price:'' %><%= _f.q?'&q='+encodeURIComponent(_f.q):'' %>"
+                   class="px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1 <%= _f.sort==='trending' ? 'bg-white/10 text-white' : 'text-on-surface-variant hover:text-white' %>">
+                  <span class="material-symbols-outlined text-[14px]">trending_up</span>Trending
+                </a>
+              </div>
+
+              <!-- Resultado count -->
+              <% if (_ov.length > 0) { %>
+              <span class="text-xs text-on-surface-variant ml-auto">
+                <%= _ov.length %><%= _pg.hasMore ? '+' : '' %> overlay<%= _ov.length !== 1 ? 's' : '' %>
+                <% if (_f.category) { %> in category<% } %>
+                <% if (_f.q) { %> matching "<%= _f.q %>"<% } %>
+              </span>
+              <% } %>
+            </div>
             <% if (_ov.length === 0) { %>
             <div class="flex flex-col items-center justify-center py-32 border-2 border-dashed border-white/5 rounded-3xl">
                 <div class="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6">

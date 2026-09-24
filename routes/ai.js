@@ -16,17 +16,21 @@ router.post('/ai-chat', optionalAuth, async (req, res) => {
   const { message, history = [] } = req.body
   if (!message?.trim()) return res.status(400).json({ error: 'Missing message' })
 
-  const systemPrompt = `Eres el asistente virtual de SimplyOver, el marketplace número uno de overlays para OBS. 
-Tu rol principal es actuar como asistente de soporte, analista de contenido y guía de la plataforma.
+  const systemPrompt = `Eres el asistente virtual de SimplyOver, el marketplace de overlays para OBS y streaming.
+Tu rol es actuar como asistente de soporte, analista de contenido y guía de la plataforma.
 
-Reglas y Funciones:
-- Ayuda a los usuarios a encontrar contenido (anime, gaming, arte, esports, etc.) a través de las categorías o el buscador.
-- Explica el sistema de compras, favoritos y tableros.
-- IMPORTANTE: Las funciones de crear/generar overlays con IA (AI Studio) todavía NO están implementadas, pero indícale al usuario que están previstas como un módulo futuro próximo.
-- Utiliza siempre formato Markdown en tus respuestas para decorarlas. Usa **negrita** para resaltar preguntas, conceptos importantes o títulos, y *cursiva* para ejemplos o aclaraciones breves.
+Funciones disponibles:
+- Ayuda a encontrar overlays por categoría (stream-alerts, facecam-frames, panels, widgets, bundles, transitions, screens, etc.)
+- Explica el sistema de favoritos (corazón en cada overlay), tableros (guardar en boards), y biblioteca (overlays descargados)
+- Guia sobre cómo publicar overlays: ir a Studio, subir preview + archivo ZIP, elegir categoría y precio
+- Explica el AI Studio: describe tu overlay y la IA genera una especificación completa lista para usar
+- Sistema de mensajes: podés contactar directamente a los creadores desde su perfil
+- Overlays gratuitos: se descargan directamente; overlays de pago: requieren compra
 
-Ejemplo de tu tono y formato de respuesta:
-¡Hola! Esta es una excelente web. ¿En qué se encuentra? **¿Qué tipo de contenido ofrece?** *(Por ejemplo: anime, gaming, arte, etc.)* **¿Cómo puedo encontrarlo?** *(Por ejemplo: navegar por las categorías, usar el buscador, etc.)* **¿Cuál es mi rol?** *(Por ejemplo: asistente de soporte, analista de contenido, etc.)* Si tienes alguna pregunta sobre el estilo o el precio de un overlay, dime y te ayudo.`
+Formato de respuesta:
+- Usas Markdown con **negrita** para conceptos importantes e *cursiva* para ejemplos
+- Sos amigable, conciso y orientado a ayudar streamers a mejorar su contenido visual
+- Si el usuario busca algo específico, sugerir navegar por categorías o usar el buscador del sitio`
 
 
   const messages = [
@@ -55,8 +59,8 @@ Ejemplo de tu tono y formato de respuesta:
       try {
         await query(
           `INSERT INTO ia_sessions (id, user_id, model_id, messages, created_at, updated_at)
-           VALUES (?, ?, 'gpt-4o-mini', ?, NOW(), NOW())`,
-          [sessionId, req.user.id, JSON.stringify([...messages, { role: 'assistant', content: reply }])]
+           VALUES (?, ?, ?, ?, NOW(), NOW())`,
+          [sessionId, req.user.id, String(modelId), JSON.stringify([...messages, { role: 'assistant', content: reply }])]
         )
       } catch (saveErr) {
         console.warn('[AI/Chat] Could not save session:', saveErr.message)

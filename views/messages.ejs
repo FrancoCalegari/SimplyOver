@@ -7,11 +7,31 @@
 
     <!-- Sidebar de conversaciones -->
     <aside class="w-[320px] shrink-0 border-r border-white/10 bg-surface-container/30 flex flex-col">
-      <div class="px-5 py-5 border-b border-white/10">
-        <h1 class="text-xl font-bold text-white mb-4">Messages</h1>
+      <div class="px-5 py-5 border-b border-white/10 space-y-3">
+        <div class="flex items-center justify-between">
+          <h1 class="text-xl font-bold text-white">Messages</h1>
+          <button onclick="document.getElementById('new-chat-panel').classList.toggle('hidden')"
+                  class="p-1.5 rounded-lg text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-all" title="New message">
+            <span class="material-symbols-outlined text-[20px]">edit_square</span>
+          </button>
+        </div>
+
+        <!-- Panel nueva conversación -->
+        <div id="new-chat-panel" class="hidden p-3 rounded-xl border border-white/10 bg-surface-container/40 space-y-2">
+          <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Start new conversation</p>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-primary text-[16px]">person_search</span>
+            <input type="text" id="user-search" placeholder="Search by username..."
+                   class="w-full bg-surface-container/60 border border-primary/20 rounded-xl py-2 pl-9 pr-4 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                   autocomplete="off"/>
+          </div>
+          <div id="user-search-results" class="hidden rounded-xl border border-white/10 overflow-hidden" style="background: rgba(18,15,28,0.97);"></div>
+        </div>
+
+        <!-- Filtro conversaciones existentes -->
         <div class="relative">
           <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary text-[18px]">search</span>
-          <input type="text" id="conv-search" placeholder="Search conversations..." onInput="filterConversations(this.value)"
+          <input type="text" id="conv-search" placeholder="Filter conversations..." onInput="filterConversations(this.value)"
                  class="w-full bg-surface-container/60 border border-white/10 rounded-full py-2 pl-9 pr-4 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"/>
         </div>
       </div>
@@ -206,6 +226,60 @@
     } catch(e) {}
   }, 5000);
   <% } %>
+
+  // ── Búsqueda de usuarios para nueva conversación ──────────────
+  let userSearchTimer;
+  const userSearchInput = document.getElementById('user-search');
+  const userSearchResults = document.getElementById('user-search-results');
+
+  if (userSearchInput) {
+    userSearchInput.addEventListener('input', function() {
+      clearTimeout(userSearchTimer);
+      const q = this.value.trim();
+      if (q.length < 2) {
+        userSearchResults?.classList.add('hidden');
+        return;
+      }
+      userSearchTimer = setTimeout(() => searchUsers(q), 300);
+    });
+  }
+
+  async function searchUsers(q) {
+    try {
+      const r = await fetch(`/api/users/search?q=${encodeURIComponent(q)}`);
+      const data = await r.json();
+      if (!userSearchResults) return;
+
+      if (!data.users || data.users.length === 0) {
+        userSearchResults.innerHTML = `<div class="px-4 py-3 text-sm text-on-surface-variant">No users found for "${q.replace(/</g,'&lt;')}"</div>`;
+        userSearchResults.classList.remove('hidden');
+        return;
+      }
+
+      userSearchResults.innerHTML = data.users.map(u => `
+        <a href="/messages/${u.username}" class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-colors border-b border-white/5 last:border-0">
+          <div class="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden shrink-0">
+            ${u.avatar_storage_id ? `<img src="/api/files/${u.avatar_storage_id}" class="w-full h-full object-cover"/>` : '<span class="material-symbols-outlined text-primary text-[16px]">person</span>'}
+          </div>
+          <div>
+            <div class="font-semibold text-white text-sm">${u.display_name || u.username}</div>
+            <div class="text-xs text-on-surface-variant">@${u.username}</div>
+          </div>
+          <span class="material-symbols-outlined text-[16px] text-on-surface-variant ml-auto">chevron_right</span>
+        </a>
+      `).join('');
+      userSearchResults.classList.remove('hidden');
+    } catch(e) {
+      userSearchResults?.classList.add('hidden');
+    }
+  }
+
+  // Cerrar resultados al hacer click fuera
+  document.addEventListener('click', function(e) {
+    if (userSearchInput && !userSearchInput.contains(e.target) && userSearchResults && !userSearchResults.contains(e.target)) {
+      userSearchResults?.classList.add('hidden');
+    }
+  });
 </script>
 </body>
 </html>

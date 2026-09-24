@@ -85,9 +85,16 @@
   </section>
 
   <!-- ═══ Right Panel: Auth Form ═══ -->
-  <section class="flex-1 flex items-center justify-center p-6 md:p-12 bg-background relative overflow-hidden">
+  <section class="flex-1 flex items-center justify-center p-6 md:p-12 relative overflow-hidden" style="background: #0e0e15;">
+    <!-- Imagen de fondo con opacidad baja -->
+    <div class="absolute inset-0 z-0 bg-cover bg-center transition-opacity duration-700" id="bg-image-form"
+         style="background-image: url('https://lh3.googleusercontent.com/aida/AP1WRLv4I8ucRFfhK5bsuHjLuOmsjnXuR40rKcROfKcLAJ5qyPXaEvOBHk6aEebvtU1WZYMxN7nTT2xSQg1nudUj2VMOtGYKRero1CPXYhj0OKw2RDEWGT15iBWVFjPNEQDteUjd6B6QCRFWg3-gZRJM0BNszM186UdqPWJymeqb2sQ8KV_uLXy32m_gR20TpNblsyWJIY25-1Q91ZOvq2Xtm8ce7G4ciwuH1vw9COjgM4wi05-V-AjTDz_03iY'); opacity: 0.08; mix-blend-mode: lighten;">
+    </div>
+    <!-- Overlay sólido oscuro para garantizar legibilidad -->
+    <div class="absolute inset-0 z-1" style="background: rgba(14,14,21,0.75); backdrop-filter: blur(2px);"></div>
+    
     <!-- Glow de fondo -->
-    <div class="absolute top-1/4 right-1/4 w-80 h-80 rounded-full blur-[120px] opacity-10 transition-colors duration-700 pointer-events-none" id="form-glow"
+    <div class="absolute top-1/4 right-1/4 w-80 h-80 rounded-full blur-[120px] opacity-6 transition-colors duration-700 pointer-events-none z-1" id="form-glow"
          style="background: #4cd7f6"></div>
 
     <div class="w-full max-w-md relative z-10">

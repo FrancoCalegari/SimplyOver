@@ -9,6 +9,25 @@ import { requireAuth } from '../lib/authExpress.js'
 
 const router = Router()
 
+// ─── GET /api/favorites ──────────────────────────────────────────
+router.get('/', requireAuth, async (req, res) => {
+  const userId = req.user.id;
+  try {
+    const favorites = await query(
+      `SELECT o.id, o.name, o.slug, o.price, o.preview_storage_ids
+       FROM favorites f
+       JOIN overlays o ON o.id = f.overlay_id
+       WHERE f.user_id = ?
+       ORDER BY f.created_at DESC`,
+      [userId]
+    );
+    res.json({ favorites });
+  } catch (err) {
+    console.error('[Favorites/List]', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 // ─── POST /api/favorites ──────────────────────────────────────────────────────
 router.post('/', requireAuth, async (req, res) => {
   const { overlayId } = req.body

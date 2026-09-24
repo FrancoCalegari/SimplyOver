@@ -1,217 +1,365 @@
 <!DOCTYPE html>
 <html class="dark" lang="en">
-<%- include('partials/head', {title: 'Neon Pulse - Cyberpunk Stream Suite | SimplyOver'}) %>
+<%- include('partials/head', {title: (typeof overlay !== 'undefined' && overlay ? overlay.name + ' | SimplyOver' : 'Overlay Details | SimplyOver')}) %>
+<%
+  const _ov = (typeof overlay !== 'undefined') ? overlay : null;
+  const _sw = (typeof spiderwebUrl !== 'undefined') ? spiderwebUrl : '';
+  const _reviews = (typeof reviews !== 'undefined') ? reviews : [];
+  const _cats = (typeof overlayCategories !== 'undefined') ? overlayCategories : [];
+  const _isFav = (typeof isFavorite !== 'undefined') ? isFavorite : false;
+  const _purchase = (typeof userPurchase !== 'undefined') ? userPurchase : null;
+  const _isPaid = _ov && parseFloat(_ov.price) > 0;
+%>
 <body class="bg-background selection:bg-primary/30 selection:text-primary">
     <%- include('partials/navbar') %>
-    
+
+    <% if (!_ov) { %>
+    <div class="flex flex-col items-center justify-center min-h-screen text-center px-6">
+      <span class="material-symbols-outlined text-6xl text-on-surface-variant mb-4">search_off</span>
+      <h1 class="text-3xl font-bold text-white mb-2">Overlay not found</h1>
+      <p class="text-on-surface-variant mb-6">This overlay may have been removed or is no longer available.</p>
+      <a href="/" class="px-6 py-3 rounded-full bg-primary/10 border border-primary/30 text-primary font-semibold">Back to Marketplace</a>
+    </div>
+    <% } else { %>
+
     <main class="max-w-[1440px] mx-auto px-5 md:px-12 py-12">
         <!-- Breadcrumbs -->
-        <nav class="flex items-center gap-2 mb-8 text-on-surface-variant text-xs font-semibold">
+        <nav class="flex items-center gap-2 mb-8 text-on-surface-variant text-xs font-semibold flex-wrap">
             <a class="hover:text-primary transition-colors" href="/">Home</a>
             <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-            <a class="hover:text-primary transition-colors" href="#">Overlays</a>
-            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-            <a class="hover:text-primary transition-colors" href="#">Gaming</a>
-            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-            <span class="text-primary font-bold">Neon Pulse</span>
+            <% _cats.forEach(function(cat, i) { %>
+              <a class="hover:text-primary transition-colors" href="/?category=<%= cat.slug %>"><%= cat.name %></a>
+              <% if (i < _cats.length - 1) { %>
+                <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+              <% } %>
+            <% }); %>
+            <% if (_cats.length > 0) { %>
+              <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+            <% } %>
+            <span class="text-primary font-bold"><%= _ov.name %></span>
         </nav>
-        
-        <div class="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8 items-start">
+
+        <div class="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-10 items-start">
             <!-- LEFT COLUMN -->
-            <div class="space-y-12">
+            <div class="space-y-10">
                 <!-- Main Preview -->
-                <section class="relative group aspect-video rounded-xl overflow-hidden glass-panel">
-                    <img alt="Neon Pulse Preview" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_Ap19D-FfLi4y6mlBgIP1qNrH6x5L75gue7weIrzEqp1Gt6EnE4rstF4E1XGSvvdIMvY9_oOt8n2goKzySj_BCwMNpw7qAghcs7lBY4qmOwz8u-v-xj05hqbr4ST8CU3EPBDNyS8OPCAz_W3qvsQGkm7gvLGIxgEnr9VRRU4EXori78H0ZnQcP0KlLZIvt4SQ1iZioILaEP4lWlVwaVygX-N7HmaIMje56WFfamIF5MMRBlJu5AYHW3LEdWydBPylyuqJQMFIEw4"/>
-                    <div class="absolute inset-0 bg-black/20 flex items-center justify-center">
-                        <button class="w-24 h-24 rounded-full glass-panel flex items-center justify-center text-primary group-hover:scale-110 transition-all duration-300">
-                            <span class="material-symbols-outlined text-5xl translate-x-1" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
-                        </button>
+                <% const firstPreview = _ov.previewIds && _ov.previewIds[0] ? '/api/files/' + _ov.previewIds[0] : 'https://via.placeholder.com/1280x720/13131a/d2bbff?text=' + encodeURIComponent(_ov.name); %>
+                <section class="relative group aspect-video rounded-2xl overflow-hidden" style="background: rgba(31,31,38,0.8);">
+                    <img id="main-preview-img" alt="<%= _ov.name %> Preview"
+                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                         src="<%= firstPreview %>"
+                         onerror="this.src='https://via.placeholder.com/1280x720/13131a/d2bbff?text=No+Preview'"/>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none"></div>
+                    <!-- View count badge -->
+                    <div class="absolute bottom-4 right-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-white" style="background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);">
+                      <span class="material-symbols-outlined text-[14px]">visibility</span>
+                      <%= (_ov.view_count || 0).toLocaleString() %> views
                     </div>
                 </section>
-                
-                <!-- Thumbnail Carousel -->
-                <section class="grid grid-cols-5 gap-4">
-                    <div class="aspect-video rounded-lg overflow-hidden glass-panel border-2 border-primary cursor-pointer">
-                        <img class="w-full h-full object-cover opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGPajpyLMcNQ3ZtSPWo48N1kyqrfQL6t0bwk3y4uOvFTSkB7rQkla6Z62yvK3XPKWlLON41ejvBoOHt0PQ52jc3FjmmqcKWfIX4ocOYwXWgkICGGovfZIxuqCVX3WVO6dHVvq_sQimHVfW_njg02qvMnplTEDh5ANl3QohPuCrHbOO7HQTWpYiwtf46G_7hiww9Aw3rhAOwPeNHdr2QOIPgdk6F7we_SABsXvoswxuRZJ5xehkCVHOm3lIHS2UX162NVTTBBrtiCQ"/>
+
+                <!-- Thumbnail Strip -->
+                <% if (_ov.previewIds && _ov.previewIds.length > 1) { %>
+                <section class="grid gap-3" style="grid-template-columns: repeat(<%= Math.min(_ov.previewIds.length, 5) %>, 1fr)">
+                    <% _ov.previewIds.slice(0, 5).forEach(function(pid, idx) { %>
+                    <div class="aspect-video rounded-xl overflow-hidden cursor-pointer border-2 transition-all duration-200 <%= idx === 0 ? 'border-primary' : 'border-white/10 hover:border-primary/50' %>"
+                         onclick="switchPreview('/api/files/<%= pid %>', this)">
+                        <img class="w-full h-full object-cover <%= idx === 0 ? 'opacity-100' : 'opacity-60 hover:opacity-90' %> transition-opacity"
+                             src="/api/files/<%= pid %>" alt="Preview <%= idx + 1 %>"/>
                     </div>
-                    <div class="aspect-video rounded-lg overflow-hidden glass-panel border border-white/10 hover:border-primary/50 transition-all cursor-pointer">
-                        <img class="w-full h-full object-cover opacity-60" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6h_wYq32h_PXXCmolLwbNZno76RPiQziskrtcoAUztbCgTd0eVEvdd2bbvhQ747PKZoXRVIQwkHovXSalCFgM5k5RlbFov77OzPC64MIh37sfEXOf3MxgHMMQkHxu5_I0C81sN2B9xF-YyE0TBCXXw4UpUljwbxR2LMAdvgJA3rw2X6B99BsqVYpK_9392FPoS_-kw6SDjQ9Mo3iEJq8KqARVGC9JKiItoRyL-nTL6QatZyCW35ZcLLG8miL96IJCio45ssCUPPw"/>
-                    </div>
-                    <div class="aspect-video rounded-lg overflow-hidden glass-panel border border-white/10 hover:border-primary/50 transition-all cursor-pointer">
-                        <img class="w-full h-full object-cover opacity-60" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3WOA_3d-M20yoxMUkXz_dHBV9lDzJ0m4TGTQ6uqgm7BEhnDd0VcLpGiGhnLUXey3Rpe2teuJY9id2v16Iv4bCF5RAxP0Vr6h4jwWSJUHLQCK7bDpJE_xonfhl9zL3YL69DiuE63F4CzBuhXaG7KPF1NiPdjWx-85EZx3fZIY9hA5CrcnNb-M98kNoJ_aWr-g2rt_k4Jh-_s-oz3kUjDuVbXsWXuwJNb8u5XESG0VoPbuW9CBaHW35IIagLezT5GrWJBceehVA0aw"/>
-                    </div>
-                    <div class="aspect-video rounded-lg overflow-hidden glass-panel border border-white/10 hover:border-primary/50 transition-all cursor-pointer">
-                        <img class="w-full h-full object-cover opacity-60" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNB8JNET988DFdt-52Y4W6HQK4NXQdQ0r434qcTGylN71jdW_7HTEGDNYx0hhOSSTu8CmLiOw7Y3hn-HRmdWV_dXd48w4jyfCYJbrA02eImFAiL0dh8o85YuHDOiVgxdAiss5oyArp_2eXkDk5XPLBiZpWPfwqvP9lNtWy0CGgI63OcXTtpgBgzCCvak-LD2GY0tQ_1N8kvNtxAWw5IvoLT-dh9J9iQgd_1ckixbgi2xhFgR7siOyPKBFrN8gtMl_rgFCnoU2Lf4Q"/>
-                    </div>
-                    <div class="aspect-video rounded-lg overflow-hidden glass-panel border border-white/10 hover:border-primary/50 transition-all cursor-pointer">
-                        <img class="w-full h-full object-cover opacity-60" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5zwYrCQoHQmRxyVf3TwJJcfyzlIAhu_5OWSzDJnpt1gqIUWNpolwzTnkzdXB-bxZipus5pZ-NyjOhoOdp1-68N9viHi2-MpHdsS1pzfVOXp6WVU7JMmnuu84E9_GMXuom70kuZLIsyQn2e7GyhOD8SZeVVkPUegUXyle_pvizUZWzm9kcMXKlIKKAYtUI7Zd4iyT8Ykf_Nmp29m1h_HaBdC5-5DwgH1-pmhE_sEjqhQe_PjcO6PG_9DSgRV5Xy4E2MoCyXFvhOhQ"/>
-                    </div>
+                    <% }); %>
                 </section>
-                
+                <% } %>
+
+                <!-- Description -->
+                <section class="glass-panel rounded-2xl p-8 space-y-4">
+                  <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">description</span>
+                    About this overlay
+                  </h2>
+                  <p class="text-on-surface-variant leading-relaxed whitespace-pre-line"><%= _ov.description || _ov.short_description || 'No description provided.' %></p>
+                  <% if (_ov.tags && _ov.tags.length > 0) { %>
+                  <div class="flex flex-wrap gap-2 pt-2">
+                    <% _ov.tags.forEach(function(tag) { %>
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-white/5 border border-white/10 text-on-surface-variant"><%= tag %></span>
+                    <% }); %>
+                  </div>
+                  <% } %>
+                </section>
+
                 <!-- Reviews Section -->
-                <section class="space-y-8">
+                <section class="space-y-6">
                     <div class="flex items-center justify-between">
-                        <h2 class="text-2xl font-bold text-on-surface">Community Feedback</h2>
-                        <button class="bg-primary/10 border border-primary/20 text-primary px-6 py-2 rounded-full font-semibold hover:bg-primary/20 transition-all">Write a Review</button>
+                        <h2 class="text-2xl font-bold text-on-surface">Community Reviews
+                          <span class="text-on-surface-variant text-base font-normal ml-2">(<%= _reviews.length %>)</span>
+                        </h2>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Review Card 1 -->
-                        <div class="glass-panel p-6 rounded-xl space-y-4">
+                    <% if (_reviews.length === 0) { %>
+                    <div class="glass-panel rounded-2xl p-10 text-center">
+                      <span class="material-symbols-outlined text-4xl text-on-surface-variant/30 mb-3 block">rate_review</span>
+                      <p class="text-on-surface-variant">No reviews yet. Be the first to share your experience!</p>
+                    </div>
+                    <% } else { %>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <% _reviews.forEach(function(rev) { %>
+                        <div class="glass-panel p-6 rounded-2xl space-y-3">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center font-bold text-secondary">A</div>
+                                    <div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center font-bold text-secondary overflow-hidden">
+                                      <% if (rev.avatar_storage_id) { %>
+                                        <img src="/api/files/<%= rev.avatar_storage_id %>" class="w-full h-full object-cover"/>
+                                      <% } else { %>
+                                        <%= (rev.display_name || rev.username || '?')[0].toUpperCase() %>
+                                      <% } %>
+                                    </div>
                                     <div>
-                                        <div class="font-semibold text-sm">AlexStreamz</div>
-                                        <div class="text-[10px] text-on-surface-variant uppercase tracking-wider">Verified Buyer</div>
+                                        <div class="font-semibold text-sm text-white"><%= rev.display_name || rev.username %></div>
+                                        <div class="text-[10px] text-on-surface-variant">@<%= rev.username %></div>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-1 text-secondary">
                                     <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
-                                    <span class="font-bold">10</span>
+                                    <span class="font-bold"><%= rev.rating %>/10</span>
                                 </div>
                             </div>
-                            <p class="text-on-surface-variant leading-relaxed">
-                                The animations are buttery smooth. Setting this up in OBS took less than 5 minutes thanks to the scene collection import. Best cyberpunk theme on the market!
-                            </p>
+                            <% if (rev.title) { %><p class="font-semibold text-sm text-white"><%= rev.title %></p><% } %>
+                            <% if (rev.body) { %><p class="text-on-surface-variant text-sm leading-relaxed"><%= rev.body %></p><% } %>
+                            <p class="text-[10px] text-on-surface-variant/50"><%= new Date(rev.created_at).toLocaleDateString() %></p>
                         </div>
-                        <!-- Review Card 2 -->
-                        <div class="glass-panel p-6 rounded-xl space-y-4">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center font-bold text-primary">K</div>
-                                    <div>
-                                        <div class="font-semibold text-sm">Kaelin_Vibe</div>
-                                        <div class="text-[10px] text-on-surface-variant uppercase tracking-wider">Top Reviewer</div>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-1 text-secondary">
-                                    <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
-                                    <span class="font-bold">9</span>
-                                </div>
-                            </div>
-                            <p class="text-on-surface-variant leading-relaxed">
-                                Absolutely love the glassmorphism aesthetic. It doesn't distract from the gameplay but adds that premium 'Techno-Sophisticate' feel to the stream.
-                            </p>
-                        </div>
+                        <% }); %>
                     </div>
+                    <% } %>
                 </section>
             </div>
-            
+
             <!-- RIGHT COLUMN (Sticky) -->
-            <aside class="lg:sticky lg:top-28 space-y-6">
+            <aside class="lg:sticky lg:top-28 space-y-5">
+
+                <!-- Product Title & Price -->
+                <div class="glass-panel p-7 rounded-2xl space-y-5">
+                  <h1 class="text-2xl font-bold text-on-surface leading-tight"><%= _ov.name %></h1>
+                  <% if (_ov.short_description) { %>
+                  <p class="text-on-surface-variant text-sm leading-relaxed"><%= _ov.short_description %></p>
+                  <% } %>
+
+                  <!-- Categories chips -->
+                  <% if (_cats.length > 0) { %>
+                  <div class="flex flex-wrap gap-2">
+                    <% _cats.forEach(function(cat) { %>
+                    <a href="/?category=<%= cat.slug %>" class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-on-surface-variant text-xs font-semibold hover:border-primary/30 hover:text-primary transition-all"><%= cat.name %></a>
+                    <% }); %>
+                  </div>
+                  <% } %>
+
+                  <!-- Price & CTA -->
+                  <div class="border-t border-white/5 pt-5">
+                    <div class="text-on-surface-variant text-xs font-semibold uppercase tracking-widest mb-1">Price</div>
+                    <% if (_isPaid) { %>
+                    <div class="text-4xl font-bold text-white mb-5">$<%= parseFloat(_ov.price).toFixed(2) %> <span class="text-lg text-on-surface-variant font-normal"><%= _ov.currency || 'ARS' %></span></div>
+                    <% } else { %>
+                    <div class="text-4xl font-bold text-secondary mb-5">FREE</div>
+                    <% } %>
+
+                    <!-- Actions -->
+                    <div class="space-y-3">
+                      <% if (_purchase) { %>
+                        <!-- Ya tiene acceso → botón de descarga -->
+                        <a href="/download/<%= _purchase.download_token %>"
+                           class="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-white text-lg transition-all hover:scale-[1.02] shadow-lg"
+                           style="background: linear-gradient(45deg, #4cd7f6, #06b6d4); box-shadow: 0 0 20px rgba(76,215,246,0.25);">
+                          <span class="material-symbols-outlined text-[22px]">download</span>
+                          Download (<%= _purchase.download_count %>/<%= _purchase.download_limit %>)
+                        </a>
+                      <% } else if (!_isPaid) { %>
+                        <!-- Overlay gratuito → descarga directa -->
+                        <% if (typeof user !== 'undefined' && user) { %>
+                        <button id="free-download-btn" onclick="downloadFree('<%= _ov.id %>')"
+                           class="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-white text-lg transition-all hover:scale-[1.02] shadow-lg"
+                           style="background: linear-gradient(45deg, #4cd7f6, #06b6d4); box-shadow: 0 0 20px rgba(76,215,246,0.25);">
+                          <span class="material-symbols-outlined text-[22px]">download</span>
+                          Download Free
+                        </button>
+                        <% } else { %>
+                        <a href="/login?returnTo=/overlay/<%= _ov.slug %>"
+                           class="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-white text-lg transition-all hover:scale-[1.02] shadow-lg"
+                           style="background: linear-gradient(45deg, #4cd7f6, #06b6d4);">
+                          <span class="material-symbols-outlined text-[22px]">login</span>
+                          Sign in to Download
+                        </a>
+                        <% } %>
+                      <% } else { %>
+                        <!-- Overlay de pago -->
+                        <button class="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-white text-lg transition-all hover:scale-[1.02] shadow-lg"
+                                style="background: linear-gradient(45deg, #7c3aed, #ddb7ff); box-shadow: 0 0 20px rgba(124,58,237,0.25);"
+                                onclick="alert('Payment system coming soon!')">
+                          <span class="material-symbols-outlined text-[22px]">shopping_cart</span>
+                          Buy Now
+                        </button>
+                      <% } %>
+
+                      <!-- Favorito + Board -->
+                      <div class="grid grid-cols-2 gap-3">
+                        <button id="fav-btn" onclick="toggleFav('<%= _ov.id %>')"
+                                class="flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm transition-all border"
+                                style="background: rgba(255,255,255,0.04); border-color: <%= _isFav ? 'rgba(239,68,68,0.5)' : 'rgba(255,255,255,0.1)' %>; color: <%= _isFav ? '#ef4444' : '#ccc3d8' %>">
+                          <span class="material-symbols-outlined text-[20px]" id="fav-icon" style="font-variation-settings: '<%= _isFav ? 'FILL' : '' %> 1'"><%= _isFav ? 'favorite' : 'favorite_border' %></span>
+                          <%= _isFav ? 'Favorited' : 'Favorite' %>
+                        </button>
+                        <button onclick="if(typeof openBoardSelector==='function') openBoardSelector('<%= _ov.id %>'); else alert('Login required')"
+                                class="flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm transition-all border border-white/10 text-on-surface-variant hover:border-secondary/30 hover:text-secondary"
+                                style="background: rgba(255,255,255,0.04);">
+                          <span class="material-symbols-outlined text-[20px]">push_pin</span>
+                          Save to Board
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <!-- Creator Card -->
-                <div class="glass-panel p-6 rounded-xl flex items-center justify-between">
-                    <div class="flex items-center gap-4 cursor-pointer" onclick="window.location.href='/artist/neonpulse'">
-                        <div class="w-12 h-12 rounded-full overflow-hidden border border-white/20">
-                            <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCm09E7yVTzW8sQrup4iQnolbmb9orUJAzCNIo0r6ATDjjFPRpLEbDMLXhkotL06yQPY1ZsUA2OBKXQaShVq4MYvfQAK_sabpxZz-ZlSUaUA6qMIDCZmFNp6VWbLZ15henSv6vQ1IdtutnUD8HpLqAKxVPMlPfe510E3Lx11vDUf4V6_7T_eIUe5MGmKkMrxtUjVau1vGZTYOX1klK-us1ZlmpKXTOJQdc1TnHTq9-jAQQ_3h0hXftAahRY7Xa2nl_oaNJRWB_mSIc"/>
+                <div class="glass-panel p-5 rounded-2xl flex items-center justify-between">
+                    <a href="/artist/<%= _ov.creator_username %>" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                        <div class="w-12 h-12 rounded-full overflow-hidden border border-white/20 bg-primary/10 flex items-center justify-center">
+                            <% if (_ov.creator_avatar) { %>
+                            <img class="w-full h-full object-cover" src="/api/files/<%= _ov.creator_avatar %>" alt="<%= _ov.creator_username %>"/>
+                            <% } else { %>
+                            <span class="material-symbols-outlined text-primary text-[22px]">person</span>
+                            <% } %>
                         </div>
                         <div>
-                            <p class="font-semibold text-sm text-on-surface">Neon_Pulse</p>
-                            <p class="text-xs text-on-surface-variant">42 Active Listings</p>
+                            <p class="font-semibold text-sm text-on-surface"><%= _ov.creator_display_name || _ov.creator_username %></p>
+                            <p class="text-xs text-on-surface-variant">@<%= _ov.creator_username %></p>
                         </div>
-                    </div>
-                    <div class="flex gap-2">
-                        <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center hover:bg-secondary/20 hover:text-secondary transition-all">
-                            <span class="material-symbols-outlined text-[18px]">movie</span>
-                        </button>
-                        <button class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all">
-                            <span class="material-symbols-outlined text-[18px]">bolt</span>
-                        </button>
-                    </div>
+                    </a>
+                    <a href="/messages/<%= _ov.creator_username %>" class="p-2 rounded-lg transition-all text-on-surface-variant hover:text-secondary hover:bg-secondary/10" title="Send message">
+                      <span class="material-symbols-outlined text-[20px]">mail</span>
+                    </a>
                 </div>
-                
-                <!-- Product Info -->
-                <div class="space-y-4">
-                    <h1 class="text-3xl font-bold text-on-surface leading-tight">Neon Pulse - Cyberpunk Stream Suite</h1>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-on-surface-variant text-xs font-semibold">Anime</span>
-                        <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-on-surface-variant text-xs font-semibold">Purple</span>
-                        <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-on-surface-variant text-xs font-semibold">Minimal</span>
-                        <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-on-surface-variant text-xs font-semibold">4K</span>
-                    </div>
-                    <div class="pt-4">
-                        <div class="text-on-surface-variant text-xs font-semibold uppercase tracking-widest mb-1">Price</div>
-                        <div class="text-4xl font-bold text-on-surface">$24.99</div>
-                    </div>
-                    <div class="space-y-3 pt-4">
-                        <button class="w-full gradient-button text-white text-2xl font-bold py-4 rounded-xl shadow-lg">Buy Now</button>
-                        <div class="grid grid-cols-2 gap-3">
-                            <button class="flex items-center justify-center gap-2 py-3 rounded-xl glass-panel glass-panel-hover transition-all text-on-surface font-semibold text-sm">
-                                <span class="material-symbols-outlined text-[20px]">push_pin</span>
-                                Save to Board
-                            </button>
-                            <button class="flex items-center justify-center gap-2 py-3 rounded-xl glass-panel glass-panel-hover transition-all text-on-surface font-semibold text-sm">
-                                <span class="material-symbols-outlined text-[20px]">favorite</span>
-                                Add to Favorites
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
+
                 <!-- Technical Specs -->
-                <div class="glass-panel p-6 rounded-xl space-y-4">
+                <div class="glass-panel p-6 rounded-2xl space-y-4">
                     <div class="flex items-center gap-2 text-primary">
                         <span class="material-symbols-outlined">settings_input_component</span>
-                        <h3 class="font-semibold text-sm uppercase tracking-wider">Technical Specs</h3>
+                        <h3 class="font-semibold text-sm uppercase tracking-wider">Technical Info</h3>
                     </div>
-                    <div class="space-y-3">
+                    <div class="space-y-3 text-sm">
+                        <% if (_ov.resolution) { %>
                         <div class="flex justify-between border-b border-white/5 pb-2">
                             <span class="text-on-surface-variant">Resolution</span>
-                            <span class="text-on-surface font-semibold text-sm">3840x2160</span>
+                            <span class="text-on-surface font-semibold"><%= _ov.resolution %></span>
                         </div>
+                        <% } %>
+                        <% if (_ov.software_version) { %>
                         <div class="flex justify-between border-b border-white/5 pb-2">
-                            <span class="text-on-surface-variant">Format</span>
-                            <span class="text-on-surface font-semibold text-sm">OBS Scene Collection</span>
+                            <span class="text-on-surface-variant">OBS Version</span>
+                            <span class="text-on-surface font-semibold"><%= _ov.software_version %>+</span>
                         </div>
+                        <% } %>
                         <div class="flex justify-between border-b border-white/5 pb-2">
-                            <span class="text-on-surface-variant">Size</span>
-                            <span class="text-on-surface font-semibold text-sm">142MB</span>
+                            <span class="text-on-surface-variant">Downloads</span>
+                            <span class="text-on-surface font-semibold"><%= (_ov.download_count || 0).toLocaleString() %></span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-on-surface-variant">Updated</span>
-                            <span class="text-on-surface font-semibold text-sm">Oct 2023</span>
+                            <span class="text-on-surface-variant">Published</span>
+                            <span class="text-on-surface font-semibold"><%= _ov.published_at ? new Date(_ov.published_at).toLocaleDateString() : 'N/A' %></span>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Description -->
-                <div class="glass-panel p-6 rounded-xl space-y-4">
-                    <h3 class="font-semibold text-sm uppercase tracking-wider text-on-surface">Description</h3>
-                    <p class="text-on-surface-variant leading-relaxed">
-                        Elevate your broadcast with the Neon Pulse suite. Designed for streamers who demand high-fidelity visuals, this package combines the precision of developer tools with the vibrant energy of cyberpunk art. Each scene is modular and fully customizable within OBS or Streamlabs.
-                    </p>
-                </div>
-                
-                <!-- Share Row -->
-                <div class="flex items-center justify-between pt-4">
-                    <div class="flex items-center gap-3">
-                        <button class="p-2 rounded-lg glass-panel hover:text-primary transition-all">
-                            <span class="material-symbols-outlined text-[20px]">content_copy</span>
-                        </button>
-                        <span class="text-xs font-semibold text-on-surface-variant">Copy Link</span>
-                    </div>
-                    <div class="flex gap-3">
-                        <a class="text-on-surface-variant hover:text-secondary" href="#"><span class="material-symbols-outlined">public</span></a>
-                        <a class="text-on-surface-variant hover:text-secondary" href="#"><span class="material-symbols-outlined">share</span></a>
-                        <a class="text-on-surface-variant hover:text-secondary" href="#"><span class="material-symbols-outlined">link</span></a>
+
+                <!-- Share -->
+                <div class="flex items-center justify-between px-2">
+                    <button onclick="navigator.clipboard.writeText(window.location.href).then(()=>{this.querySelector('span.text-label').textContent='Copied!';setTimeout(()=>this.querySelector('span.text-label').textContent='Copy Link',2000)})"
+                            class="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined text-[20px]">content_copy</span>
+                        <span class="text-xs font-semibold text-label">Copy Link</span>
+                    </button>
+                    <div class="flex gap-2">
+                        <a class="p-2 rounded-lg text-on-surface-variant hover:text-secondary hover:bg-secondary/10 transition-all" href="https://twitter.com/intent/tweet?url=<%= encodeURIComponent('https://simplyover.com/overlay/' + _ov.slug) %>&text=<%= encodeURIComponent('Check out this overlay: ' + _ov.name) %>" target="_blank" title="Share on X">
+                          <span class="material-symbols-outlined text-[20px]">share</span>
+                        </a>
                     </div>
                 </div>
             </aside>
         </div>
     </main>
-    
+
+    <%- include('partials/board_selector') %>
     <%- include('partials/footer') %>
-    
+
     <script>
-        const thumbnails = document.querySelectorAll('.aspect-video.rounded-lg.cursor-pointer');
-        thumbnails.forEach(thumb => {
-            thumb.addEventListener('click', () => {
-                thumbnails.forEach(t => t.classList.remove('border-primary'));
-                thumbnails.forEach(t => t.classList.add('border-white/10'));
-                thumb.classList.remove('border-white/10');
-                thumb.classList.add('border-primary');
+        // Thumbnail switcher
+        function switchPreview(url, el) {
+            document.getElementById('main-preview-img').src = url;
+            document.querySelectorAll('.aspect-video.rounded-xl.cursor-pointer').forEach(t => {
+                t.classList.remove('border-primary');
+                t.classList.add('border-white/10');
+                t.querySelector('img')?.classList.remove('opacity-100');
+                t.querySelector('img')?.classList.add('opacity-60');
             });
-        });
+            el.classList.add('border-primary');
+            el.classList.remove('border-white/10');
+            el.querySelector('img')?.classList.add('opacity-100');
+            el.querySelector('img')?.classList.remove('opacity-60');
+        }
+
+        // Favorito toggle
+        async function toggleFav(overlayId) {
+            <% if (typeof user === 'undefined' || !user) { %>
+            window.location.href = '/login?returnTo=' + encodeURIComponent(window.location.pathname);
+            return;
+            <% } %>
+            const btn = document.getElementById('fav-btn');
+            const icon = document.getElementById('fav-icon');
+            try {
+                const r = await fetch('/api/favorites', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ overlayId })
+                });
+                if (r.status === 401) { window.location.href = '/login'; return; }
+                const data = await r.json();
+                if (data.action === 'added') {
+                    icon.textContent = 'favorite';
+                    icon.style.fontVariationSettings = "'FILL' 1";
+                    btn.style.color = '#ef4444';
+                    btn.style.borderColor = 'rgba(239,68,68,0.5)';
+                    btn.querySelector(':last-child').textContent = 'Favorited';
+                } else {
+                    icon.textContent = 'favorite_border';
+                    icon.style.fontVariationSettings = "";
+                    btn.style.color = '#ccc3d8';
+                    btn.style.borderColor = 'rgba(255,255,255,0.1)';
+                    btn.querySelector(':last-child').textContent = 'Favorite';
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        // Descarga gratuita
+        async function downloadFree(overlayId) {
+            const btn = document.getElementById('free-download-btn');
+            if (!btn) return;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-symbols-outlined text-[22px] animate-spin">refresh</span> Processing...';
+            try {
+                const r = await fetch('/download/purchase/free', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ overlayId })
+                });
+                const data = await r.json();
+                if (data.success && data.token) {
+                    window.location.href = '/download/' + data.token;
+                } else {
+                    btn.disabled = false;
+                    btn.innerHTML = '<span class="material-symbols-outlined text-[22px]">download</span> Download Free';
+                    alert(data.error || 'Error processing download.');
+                }
+            } catch(e) {
+                btn.disabled = false;
+                btn.innerHTML = '<span class="material-symbols-outlined text-[22px]">download</span> Download Free';
+                alert('Network error. Please try again.');
+            }
+        }
     </script>
 </body>
 </html>
+<% } %>
