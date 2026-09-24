@@ -12,96 +12,9 @@
 <body class="bg-background text-on-background">
     <%- include('partials/navbar') %>
     <div class="flex">
-        <!-- SideNavBar — Filtros Dinámicos -->
-        <aside class="fixed left-0 h-full w-[280px] bg-surface-container/40 backdrop-blur-xl border-r border-white/10 flex flex-col py-8 sidebar-transition z-40 hidden md:flex" id="sidebar">
-            <div class="px-6 mb-8">
-                <h2 class="text-2xl font-bold text-primary">Filters</h2>
-                <p class="text-on-surface-variant text-sm">Refine your search</p>
-            </div>
-
-            <nav class="flex-1 space-y-1 overflow-y-auto px-3">
-
-                <!-- All Categories -->
-                <a href="/" class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all
-                    <%= !_f.category && !_f.price && (_f.sort === 'newest' || !_f.sort) ? 'border-l-4 border-primary bg-primary/10 text-primary' : 'text-on-surface-variant hover:bg-white/5' %>">
-                    <span class="material-symbols-outlined text-[20px]">apps</span>
-                    <span class="font-medium">All Overlays</span>
-                </a>
-
-                <!-- Separador Precio -->
-                <p class="px-4 pt-4 pb-1 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/50">Price</p>
-
-                <a href="/?price=free<%= _f.category ? '&category=' + _f.category : '' %>"
-                   class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all
-                   <%= _f.price === 'free' ? 'border-l-4 border-secondary bg-secondary/10 text-secondary' : 'text-on-surface-variant hover:bg-white/5' %>">
-                    <span class="material-symbols-outlined text-[20px]">money_off</span>
-                    <span class="font-medium">Free</span>
-                </a>
-
-                <a href="/?price=paid<%= _f.category ? '&category=' + _f.category : '' %>"
-                   class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all
-                   <%= _f.price === 'paid' ? 'border-l-4 border-tertiary bg-tertiary/10 text-tertiary' : 'text-on-surface-variant hover:bg-white/5' %>">
-                    <span class="material-symbols-outlined text-[20px]">attach_money</span>
-                    <span class="font-medium">Premium</span>
-                </a>
-
-                <!-- Separador Ordenamiento -->
-                <p class="px-4 pt-4 pb-1 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/50">Sort By</p>
-
-                <a href="/?sort=trending<%= _f.category ? '&category=' + _f.category : '' %><%= _f.price ? '&price=' + _f.price : '' %>"
-                   class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all
-                   <%= _f.sort === 'trending' ? 'border-l-4 border-primary bg-primary/10 text-primary' : 'text-on-surface-variant hover:bg-white/5' %>">
-                    <span class="material-symbols-outlined text-[20px]">trending_up</span>
-                    <span class="font-medium">Trending</span>
-                </a>
-
-                <a href="/?sort=popular<%= _f.category ? '&category=' + _f.category : '' %><%= _f.price ? '&price=' + _f.price : '' %>"
-                   class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all
-                   <%= _f.sort === 'popular' ? 'border-l-4 border-primary bg-primary/10 text-primary' : 'text-on-surface-variant hover:bg-white/5' %>">
-                    <span class="material-symbols-outlined text-[20px]">local_fire_department</span>
-                    <span class="font-medium">Most Popular</span>
-                </a>
-
-                <a href="/?sort=rating<%= _f.category ? '&category=' + _f.category : '' %><%= _f.price ? '&price=' + _f.price : '' %>"
-                   class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all
-                   <%= _f.sort === 'rating' ? 'border-l-4 border-primary bg-primary/10 text-primary' : 'text-on-surface-variant hover:bg-white/5' %>">
-                    <span class="material-symbols-outlined text-[20px]">star</span>
-                    <span class="font-medium">Top Rated</span>
-                </a>
-
-                <!-- Separador Categorías -->
-                <p class="px-4 pt-4 pb-1 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/50">Categories</p>
-
-                <% _cs.forEach(function(cat) { %>
-                <a href="/?category=<%= cat.slug %><%= _f.price ? '&price=' + _f.price : '' %>"
-                   class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all
-                   <%= _f.category === cat.slug ? 'border-l-4 border-primary bg-primary/10 text-primary' : 'text-on-surface-variant hover:bg-white/5' %>">
-                    <span class="material-symbols-outlined text-[20px]"><%= cat.icon || 'label' %></span>
-                    <span class="font-medium"><%= cat.name %></span>
-                </a>
-                <% }); %>
-
-                <% if (_cs.length === 0) { %>
-                <a href="/category/all" class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all">
-                    <span class="material-symbols-outlined text-[20px]">category</span>
-                    <span class="font-medium">Browse All</span>
-                </a>
-                <% } %>
-            </nav>
-
-            <!-- Clear Filters -->
-            <% if (_f.category || _f.price || (_f.sort && _f.sort !== 'newest')) { %>
-            <div class="px-6 mt-4">
-                <a href="/" class="w-full flex items-center justify-center gap-2 border border-white/10 text-on-surface-variant py-3 rounded-xl font-semibold hover:bg-white/5 hover:text-white transition-all text-sm">
-                    <span class="material-symbols-outlined text-[18px]">close</span>
-                    Clear Filters
-                </a>
-            </div>
-            <% } %>
-        </aside>
 
         <!-- Main Content Area -->
-        <main class="flex-1 md:ml-[280px] px-5 md:px-12 pt-12 pb-24">
+        <main class="flex-1 px-5 md:px-12 pt-12 pb-24">
             <!-- Hero Section -->
             <section class="max-w-4xl mx-auto text-center mb-16 space-y-6">
                 <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-surface border-white/20 text-secondary mb-4">

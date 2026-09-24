@@ -69,7 +69,7 @@ Formato de respuesta:
 
     res.json({ reply })
   } catch (err) {
-    console.error('[AI/Chat]', err)
+    console.warn('[AI/Chat] Error de la API (usando respuestas estáticas de respaldo):', err.message)
     // Fallback con respuestas estáticas si SpiderIA no está disponible
     const fallbackReplies = [
       '¡Hola! Soy el asistente de SimplyOver. ¿Buscas overlays de algún estilo en particular?',
@@ -141,7 +141,7 @@ Responde en JSON con la estructura: { title, description, colorScheme: { primary
 
     res.json({ success: true, draftId, template: parsed })
   } catch (err) {
-    console.error('[AI/Generate]', err)
+    console.error('[AI/Generate] Error:', err.message)
     res.status(500).json({ error: 'Generation failed. Please try again.' })
   }
 })

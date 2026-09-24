@@ -185,4 +185,57 @@ router.post('/overlays/:id/reject', async (req, res) => {
   }
 });
 
+// ─── GET /admin/users ───────────────────────────────────────────────────────
+router.get('/users', async (req, res) => {
+  try {
+    const users = await query(`
+      SELECT id, username, email, display_name, role, status, created_at
+      FROM users
+      ORDER BY created_at DESC
+    `);
+    res.render('admin_users', {
+      title: 'User Management | SimplyOver',
+      users
+    });
+  } catch (err) {
+    console.error('[Admin/Users]', err);
+    res.status(500).render('error', { title: '500', message: 'Error cargando usuarios.' });
+  }
+});
+
+// ─── POST /admin/users/:id/role ──────────────────────────────────────────────
+router.post('/users/:id/role', async (req, res) => {
+  const { role } = req.body;
+  try {
+    await query(`UPDATE users SET role = ? WHERE id = ?`, [role, req.params.id]);
+    res.redirect('/admin/users');
+  } catch (err) {
+    console.error('[Admin/Users/Role]', err);
+    res.redirect('/admin/users?error=update_failed');
+  }
+});
+
+// ─── POST /admin/users/:id/status ────────────────────────────────────────────
+router.post('/users/:id/status', async (req, res) => {
+  const { status } = req.body;
+  try {
+    await spiderWeb.moderateUser(req.params.id, status, req.user.id);
+    res.redirect('/admin/users');
+  } catch (err) {
+    console.error('[Admin/Users/Status]', err);
+    res.redirect('/admin/users?error=update_failed');
+  }
+});
+
+// ─── POST /admin/users/:id/delete ────────────────────────────────────────────
+router.post('/users/:id/delete', async (req, res) => {
+  try {
+    await query(`DELETE FROM users WHERE id = ?`, [req.params.id]);
+    res.redirect('/admin/users');
+  } catch (err) {
+    console.error('[Admin/Users/Delete]', err);
+    res.redirect('/admin/users?error=delete_failed');
+  }
+});
+
 export default router;

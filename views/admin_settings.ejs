@@ -11,13 +11,19 @@
                 <h1 class="text-3xl font-bold text-white mb-1">Admin Settings</h1>
                 <p class="text-on-surface-variant">Global platform configuration — SimplyOver</p>
             </div>
-            <a href="/admin/overlays" class="flex items-center gap-2 px-5 py-2.5 rounded-full border border-primary/30 text-primary font-semibold hover:bg-primary/10 transition-all text-sm">
-              <span class="material-symbols-outlined text-[16px]">rate_review</span>
-              Moderate Overlays
-              <% if (typeof stats !== 'undefined' && stats.pending > 0) { %>
-              <span class="w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center"><%= stats.pending %></span>
-              <% } %>
-            </a>
+            <div class="flex items-center gap-3">
+                <a href="/admin/users" class="flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/10 text-on-surface-variant hover:text-white hover:bg-white/5 transition-all text-sm font-semibold">
+                  <span class="material-symbols-outlined text-[16px]">group</span>
+                  Manage Users
+                </a>
+                <a href="/admin/overlays" class="flex items-center gap-2 px-5 py-2.5 rounded-full border border-primary/30 text-primary font-semibold hover:bg-primary/10 transition-all text-sm">
+                  <span class="material-symbols-outlined text-[16px]">rate_review</span>
+                  Moderate Overlays
+                  <% if (typeof stats !== 'undefined' && stats.pending > 0) { %>
+                  <span class="w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center"><%= stats.pending %></span>
+                  <% } %>
+                </a>
+            </div>
         </div>
 
         <!-- Alerts -->

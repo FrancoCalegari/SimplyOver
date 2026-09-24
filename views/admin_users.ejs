@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<%- include('partials/head', {title: 'User Management | SimplyOver'}) %>
+<body class="bg-background text-on-background">
+    <%- include('partials/navbar') %>
+
+    <main class="max-w-6xl mx-auto px-5 pt-24 pb-24">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-10">
+          <div>
+            <h1 class="text-3xl font-bold text-white mb-1">User Management</h1>
+            <p class="text-on-surface-variant">View, update, or remove users.</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <a href="/admin/settings" class="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-on-surface-variant hover:text-white hover:bg-white/5 transition-all text-sm font-semibold">
+              <span class="material-symbols-outlined text-[16px]">arrow_back</span> Back to Settings
+            </a>
+          </div>
+        </div>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+        <div class="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 mb-8">
+          Error: <%= error %>
+        </div>
+        <% } %>
+
+        <div class="glass-panel border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-on-surface-variant">
+              <thead class="text-xs uppercase bg-surface-container/50 border-b border-white/10 text-white">
+                <tr>
+                  <th class="px-6 py-4 font-semibold">Username</th>
+                  <th class="px-6 py-4 font-semibold">Email</th>
+                  <th class="px-6 py-4 font-semibold">Role</th>
+                  <th class="px-6 py-4 font-semibold">Status</th>
+                  <th class="px-6 py-4 font-semibold text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-white/5">
+                <% users.forEach(u => { %>
+                  <tr class="hover:bg-white/[0.02] transition-colors">
+                    <td class="px-6 py-4">
+                      <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center font-bold text-primary">
+                          <%= u.username.charAt(0).toUpperCase() %>
+                        </div>
+                        <div>
+                          <div class="font-semibold text-white"><%= u.username %></div>
+                          <div class="text-xs"><%= u.display_name || 'No Name' %></div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-6 py-4"><%= u.email %></td>
+                    <td class="px-6 py-4">
+                      <form action="/admin/users/<%= u.id %>/role" method="POST" class="inline-block">
+                        <select name="role" onchange="this.form.submit()" class="bg-surface-container/60 border border-white/10 text-white text-xs rounded-lg p-1.5 outline-none focus:ring-1 focus:ring-primary">
+                          <option value="user" <%= u.role === 'user' ? 'selected' : '' %>>User</option>
+                          <option value="creator" <%= u.role === 'creator' ? 'selected' : '' %>>Creator</option>
+                          <option value="admin" <%= u.role === 'admin' ? 'selected' : '' %>>Admin</option>
+                        </select>
+                      </form>
+                    </td>
+                    <td class="px-6 py-4">
+                      <form action="/admin/users/<%= u.id %>/status" method="POST" class="inline-block">
+                        <select name="status" onchange="this.form.submit()" class="bg-surface-container/60 border border-white/10 text-xs rounded-lg p-1.5 outline-none focus:ring-1 focus:ring-primary <%= u.status === 'active' ? 'text-green-400' : u.status === 'suspended' ? 'text-yellow-400' : 'text-red-400' %>">
+                          <option value="active" <%= u.status === 'active' ? 'selected' : '' %>>Active</option>
+                          <option value="suspended" <%= u.status === 'suspended' ? 'selected' : '' %>>Suspended</option>
+                          <option value="banned" <%= u.status === 'banned' ? 'selected' : '' %>>Banned</option>
+                        </select>
+                      </form>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                      <form action="/admin/users/<%= u.id %>/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete <%= u.username %>? This action cannot be undone.')">
+                        <button type="submit" class="p-2 rounded-xl text-on-surface-variant hover:text-red-400 hover:bg-red-400/10 transition-colors" title="Delete User">
+                          <span class="material-symbols-outlined text-[18px]">delete</span>
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                <% }) %>
+                <% if (users.length === 0) { %>
+                  <tr>
+                    <td colspan="5" class="px-6 py-8 text-center">No users found.</td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+    </main>
+</body>
+</html>
