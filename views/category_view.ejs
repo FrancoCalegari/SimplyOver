@@ -82,7 +82,7 @@
     <div class="masonry-grid" id="overlays-grid">
       <% overlays.forEach(function(overlay, i) { %>
         <%
-          let previewUrl = 'https://via.placeholder.com/400x300/13131a/d2bbff?text=Overlay';
+          let previewUrl = '/images/placeholder.svg';
           try {
             const ids = JSON.parse(overlay.preview_storage_ids || '[]');
             if (ids[0]) previewUrl = '/api/files/' + ids[0];
@@ -98,7 +98,7 @@
                  src="<%= previewUrl %>"
                  style="height: <%= [240, 280, 320, 200, 300][i % 5] %>px;"
                  alt="<%= overlay.name %>"
-                 onerror="this.src='https://via.placeholder.com/400x280/1f1f26/d2bbff?text=<%= encodeURIComponent(overlay.name) %>'"/>
+                 onerror="this.src='/images/placeholder.svg'"/>
             <!-- Overlay hover actions -->
             <div class="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
               <button class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-primary/50 transition-colors"

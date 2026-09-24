@@ -27,6 +27,10 @@
                     <span class="material-symbols-outlined">dashboard</span>
                     <span class="font-semibold">My Boards</span>
                 </a>
+                <a class="flex items-center gap-4 px-8 py-4 <%= typeof activeTab !== 'undefined' && activeTab === 'projects' ? 'border-l-4 border-primary bg-primary/10 text-primary' : 'text-on-surface-variant hover:bg-white/5' %> transition-all duration-300" href="/dashboard/projects">
+                    <span class="material-symbols-outlined">folder_special</span>
+                    <span class="font-semibold">My Projects</span>
+                </a>
                 <a class="flex items-center gap-4 px-8 py-4 text-on-surface-variant hover:bg-white/5 transition-all duration-300" href="/studio">
                     <span class="material-symbols-outlined">draw</span>
                     <span class="font-semibold">Studio</span>

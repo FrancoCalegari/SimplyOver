@@ -185,6 +185,20 @@ router.post('/overlays/:id/reject', async (req, res) => {
   }
 });
 
+// ─── POST /admin/overlays/:id/suspend ────────────────────────────────────────
+router.post('/overlays/:id/suspend', async (req, res) => {
+  try {
+    await query(
+      `UPDATE overlays SET status = 'BANNED' WHERE id = ?`,
+      [req.params.id]
+    );
+    res.json({ success: true });
+  } catch (err) {
+    console.error('[Admin/Suspend]', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 // ─── GET /admin/users ───────────────────────────────────────────────────────
 router.get('/users', async (req, res) => {
   try {

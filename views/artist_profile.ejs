@@ -227,7 +227,7 @@
                    src="<%= prevUrl %>"
                    style="height: <%= h %>px;"
                    alt="<%= ov.name %>"
-                   onerror="this.src='https://via.placeholder.com/400x280/1f1f26/d2bbff?text=Overlay'"/>
+                   onerror="this.src='/images/placeholder.svg'"/>
               <span class="absolute top-3 right-3 px-2.5 py-1 rounded-lg text-xs font-bold <%= priceClass %>"><%= priceLabel %></span>
               <div class="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
                 <a href="/overlay/<%= ov.slug || ov.id %>"

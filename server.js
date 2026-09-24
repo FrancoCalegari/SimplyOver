@@ -37,10 +37,20 @@ app.use(loadCategories);
 app.get('/api/files/:id', async (req, res) => {
   try {
     const fileId = req.params.id;
+    
+    // Evitar consultar al backend si el ID es inválido (ej: templates que pasaron "null")
+    if (!fileId || fileId === 'null' || fileId === 'undefined') {
+      return res.redirect('/images/placeholder.svg');
+    }
+
     const fetchRes = await fetch(`${process.env.SPIDERWEBURL}/storage/files/${fileId}`, {
       headers: { 'X-API-KEY': process.env.SPIDERWEBAPIKEY }
     });
-    if (!fetchRes.ok) return res.status(fetchRes.status).send('File not found');
+    
+    if (!fetchRes.ok) {
+      // Si la imagen no existe o hay error, mostrar el placeholder de "No Image"
+      return res.redirect('/images/placeholder.svg');
+    }
     
     const contentType = fetchRes.headers.get('content-type');
     if (contentType) res.setHeader('Content-Type', contentType);
@@ -52,7 +62,7 @@ app.get('/api/files/:id', async (req, res) => {
     res.send(Buffer.from(buffer));
   } catch (err) {
     console.error('[File Proxy]', err);
-    res.status(500).send('Proxy error');
+    res.redirect('/images/placeholder.svg');
   }
 });
 
@@ -60,6 +70,7 @@ app.get('/api/files/:id', async (req, res) => {
 import authRouter      from './routes/auth.js';
 import categoriesRouter from './routes/categories.js';
 import libraryRouter   from './routes/library.js';
+import projectsRouter  from './routes/projects.js';
 import boardsRouter    from './routes/boards.js';
 import messagesRouter  from './routes/messages.js';
 import aiRouter        from './routes/ai.js';
@@ -73,6 +84,7 @@ import friendsRouter   from './routes/friends.js';
 app.use('/auth',          authRouter);
 app.use('/category',      categoriesRouter);
 app.use('/dashboard/library', libraryRouter);
+app.use('/dashboard/projects', projectsRouter);
 app.use('/boards',        boardsRouter);
 app.use('/messages',      messagesRouter);
 app.use('/api',           aiRouter);

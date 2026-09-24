@@ -25,6 +25,20 @@ const upload = multer({ storage: multer.memoryStorage() });
 router.get('/', requireAuth, async (req, res) => {
   try {
     const categories = await query('SELECT id, name, slug FROM categories ORDER BY name ASC');
+    res.render('studio_upload', {
+      title: 'Publish Overlay | SimplyOver',
+      categories,
+    });
+  } catch (err) {
+    console.error('[Studio Error]', err);
+    res.status(500).render('error', { title: '500', message: 'Internal Server Error' });
+  }
+});
+
+// ─── GET /studio/canvas ────────────────────────────────────────────────────────
+router.get('/canvas', requireAuth, async (req, res) => {
+  try {
+    const categories = await query('SELECT id, name, slug FROM categories ORDER BY name ASC');
 
     // Pre-cargar draft si viene desde ?draftId
     let preloadedDraft = null;
@@ -36,12 +50,12 @@ router.get('/', requireAuth, async (req, res) => {
     }
 
     res.render('studio_canvas', {
-      title: 'Studio | SimplyOver',
+      title: 'Studio Web Editor | SimplyOver',
       categories,
       preloadedDraft,
     });
   } catch (err) {
-    console.error('[Studio Error]', err);
+    console.error('[Studio Canvas Error]', err);
     res.status(500).render('error', { title: '500', message: 'Internal Server Error' });
   }
 });
@@ -138,7 +152,7 @@ router.post('/publish', requireAuth,
       if (req.headers.accept?.includes('application/json')) {
         return res.json({ success: true, overlayId, message: 'Overlay enviado a revisión.' });
       }
-      res.redirect('/dashboard/library?published=true');
+      res.redirect('/dashboard/projects?published=true');
     } catch (err) {
       console.error('[Studio Publish Error]', err);
       if (req.headers.accept?.includes('application/json')) {

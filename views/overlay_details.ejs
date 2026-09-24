@@ -43,12 +43,12 @@
             <!-- LEFT COLUMN -->
             <div class="space-y-10">
                 <!-- Main Preview -->
-                <% const firstPreview = _ov.previewIds && _ov.previewIds[0] ? '/api/files/' + _ov.previewIds[0] : 'https://via.placeholder.com/1280x720/13131a/d2bbff?text=' + encodeURIComponent(_ov.name); %>
+                <% const firstPreview = _ov.previewIds && _ov.previewIds[0] ? '/api/files/' + _ov.previewIds[0] : '/images/placeholder.svg' + encodeURIComponent(_ov.name); %>
                 <section class="relative group aspect-video rounded-2xl overflow-hidden" style="background: rgba(31,31,38,0.8);">
                     <img id="main-preview-img" alt="<%= _ov.name %> Preview"
                          class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                          src="<%= firstPreview %>"
-                         onerror="this.src='https://via.placeholder.com/1280x720/13131a/d2bbff?text=No+Preview'"/>
+                         onerror="this.src='/images/placeholder.svg'"/>
                     <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none"></div>
                     <!-- View count badge -->
                     <div class="absolute bottom-4 right-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-white" style="background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);">
@@ -163,21 +163,31 @@
                     <div class="space-y-3">
                       <% if (_purchase) { %>
                         <!-- Ya tiene acceso → botón de descarga -->
-                        <a href="/download/<%= _purchase.download_token %>"
-                           class="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-white text-lg transition-all hover:scale-[1.02] shadow-lg"
-                           style="background: linear-gradient(45deg, #4cd7f6, #06b6d4); box-shadow: 0 0 20px rgba(76,215,246,0.25);">
-                          <span class="material-symbols-outlined text-[22px]">download</span>
-                          Download (<%= _purchase.download_count %>/<%= _purchase.download_limit %>)
-                        </a>
+                        <div class="space-y-2">
+                          <a href="/download/<%= _purchase.download_token %>"
+                             class="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-white text-lg transition-all hover:scale-[1.02] shadow-lg"
+                             style="background: linear-gradient(45deg, #4cd7f6, #06b6d4); box-shadow: 0 0 20px rgba(76,215,246,0.25);">
+                            <span class="material-symbols-outlined text-[22px]">download</span>
+                            Download (<%= _purchase.download_count %>/<%= _purchase.download_limit %>)
+                          </a>
+                          <button onclick="openInstallModal()" class="w-full text-center text-xs text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center gap-1">
+                            <span class="material-symbols-outlined text-[14px]">help</span> How to install in OBS?
+                          </button>
+                        </div>
                       <% } else if (!_isPaid) { %>
                         <!-- Overlay gratuito → descarga directa -->
                         <% if (typeof user !== 'undefined' && user) { %>
-                        <button id="free-download-btn" onclick="downloadFree('<%= _ov.id %>')"
-                           class="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-white text-lg transition-all hover:scale-[1.02] shadow-lg"
-                           style="background: linear-gradient(45deg, #4cd7f6, #06b6d4); box-shadow: 0 0 20px rgba(76,215,246,0.25);">
-                          <span class="material-symbols-outlined text-[22px]">download</span>
-                          Download Free
-                        </button>
+                        <div class="space-y-2">
+                          <button id="free-download-btn" onclick="downloadFree('<%= _ov.id %>')"
+                             class="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-white text-lg transition-all hover:scale-[1.02] shadow-lg"
+                             style="background: linear-gradient(45deg, #4cd7f6, #06b6d4); box-shadow: 0 0 20px rgba(76,215,246,0.25);">
+                            <span class="material-symbols-outlined text-[22px]">download</span>
+                            Download Free
+                          </button>
+                          <button onclick="openInstallModal()" class="w-full text-center text-xs text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center gap-1">
+                            <span class="material-symbols-outlined text-[14px]">help</span> How to install in OBS?
+                          </button>
+                        </div>
                         <% } else { %>
                         <a href="/login?returnTo=/overlay/<%= _ov.slug %>"
                            class="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-white text-lg transition-all hover:scale-[1.02] shadow-lg"
@@ -359,7 +369,55 @@
                 alert('Network error. Please try again.');
             }
         }
+        // Install Modal Logic
+        function openInstallModal() {
+            const modal = document.getElementById('installModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+        function closeInstallModal() {
+            const modal = document.getElementById('installModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
     </script>
+
+    <!-- Install Modal HTML -->
+    <div id="installModal" class="fixed inset-0 bg-black/80 z-[100] hidden items-center justify-center p-4 backdrop-blur-sm" onclick="if(event.target===this) closeInstallModal()">
+        <div class="glass-surface border border-white/10 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl">
+            <div class="px-6 py-4 border-b border-white/10 flex justify-between items-center bg-surface-container-highest/50">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">integration_instructions</span>
+                    How to install in OBS Studio
+                </h3>
+                <button onclick="closeInstallModal()" class="text-on-surface-variant hover:text-white transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="p-6 space-y-4 text-sm text-on-surface-variant">
+                <p>Follow these simple steps to add this overlay to your stream:</p>
+                <ol class="list-decimal pl-5 space-y-2">
+                    <li>Extract the downloaded <strong>.zip</strong> or <strong>.rar</strong> file into a folder on your computer.</li>
+                    <li>Open OBS Studio and select your desired Scene.</li>
+                    <li>In the Sources panel, click the <strong>+</strong> (Add) button.</li>
+                    <li>Select <strong>Media Source</strong> (for animated .webm/.mov) or <strong>Image</strong> (for static .png/.jpg).</li>
+                    <li>Name the source (e.g., "Webcam Frame") and click OK.</li>
+                    <li>Click <strong>Browse</strong> and locate the extracted file.</li>
+                    <li>If it's an animated file, make sure to check <strong>"Loop"</strong> so the animation doesn't stop.</li>
+                    <li>Click OK, and then resize/move the overlay on your preview window!</li>
+                </ol>
+                <div class="mt-4 p-4 bg-primary/10 border border-primary/20 rounded-xl">
+                    <p class="text-xs text-primary font-semibold flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[16px]">lightbulb</span>
+                        Tip: You can drag and drop the files directly from your folder into the OBS preview!
+                    </p>
+                </div>
+            </div>
+            <div class="p-4 border-t border-white/5 text-right">
+                <button onclick="closeInstallModal()" class="px-6 py-2.5 rounded-xl font-bold bg-white/10 text-white hover:bg-white/20 transition-colors">Got it</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
 <% } %>

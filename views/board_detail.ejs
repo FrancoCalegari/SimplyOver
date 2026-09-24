@@ -82,7 +82,7 @@
       <div class="masonry-grid">
         <% _items.forEach(function(item, i) { %>
         <%
-          let previewUrl = 'https://via.placeholder.com/400x280/13131a/d2bbff?text=Overlay';
+          let previewUrl = '/images/placeholder.svg';
           try {
             const ids = JSON.parse(item.preview_storage_ids || '[]');
             if (ids[0]) previewUrl = '/api/files/' + ids[0];
@@ -100,7 +100,7 @@
                  src="<%= previewUrl %>"
                  style="height: <%= h %>px;"
                  alt="<%= item.name %>"
-                 onerror="this.src='https://via.placeholder.com/400x280/1f1f26/d2bbff?text=Overlay'"/>
+                 onerror="this.src='/images/placeholder.svg'"/>
 
             <span class="absolute top-3 right-3 px-2.5 py-1 rounded-lg text-xs font-bold <%= priceClass %>">
               <%= priceLabel %>

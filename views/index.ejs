@@ -118,7 +118,7 @@
             <div class="masonry-grid" id="overlays-grid">
                 <% _ov.forEach(function(overlay, i) { %>
                 <%
-                    let previewUrl = 'https://via.placeholder.com/400x300/13131a/d2bbff?text=Overlay';
+                    let previewUrl = '/images/placeholder.svg';
                     try {
                         const ids = JSON.parse(overlay.preview_storage_ids || '[]');
                         if (ids[0]) previewUrl = '/api/files/' + ids[0];
@@ -138,7 +138,7 @@
                              src="<%= previewUrl %>"
                              style="height: <%= h %>px;"
                              alt="<%= overlay.name %>"
-                             onerror="this.src='https://via.placeholder.com/400x<%= h %>/1f1f26/d2bbff?text=Overlay'"/>
+                             onerror="this.src='/images/placeholder.svg'"/>
 
                         <!-- Featured badge -->
                         <% if (overlay.is_featured) { %>
