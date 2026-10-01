@@ -2,3 +2,10 @@ node_modules
 .next
 .env
 package-lock.json
+
+# Archivos de informe y scripts locales
+Informe_Proyecto_SimplyOver.pdf
+capture_screens.mjs
+generate_pdf.mjs
+informe.html
+public/screenshots/
