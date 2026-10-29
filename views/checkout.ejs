@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<%- include('partials/head') %>
+
+<body class="bg-[#0D0D14] text-[#e4e1ec] min-h-screen flex flex-col font-['Inter',sans-serif]">
+  <%- include('partials/navbar') %>
+
+  <!-- SDK oficial de Mercado Pago V2 -->
+  <script src="https://sdk.mercadopago.com/js/v2"></script>
+  <!-- Confetti para animación de éxito -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+    <!-- ── Breadcrumbs & Modo Demo Bar ──────────────────────────────────────── -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+      <div>
+        <nav class="flex items-center gap-2 text-xs text-on-surface-variant mb-2">
+          <a href="/" class="hover:text-primary transition-colors flex items-center gap-1">
+            <span class="material-symbols-outlined text-[14px]">storefront</span> Marketplace
+          </a>
+          <span>/</span>
+          <a href="/overlay/<%= overlay.slug || overlay.id %>" class="hover:text-primary transition-colors">
+            <%= overlay.name %>
+          </a>
+          <span>/</span>
+          <span class="text-white font-medium">Checkout Seguro</span>
+        </nav>
+        <h1 class="text-2xl md:text-3xl font-extrabold text-white flex items-center gap-3">
+          Finalizar Compra
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            Checkout Seguro SSL 256-Bit
+          </span>
+        </h1>
+      </div>
+
+      <!-- Developer / Demo Switcher Banner -->
+      <div class="flex flex-wrap items-center gap-2 bg-[#1A1A24] border border-white/10 rounded-2xl p-2.5 shadow-xl">
+        <div class="flex items-center gap-2 px-2 text-xs font-semibold text-secondary">
+          <span class="material-symbols-outlined text-[18px]">verified_user</span>
+          <span>Modo Demo MP</span>
+        </div>
+        <div class="h-4 w-px bg-white/10"></div>
+        <button type="button" onclick="openMPGuideModal()" class="px-3 py-1 rounded-lg text-xs font-medium text-white/80 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-all flex items-center gap-1">
+          <span class="material-symbols-outlined text-[14px]">settings</span>
+          <span>Configurar MP Pro</span>
+        </button>
+        <div class="h-4 w-px bg-white/10"></div>
+        <!-- Quick Simulators -->
+        <span class="text-[11px] text-white/50 hidden sm:inline">Simular:</span>
+        <button type="button" onclick="quickSimulate('approved')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-emerald-300 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 transition-all">
+          ✓ Éxito
+        </button>
+        <button type="button" onclick="quickSimulate('rejected')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-red-300 bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 transition-all">
+          ✕ Rechazo
+        </button>
+        <button type="button" onclick="quickSimulate('pending')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-amber-300 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 transition-all">
+          ⏳ Pendiente
+        </button>
+      </div>
+    </div>
+
+    <% if (alreadyPurchased) { %>
+    <!-- Banner de aviso si ya fue adquirido -->
+    <div class="mb-8 p-4 rounded-2xl border border-secondary/30 bg-secondary/10 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <span class="material-symbols-outlined text-secondary text-2xl">check_circle</span>
+        <div>
+          <p class="font-bold text-white text-sm">¡Ya posees este overlay en tu biblioteca!</p>
+          <p class="text-xs text-on-surface-variant">Puedes descargarlo inmediatamente o simular otra compra para demostración.</p>
+        </div>
+      </div>
+      <a href="/download/<%= purchaseData.download_token %>" class="px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-secondary-container to-secondary hover:opacity-90 transition-all shrink-0">
+        Descargar Ahora
+      </a>
+    </div>
+    <% } %>
+
+    <!-- ── GRID PRINCIPAL: Pasarela (Izq) vs Resumen (Der) ──────────────────── -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+      <!-- COLUMNA IZQUIERDA: Formulario y Pasarela (7 cols) -->
+      <div class="lg:col-span-7 space-y-6">
+
+        <!-- 1. Datos del Comprador -->
+        <section class="rounded-2xl border border-white/10 bg-[#15151e]/80 backdrop-blur-xl p-6 shadow-2xl">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-base font-bold text-white flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-primary/20 text-primary text-xs flex items-center justify-center font-bold">1</span>
+              Datos del Comprador
+            </h2>
+            <% if (user) { %>
+              <span class="text-xs text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 flex items-center gap-1">
+                <span class="material-symbols-outlined text-[13px]">verified</span> Conectado como @<%= user.username %>
+              </span>
+            <% } else { %>
+              <span class="text-xs text-on-surface-variant">
+                ¿Tienes cuenta? <a href="/login?returnTo=/checkout/<%= overlay.id %>" class="text-primary hover:underline font-semibold">Iniciar sesión</a>
+              </span>
+            <% } %>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="buyer-name" class="block text-xs font-medium text-on-surface-variant mb-1">Nombre Completo</label>
+              <input type="text" id="buyer-name" name="buyer-name" autocomplete="name" required
+                     value="<%= user ? (user.display_name || user.username) : 'Alex Streamer' %>"
+                     class="w-full bg-[#1b1b26] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder-white/30"
+                     placeholder="Ej: Franco Calegari" />
+            </div>
+
+            <div>
+              <label for="buyer-email" class="block text-xs font-medium text-on-surface-variant mb-1">Correo Electrónico (Para recibir enlace)</label>
+              <input type="email" id="buyer-email" name="buyer-email" autocomplete="email" required
+                     value="<%= user ? user.email : 'alex@twitch.tv' %>"
+                     class="w-full bg-[#1b1b26] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder-white/30"
+                     placeholder="tu@email.com" />
+            </div>
+
+            <div class="sm:col-span-2">
+              <label for="buyer-dni" class="block text-xs font-medium text-on-surface-variant mb-1">DNI / Identificación Fiscal (Opcional - Factura)</label>
+              <input type="text" id="buyer-dni" name="buyer-dni" inputmode="numeric"
+                     value="38492019"
+                     class="w-full bg-[#1b1b26] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder-white/30"
+                     placeholder="Número de DNI para Mercado Pago" />
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. Método de Pago Selector -->
+        <section class="rounded-2xl border border-white/10 bg-[#15151e]/80 backdrop-blur-xl p-6 shadow-2xl">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-base font-bold text-white flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-primary/20 text-primary text-xs flex items-center justify-center font-bold">2</span>
+              Medio de Pago
+            </h2>
+            <div class="flex items-center gap-1.5 text-xs text-[#009ee3] font-semibold">
+              <img src="https://http2.mlstatic.com/frontend-assets/ui-navigation/5.18.9/mercadopago/favicon.ico" class="w-4 h-4 rounded-full" alt="MP" />
+              <span>Checkout Pro</span>
+            </div>
+          </div>
+
+          <!-- Selector de Pestañas / Métodos -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6">
+            <!-- Tab 1: MP Checkout Pro -->
+            <button type="button" onclick="switchMethod('mp_pro')" id="tab-btn-mp_pro"
+                    class="method-tab active flex flex-col items-center justify-center p-3 rounded-xl border text-center transition-all bg-[#009ee3]/10 border-[#009ee3] text-white">
+              <span class="material-symbols-outlined text-[24px] text-[#009ee3] mb-1">wallet</span>
+              <span class="text-xs font-bold leading-tight">Mercado Pago</span>
+              <span class="text-[10px] text-white/50">Checkout Pro</span>
+            </button>
+
+            <!-- Tab 2: Tarjetas -->
+            <button type="button" onclick="switchMethod('cards')" id="tab-btn-cards"
+                    class="method-tab flex flex-col items-center justify-center p-3 rounded-xl border text-center transition-all bg-white/[0.03] border-white/10 text-on-surface-variant hover:text-white hover:border-white/20">
+              <span class="material-symbols-outlined text-[24px] mb-1">credit_card</span>
+              <span class="text-xs font-bold leading-tight">Tarjetas</span>
+              <span class="text-[10px] text-white/50">Crédito / Débito</span>
+            </button>
+
+            <!-- Tab 3: Transferencia / DEBIN -->
+            <button type="button" onclick="switchMethod('transfer')" id="tab-btn-transfer"
+                    class="method-tab flex flex-col items-center justify-center p-3 rounded-xl border text-center transition-all bg-white/[0.03] border-white/10 text-on-surface-variant hover:text-white hover:border-white/20">
+              <span class="material-symbols-outlined text-[24px] mb-1">qr_code_2</span>
+              <span class="text-xs font-bold leading-tight">Transferencia</span>
+              <span class="text-[10px] text-white/50">CVU / DEBIN</span>
+            </button>
+
+            <!-- Tab 4: Efectivo -->
+            <button type="button" onclick="switchMethod('cash')" id="tab-btn-cash"
+                    class="method-tab flex flex-col items-center justify-center p-3 rounded-xl border text-center transition-all bg-white/[0.03] border-white/10 text-on-surface-variant hover:text-white hover:border-white/20">
+              <span class="material-symbols-outlined text-[24px] mb-1">receipt_long</span>
+              <span class="text-xs font-bold leading-tight">Efectivo</span>
+              <span class="text-[10px] text-white/50">Rapipago/PagoFácil</span>
+            </button>
+          </div>
+
+          <!-- CONTENIDO TAB 1: Mercado Pago Checkout Pro (Oficial & Simulador) -->
+          <div id="content-mp_pro" class="method-content space-y-4">
+            <div class="rounded-2xl p-5 border border-[#009ee3]/30 bg-gradient-to-br from-[#009ee3]/10 via-[#151522] to-[#12121c] relative overflow-hidden">
+              <div class="absolute -right-8 -bottom-8 w-40 h-40 bg-[#009ee3]/15 rounded-full blur-3xl pointer-events-none"></div>
+
+              <div class="flex items-start justify-between gap-4 mb-4">
+                <div>
+                  <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#009ee3]/20 border border-[#009ee3]/40 text-[#009ee3] text-[11px] font-bold uppercase tracking-wider mb-2">
+                    <span class="material-symbols-outlined text-[13px]">bolt</span> Recomendado Mercado Pago
+                  </div>
+                  <h3 class="text-lg font-bold text-white">Mercado Pago Checkout Pro</h3>
+                  <p class="text-xs text-on-surface-variant mt-1 leading-relaxed">
+                    Paga con dinero disponible en cuenta, tarjetas bancarias de débito y crédito en cuotas fijas, o con Mercado Crédito.
+                  </p>
+                </div>
+                <img src="https://http2.mlstatic.com/frontend-assets/ui-navigation/5.18.9/mercadopago/logo__small.png" alt="Mercado Pago" class="h-8 object-contain shrink-0" />
+              </div>
+
+              <!-- Medios Aceptados Badges -->
+              <div class="flex flex-wrap items-center gap-2 mb-5">
+                <span class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-white/5 text-white/80 border border-white/10">Dinero en MP</span>
+                <span class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-white/5 text-white/80 border border-white/10">Visa / Mastercard / Cabal</span>
+                <span class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-white/5 text-white/80 border border-white/10">Mercado Crédito</span>
+                <span class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-white/5 text-white/80 border border-white/10">Rapipago / Pago Fácil</span>
+              </div>
+
+              <!-- Contenedor Oficial Wallet Brick de Mercado Pago (para cuando hay credenciales activas) -->
+              <div id="wallet_container" class="mb-3"></div>
+
+              <!-- Botón Checkout Pro (Funciona en Demo o abre la simulación interactiva) -->
+              <button type="button" id="btn-mp-checkout-pro" onclick="triggerMPCheckoutPro()"
+                      class="w-full py-4 px-6 rounded-xl font-bold text-white text-base shadow-xl flex items-center justify-center gap-3 transition-all hover:scale-[1.01] hover:brightness-110 active:scale-[0.99]"
+                      style="background: linear-gradient(135deg, #009ee3 0%, #007bb5 100%); box-shadow: 0 8px 25px rgba(0, 158, 227, 0.35);">
+                <img src="https://http2.mlstatic.com/frontend-assets/ui-navigation/5.18.9/mercadopago/favicon.ico" class="w-5 h-5 rounded-full" alt="MP Icon" />
+                <span>Pagar con Mercado Pago Checkout Pro</span>
+                <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+              </button>
+
+              <div class="mt-3 flex items-center justify-center gap-4 text-[11px] text-white/50">
+                <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-emerald-400">lock</span> Pago Seguro</span>
+                <span>•</span>
+                <span>Sin costos ocultos</span>
+                <span>•</span>
+                <span>Descarga instantánea</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CONTENIDO TAB 2: Tarjetas de Crédito / Débito con Simulador 3D -->
+          <div id="content-cards" class="method-content hidden space-y-6">
+
+            <!-- 3D Card Interactive Preview -->
+            <div class="relative w-full max-w-sm mx-auto h-48 rounded-2xl p-6 text-white shadow-2xl transition-all duration-500 overflow-hidden border border-white/15"
+                 id="virtual-card"
+                 style="background: linear-gradient(135deg, #1f1b3c 0%, #151128 50%, #0c2340 100%); box-shadow: 0 15px 35px rgba(0,0,0,0.5), inset 0 0 20px rgba(124,58,237,0.2);">
+              <!-- Holographic effect glow -->
+              <div class="absolute -top-12 -left-12 w-32 h-32 bg-primary/30 rounded-full blur-2xl pointer-events-none"></div>
+              <div class="absolute -bottom-12 -right-12 w-32 h-32 bg-secondary/20 rounded-full blur-2xl pointer-events-none"></div>
+
+              <div class="flex items-center justify-between mb-4 relative z-10">
+                <div class="w-10 h-7 rounded-md bg-amber-400/80 border border-amber-300 flex items-center justify-center">
+                  <div class="w-6 h-4 border border-amber-600/40 rounded-sm"></div>
+                </div>
+                <span id="card-brand-display" class="font-extrabold italic text-sm tracking-widest text-white/90">VISA</span>
+              </div>
+
+              <!-- Card Number -->
+              <div class="mt-2 mb-4 relative z-10">
+                <p id="card-number-display" class="font-mono text-lg tracking-wider text-white drop-shadow">
+                  •••• •••• •••• 4242
+                </p>
+              </div>
+
+              <!-- Footer info: Holder & Expiry -->
+              <div class="flex items-end justify-between relative z-10 text-xs">
+                <div>
+                  <p class="text-[9px] uppercase tracking-wider text-white/50">Titular</p>
+                  <p id="card-name-display" class="font-semibold uppercase tracking-wide truncate max-w-[180px]">
+                    <%= user ? (user.display_name || user.username) : 'ALEX STREAMER' %>
+                  </p>
+                </div>
+                <div class="text-right">
+                  <p class="text-[9px] uppercase tracking-wider text-white/50">Vence</p>
+                  <p id="card-exp-display" class="font-mono font-semibold">12/28</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Chips de Prueba Rápida -->
+            <div>
+              <p class="text-xs text-on-surface-variant font-medium mb-2">Tarjetas de Prueba (Haz click para autocompletar):</p>
+              <div class="flex flex-wrap gap-2">
+                <button type="button" onclick="fillTestCard('visa_ok')" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-white/5 hover:bg-white/10 text-emerald-400 border border-emerald-500/30 transition-all flex items-center gap-1">
+                  <span>💳 Visa Aprobada (4242)</span>
+                </button>
+                <button type="button" onclick="fillTestCard('mc_ok')" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-white/5 hover:bg-white/10 text-emerald-400 border border-emerald-500/30 transition-all flex items-center gap-1">
+                  <span>💳 Mastercard (5555)</span>
+                </button>
+                <button type="button" onclick="fillTestCard('insufficient')" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-white/5 hover:bg-white/10 text-amber-400 border border-amber-500/30 transition-all flex items-center gap-1">
+                  <span>⚠️ Fondos Insuf. (4012)</span>
+                </button>
+                <button type="button" onclick="fillTestCard('declined')" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-white/5 hover:bg-white/10 text-red-400 border border-red-500/30 transition-all flex items-center gap-1">
+                  <span>✕ Rechazada (4111)</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Card Form Fields siguiendo Modern Web Guidance -->
+            <form id="card-form" onsubmit="submitCardPayment(event)" class="space-y-4">
+              <div>
+                <label for="cc-number" class="block text-xs font-medium text-on-surface-variant mb-1">Número de Tarjeta</label>
+                <div class="relative">
+                  <input id="cc-number" name="cc-number" type="text" autocomplete="cc-number"
+                         inputmode="numeric" maxlength="19" pattern="[\d ]{13,19}" required
+                         value="4242 4242 4242 4242"
+                         oninput="onCardNumberInput(this)"
+                         class="w-full bg-[#1b1b26] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-mono tracking-wider focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder-white/30"
+                         placeholder="1234 5678 9012 3456" />
+                  <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-white/40 text-[20px]">credit_card</span>
+                </div>
+              </div>
+
+              <div>
+                <label for="cc-name" class="block text-xs font-medium text-on-surface-variant mb-1">Nombre en la Tarjeta</label>
+                <input id="cc-name" name="cc-name" type="text" autocomplete="cc-name"
+                       maxlength="50" pattern="[\p{L} \-\.]+" required
+                       value="<%= user ? (user.display_name || user.username) : 'Alex Streamer' %>"
+                       oninput="document.getElementById('card-name-display').innerText = this.value.toUpperCase() || 'TITULAR'"
+                       class="w-full bg-[#1b1b26] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white uppercase focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder-white/30"
+                       placeholder="COMO APARECE EN LA TARJETA" />
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <label for="cc-exp" class="text-xs font-medium text-on-surface-variant">Vencimiento</label>
+                    <span id="exp-hint" class="text-[10px] text-white/40">MM/AA</span>
+                  </div>
+                  <input id="cc-exp" name="cc-exp" type="text" autocomplete="cc-exp"
+                         aria-describedby="exp-hint" maxlength="5" required
+                         value="12/28"
+                         oninput="onExpInput(this)"
+                         class="w-full bg-[#1b1b26] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-mono text-center focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder-white/30"
+                         placeholder="MM/AA" />
+                </div>
+
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <label for="cc-csc" class="text-xs font-medium text-on-surface-variant">Código Seguridad</label>
+                    <span class="text-[10px] text-white/40">3 o 4 dígitos</span>
+                  </div>
+                  <input id="cc-csc" name="cc-csc" type="text" autocomplete="cc-csc"
+                         inputmode="numeric" maxlength="4" pattern="[0-9]{3,4}" required
+                         value="123"
+                         class="w-full bg-[#1b1b26] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white font-mono text-center focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder-white/30"
+                         placeholder="CVV / CVC" />
+                </div>
+              </div>
+
+              <!-- Cuotas -->
+              <div>
+                <label for="cc-installments" class="block text-xs font-medium text-on-surface-variant mb-1">Plan de Cuotas</label>
+                <select id="cc-installments" name="cc-installments"
+                        class="w-full bg-[#1b1b26] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all">
+                  <option value="1">1 cuota de $<span class="unit-price-display"><%= parseFloat(overlay.price).toFixed(2) %></span> (Sin recargo)</option>
+                  <option value="3">3 cuotas fijas de $<span class="installment-3-display"><%= (parseFloat(overlay.price) / 3).toFixed(2) %></span></option>
+                  <option value="6">6 cuotas fijas de $<span class="installment-6-display"><%= (parseFloat(overlay.price) / 6).toFixed(2) %></span></option>
+                </select>
+              </div>
+
+              <button type="submit" id="btn-submit-card"
+                      class="w-full py-4 px-6 rounded-xl font-bold text-white text-base shadow-xl flex items-center justify-center gap-2 transition-all hover:scale-[1.01] hover:brightness-110 active:scale-[0.99] primary-gradient">
+                <span class="material-symbols-outlined text-[20px]">lock</span>
+                <span>Pagar $<span class="unit-price-display"><%= parseFloat(overlay.price).toFixed(2) %></span> <%= overlay.currency || 'ARS' %></span>
+              </button>
+            </form>
+          </div>
+
+          <!-- CONTENIDO TAB 3: Transferencia DEBIN / CVU -->
+          <div id="content-transfer" class="method-content hidden space-y-4">
+            <div class="rounded-2xl p-6 border border-white/10 bg-[#1A1A24] text-center">
+              <div class="w-48 h-48 mx-auto bg-white p-3 rounded-2xl shadow-xl flex items-center justify-center mb-4 relative">
+                <!-- QR Code visual simulado con logo de Mercado Pago al centro -->
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=mercadopago://transfer?alias=SIMPLYOVER.MP&amount=<%= overlay.price %>"
+                     alt="QR Transferencia" class="w-full h-full object-contain" />
+              </div>
+
+              <p class="text-xs text-on-surface-variant mb-3">Escanea desde tu app bancaria o Mercado Pago con cualquier billetera virtual</p>
+
+              <div class="space-y-2 max-w-sm mx-auto text-left">
+                <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
+                  <div>
+                    <p class="text-[10px] text-white/50 uppercase">Alias Mercado Pago</p>
+                    <p class="font-mono text-sm font-bold text-secondary">SIMPLYOVER.MP</p>
+                  </div>
+                  <button type="button" onclick="copyToClipboard('SIMPLYOVER.MP', this)" class="text-xs px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-all flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px]">content_copy</span> Copiar
+                  </button>
+                </div>
+
+                <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10">
+                  <div>
+                    <p class="text-[10px] text-white/50 uppercase">CVU Virtual</p>
+                    <p class="font-mono text-xs text-white">0000003100098492019283</p>
+                  </div>
+                  <button type="button" onclick="copyToClipboard('0000003100098492019283', this)" class="text-xs px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-all flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px]">content_copy</span> Copiar
+                  </button>
+                </div>
+              </div>
+
+              <div class="mt-5">
+                <button type="button" onclick="simulatePaymentFlow('transfer')"
+                        class="w-full py-3.5 px-6 rounded-xl font-bold text-white text-sm bg-gradient-to-r from-secondary-container to-secondary hover:opacity-90 transition-all shadow-lg shadow-secondary/20 flex items-center justify-center gap-2">
+                  <span class="material-symbols-outlined text-[18px]">send_and_archive</span>
+                  <span>Ya realicé la transferencia (Simular Acreditación)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- CONTENIDO TAB 4: Efectivo (Rapipago / Pago Fácil) -->
+          <div id="content-cash" class="method-content hidden space-y-4">
+            <div class="rounded-2xl p-6 border border-white/10 bg-[#1A1A24]">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-amber-400">store</span>
+                  <h4 class="font-bold text-white text-sm">Pago en Efectivo</h4>
+                </div>
+                <div class="flex items-center gap-2 text-xs font-bold">
+                  <span class="text-red-400 bg-red-500/10 px-2 py-0.5 rounded">Rapipago</span>
+                  <span class="text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">Pago Fácil</span>
+                </div>
+              </div>
+
+              <p class="text-xs text-on-surface-variant mb-4 leading-relaxed">
+                Al emitir el cupón de pago, recibirás un código de barra para abonar en cualquier terminal de cobro. La descarga se habilitará automáticamente al acreditarse.
+              </p>
+
+              <!-- Simulación de Código de Barras -->
+              <div class="p-4 rounded-xl bg-white text-black text-center mb-4">
+                <div class="font-mono text-xs tracking-widest font-bold mb-2">MERCADO PAGO — TICKET DE PAGO</div>
+                <div class="h-12 w-full flex items-center justify-center space-x-1 overflow-hidden opacity-80">
+                  <% for(let i=0; i<38; i++) { %>
+                    <div class="h-full bg-black" style="width: <%= (i % 3 === 0 ? 4 : (i % 2 === 0 ? 2 : 1)) %>px;"></div>
+                  <% } %>
+                </div>
+                <div class="font-mono text-[11px] tracking-widest font-semibold mt-1">2700 8492 0192 8472 9102</div>
+              </div>
+
+              <button type="button" onclick="simulatePaymentFlow('cash')"
+                      class="w-full py-3.5 px-6 rounded-xl font-bold text-white text-sm bg-amber-500 hover:bg-amber-600 transition-all shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">receipt</span>
+                <span>Generar Cupón de Pago Simulado</span>
+              </button>
+            </div>
+          </div>
+
+        </section>
+      </div>
+
+      <!-- COLUMNA DERECHA: Resumen de Compra y Overlay Card (5 cols) -->
+      <div class="lg:col-span-5 space-y-6 lg:sticky lg:top-24">
+
+        <div class="rounded-2xl border border-white/10 bg-[#15151e]/90 backdrop-blur-xl p-6 shadow-2xl relative overflow-hidden">
+          <div class="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-2xl pointer-events-none"></div>
+
+          <h2 class="text-base font-bold text-white mb-4 flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary text-[20px]">shopping_bag</span>
+            Resumen del Pedido
+          </h2>
+
+          <!-- Overlay Card Item -->
+          <div class="flex gap-4 p-3.5 rounded-xl bg-white/[0.03] border border-white/5 mb-5">
+            <div class="w-20 h-20 rounded-xl overflow-hidden bg-surface-container shrink-0 border border-white/10 relative">
+              <% if (overlay.previewIds && overlay.previewIds.length > 0) { %>
+                <img src="/api/files/<%= overlay.previewIds[0] %>" alt="<%= overlay.name %>" class="w-full h-full object-cover" />
+              <% } else { %>
+                <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-primary-container/20 to-secondary-container/20 text-secondary">
+                  <span class="material-symbols-outlined text-2xl">view_quilt</span>
+                </div>
+              <% } %>
+            </div>
+
+            <div class="flex-1 min-w-0">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-primary">OBS Studio Overlay</span>
+              <h3 class="text-sm font-bold text-white truncate"><%= overlay.name %></h3>
+              <p class="text-xs text-on-surface-variant mt-0.5 flex items-center gap-1">
+                <span class="material-symbols-outlined text-[12px] text-white/50">brush</span>
+                Por <%= overlay.creator_display_name || overlay.creator_username || 'Artista Verificado' %>
+              </p>
+              <div class="mt-2 text-xs font-extrabold text-secondary">
+                $<span class="unit-price-display"><%= parseFloat(overlay.price).toFixed(2) %></span> <%= overlay.currency || 'ARS' %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Included Features -->
+          <div class="space-y-2 mb-6 border-b border-white/5 pb-5 text-xs text-on-surface-variant">
+            <div class="flex items-center gap-2 text-white/90">
+              <span class="material-symbols-outlined text-emerald-400 text-[16px]">check_circle</span>
+              <span>Licencia comercial para Twitch, YouTube y Kick</span>
+            </div>
+            <div class="flex items-center gap-2 text-white/90">
+              <span class="material-symbols-outlined text-emerald-400 text-[16px]">check_circle</span>
+              <span>Paquete completo con alertas, chat y escenas</span>
+            </div>
+            <div class="flex items-center gap-2 text-white/90">
+              <span class="material-symbols-outlined text-emerald-400 text-[16px]">check_circle</span>
+              <span>10 descargas protegidas por token único</span>
+            </div>
+            <div class="flex items-center gap-2 text-white/90">
+              <span class="material-symbols-outlined text-emerald-400 text-[16px]">check_circle</span>
+              <span>Garantía de compatibilidad con OBS Studio</span>
+            </div>
+          </div>
+
+          <!-- Cupón de Descuento Interactivo -->
+          <div class="mb-5">
+            <label for="coupon-input" class="block text-xs font-medium text-on-surface-variant mb-1">Cupón de Descuento</label>
+            <div class="flex gap-2">
+              <input type="text" id="coupon-input" placeholder="Ej: DEMO50 o STREAMER100"
+                     class="flex-1 bg-[#1b1b26] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white uppercase font-mono tracking-wider focus:border-primary outline-none transition-all" />
+              <button type="button" onclick="applyCoupon()" class="px-4 py-2 rounded-xl text-xs font-bold text-white bg-white/10 hover:bg-white/20 border border-white/10 transition-all">
+                Aplicar
+              </button>
+            </div>
+            <div id="coupon-feedback" class="text-[11px] mt-1.5 hidden"></div>
+            <!-- Demo Coupon Pills -->
+            <div class="flex items-center gap-1.5 mt-2">
+              <span class="text-[10px] text-white/40">Prueba:</span>
+              <button type="button" onclick="applyDemoCoupon('DEMO50')" class="text-[10px] px-2 py-0.5 rounded bg-primary/10 text-primary hover:bg-primary/20 transition-all">
+                DEMO50 (-50%)
+              </button>
+              <button type="button" onclick="applyDemoCoupon('STREAMER100')" class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-all">
+                STREAMER100 (100% OFF)
+              </button>
+            </div>
+          </div>
+
+          <!-- Price Breakdown -->
+          <div class="space-y-2.5 border-t border-white/10 pt-4 text-xs">
+            <div class="flex justify-between text-on-surface-variant">
+              <span>Subtotal</span>
+              <span class="font-mono text-white">$<span id="subtotal-amount"><%= parseFloat(overlay.price).toFixed(2) %></span></span>
+            </div>
+            <div class="flex justify-between text-on-surface-variant">
+              <span>Comisión de plataforma</span>
+              <span class="font-mono text-emerald-400">Gratis ($0.00)</span>
+            </div>
+            <div id="discount-row" class="flex justify-between text-emerald-400 hidden">
+              <span id="discount-label">Descuento aplicado</span>
+              <span class="font-mono">-$<span id="discount-amount">0.00</span></span>
+            </div>
+            <div class="flex justify-between items-baseline pt-3 border-t border-white/10">
+              <span class="text-sm font-bold text-white">Total a pagar</span>
+              <div class="text-right">
+                <span class="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary font-mono">
+                  $<span id="total-amount"><%= parseFloat(overlay.price).toFixed(2) %></span>
+                </span>
+                <span class="text-xs text-on-surface-variant block"><%= overlay.currency || 'ARS' %></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sellos de Seguridad -->
+          <div class="mt-6 pt-5 border-t border-white/5 flex items-center justify-around text-center text-[10px] text-white/50">
+            <div class="flex flex-col items-center">
+              <span class="material-symbols-outlined text-[20px] text-emerald-400 mb-0.5">verified</span>
+              <span>Mercado Pago Partner</span>
+            </div>
+            <div class="flex flex-col items-center">
+              <span class="material-symbols-outlined text-[20px] text-primary mb-0.5">download_done</span>
+              <span>Entrega Inmediata</span>
+            </div>
+            <div class="flex flex-col items-center">
+              <span class="material-symbols-outlined text-[20px] text-secondary mb-0.5">support_agent</span>
+              <span>Soporte Garantizado</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ── MODAL: SIMULADOR DE MERCADO PAGO CHECKOUT PRO ──────────────────────── -->
+  <div id="mp-modal-simulator" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+    <div class="w-full max-w-lg bg-[#181824] border border-[#009ee3]/40 rounded-3xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+
+      <!-- Modal Header MP Header -->
+      <div class="bg-[#009ee3] px-6 py-4 flex items-center justify-between text-white">
+        <div class="flex items-center gap-2">
+          <img src="https://http2.mlstatic.com/frontend-assets/ui-navigation/5.18.9/mercadopago/logo__small.png" alt="Mercado Pago" class="h-6 brightness-0 invert object-contain" />
+          <span class="text-xs font-semibold bg-white/20 px-2 py-0.5 rounded-full">Checkout Pro Demo</span>
+        </div>
+        <button type="button" onclick="closeMPModal()" class="text-white/80 hover:text-white transition-colors p-1">
+          <span class="material-symbols-outlined text-[22px]">close</span>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6 space-y-6">
+
+        <div class="flex items-center justify-between border-b border-white/10 pb-4">
+          <div>
+            <p class="text-xs text-white/50 uppercase">Estás pagando en SimplyOver</p>
+            <h4 class="text-base font-bold text-white"><%= overlay.name %></h4>
+          </div>
+          <div class="text-right">
+            <span class="text-xl font-extrabold text-white font-mono">$<span id="mp-modal-price"><%= parseFloat(overlay.price).toFixed(2) %></span></span>
+            <span class="text-[10px] text-white/50 block"><%= overlay.currency || 'ARS' %></span>
+          </div>
+        </div>
+
+        <div>
+          <p class="text-xs font-bold text-white mb-3">¿Cómo quieres pagar?</p>
+          <div class="space-y-2.5">
+
+            <!-- Opción A: Dinero en Mercado Pago -->
+            <label class="flex items-center justify-between p-3.5 rounded-xl border border-white/10 bg-white/[0.03] hover:border-[#009ee3] cursor-pointer transition-all group">
+              <div class="flex items-center gap-3">
+                <input type="radio" name="mp-method-choice" value="mp_balance" checked class="accent-[#009ee3] w-4 h-4" />
+                <div>
+                  <p class="text-sm font-semibold text-white group-hover:text-[#009ee3] transition-colors">Dinero en cuenta Mercado Pago</p>
+                  <p class="text-xs text-emerald-400 font-mono">Disponible: $85.420,00 ARS</p>
+                </div>
+              </div>
+              <span class="material-symbols-outlined text-[#009ee3] text-[20px]">account_balance_wallet</span>
+            </label>
+
+            <!-- Opción B: Tarjeta Guardada -->
+            <label class="flex items-center justify-between p-3.5 rounded-xl border border-white/10 bg-white/[0.03] hover:border-[#009ee3] cursor-pointer transition-all group">
+              <div class="flex items-center gap-3">
+                <input type="radio" name="mp-method-choice" value="saved_card" class="accent-[#009ee3] w-4 h-4" />
+                <div>
+                  <p class="text-sm font-semibold text-white group-hover:text-[#009ee3] transition-colors">Visa Débito **** 4242</p>
+                  <p class="text-xs text-white/50">Acreditación instantánea</p>
+                </div>
+              </div>
+              <span class="font-extrabold text-xs text-white/80">VISA</span>
+            </label>
+
+            <!-- Opción C: Mercado Crédito -->
+            <label class="flex items-center justify-between p-3.5 rounded-xl border border-white/10 bg-white/[0.03] hover:border-[#009ee3] cursor-pointer transition-all group">
+              <div class="flex items-center gap-3">
+                <input type="radio" name="mp-method-choice" value="mercado_credito" class="accent-[#009ee3] w-4 h-4" />
+                <div>
+                  <p class="text-sm font-semibold text-white group-hover:text-[#009ee3] transition-colors">Mercado Crédito (Hasta 12 cuotas)</p>
+                  <p class="text-xs text-white/50">Paga el mes que viene</p>
+                </div>
+              </div>
+              <span class="material-symbols-outlined text-[#009ee3] text-[20px]">calendar_month</span>
+            </label>
+
+          </div>
+        </div>
+
+        <!-- Outcome Selector for Testing -->
+        <div class="p-3.5 rounded-xl bg-white/5 border border-white/10 text-xs">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-bold text-white/80">Resultado de la prueba:</span>
+            <span class="text-[10px] text-white/40">Simulación interactiva</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <button type="button" onclick="setModalOutcome('approved')" id="btn-out-approved" class="py-1 px-2 rounded-lg font-bold text-center border border-emerald-500 bg-emerald-500/20 text-emerald-300">
+              ✓ Aprobado
+            </button>
+            <button type="button" onclick="setModalOutcome('rejected')" id="btn-out-rejected" class="py-1 px-2 rounded-lg font-bold text-center border border-white/10 bg-white/5 text-white/70 hover:text-white">
+              ✕ Rechazado
+            </button>
+            <button type="button" onclick="setModalOutcome('pending')" id="btn-out-pending" class="py-1 px-2 rounded-lg font-bold text-center border border-white/10 bg-white/5 text-white/70 hover:text-white">
+              ⏳ Pendiente
+            </button>
+          </div>
+        </div>
+
+        <button type="button" onclick="confirmMPSimulatedPayment()"
+                id="btn-confirm-mp"
+                class="w-full py-4 rounded-xl font-bold text-white text-base shadow-xl flex items-center justify-center gap-2 transition-all hover:brightness-110 active:scale-[0.99] bg-[#009ee3]">
+          <span class="material-symbols-outlined text-[20px]">check</span>
+          <span>Pagar $<span id="mp-modal-btn-price"><%= parseFloat(overlay.price).toFixed(2) %></span> con Mercado Pago</span>
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MODAL: GUÍA DE CONFIGURACIÓN MERCADO PAGO CHECKOUT PRO ─────────────── -->
+  <div id="mp-guide-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+    <div class="w-full max-w-2xl bg-[#181824] border border-white/20 rounded-3xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+      <div class="px-6 py-5 border-b border-white/10 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[#009ee3]">integration_instructions</span>
+          <h3 class="text-base font-bold text-white">Mercado Pago Checkout Pro — Guía de Activación</h3>
+        </div>
+        <button type="button" onclick="closeMPGuideModal()" class="text-white/60 hover:text-white p-1">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-5 text-xs text-on-surface-variant max-h-[75vh] overflow-y-auto">
+        <p class="text-sm text-white leading-relaxed">
+          Esta plataforma ya está <strong>100% preparada y programada</strong> para Mercado Pago Checkout Pro. Para procesar cobros reales en vivo o en sandbox oficial, solo debes conectar tus credenciales:
+        </p>
+
+        <div class="space-y-4">
+          <div class="p-4 rounded-xl bg-white/[0.03] border border-white/10">
+            <h4 class="font-bold text-white text-sm mb-1 flex items-center gap-1.5">
+              <span class="w-5 h-5 rounded-full bg-[#009ee3]/20 text-[#009ee3] flex items-center justify-center text-xs">1</span>
+              Obtén tus credenciales de Mercado Pago
+            </h4>
+            <p class="mb-2">Ingresa a tu panel de desarrollador en:</p>
+            <a href="https://www.mercadopago.com.ar/developers/panel/credentials" target="_blank" rel="noopener" class="text-[#009ee3] hover:underline font-mono text-xs flex items-center gap-1">
+              https://www.mercadopago.com.ar/developers/panel/credentials <span class="material-symbols-outlined text-[13px]">open_in_new</span>
+            </a>
+          </div>
+
+          <div class="p-4 rounded-xl bg-white/[0.03] border border-white/10">
+            <h4 class="font-bold text-white text-sm mb-1 flex items-center gap-1.5">
+              <span class="w-5 h-5 rounded-full bg-[#009ee3]/20 text-[#009ee3] flex items-center justify-center text-xs">2</span>
+              Agrega tus claves al archivo <code class="text-secondary font-mono">.env</code>
+            </h4>
+            <p class="mb-2">Reemplaza los valores de prueba por tus claves reales de Producción o Sandbox:</p>
+            <pre class="bg-black/60 p-3 rounded-lg text-emerald-400 font-mono text-[11px] overflow-x-auto">
+# Mercado Pago (Argentina - ARS)
+MP_ACCESS_TOKEN=APP_USR-tu-access-token-aqui
+MP_PUBLIC_KEY=APP_USR-tu-public-key-aqui
+MP_WEBHOOK_SECRET=tu-webhook-secret
+NEXT_PUBLIC_APP_URL=http://localhost:3000</pre>
+          </div>
+
+          <div class="p-4 rounded-xl bg-white/[0.03] border border-white/10">
+            <h4 class="font-bold text-white text-sm mb-1 flex items-center gap-1.5">
+              <span class="w-5 h-5 rounded-full bg-[#009ee3]/20 text-[#009ee3] flex items-center justify-center text-xs">3</span>
+              Listo automático
+            </h4>
+            <p class="leading-relaxed">
+              El SDK oficial <code class="text-white">sdk.mercadopago.com/js/v2</code> creará automáticamente el <strong>Wallet Brick</strong> oficial de Checkout Pro y conectará las URLs de retorno y webhooks.
+            </p>
+          </div>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs flex items-center gap-2">
+          <span class="material-symbols-outlined text-[18px]">check_circle</span>
+          <span>Mientras tanto, puedes probar la experiencia completa de compra, descarga y base de datos con este simulador.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MODAL / PANTALLA DE PROCESAMIENTO Y RESULTADO ──────────────────────── -->
+  <div id="payment-result-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+    <div class="w-full max-w-lg bg-[#151522] border border-white/20 rounded-3xl overflow-hidden shadow-2xl p-6 md:p-8 animate-in fade-in zoom-in-95 duration-200 text-center relative">
+
+      <!-- SPINNER DE PROCESAMIENTO -->
+      <div id="processing-state" class="py-8 space-y-6">
+        <div class="relative w-20 h-20 mx-auto">
+          <div class="w-20 h-20 rounded-full border-4 border-white/10 border-t-[#009ee3] animate-spin"></div>
+          <span class="material-symbols-outlined text-[#009ee3] text-2xl absolute inset-0 flex items-center justify-center">bolt</span>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-white mb-1">Conectando con la Pasarela de Pago</h3>
+          <p id="processing-step" class="text-xs text-on-surface-variant font-mono">1. Validando credenciales y monto seguro...</p>
+        </div>
+      </div>
+
+      <!-- ESTADO APROBADO / ÉXITO -->
+      <div id="success-state" class="hidden space-y-6">
+        <div class="w-20 h-20 mx-auto rounded-full bg-emerald-500/20 border-2 border-emerald-500 flex items-center justify-center text-emerald-400 shadow-lg shadow-emerald-500/20 animate-bounce">
+          <span class="material-symbols-outlined text-4xl">check</span>
+        </div>
+
+        <div>
+          <span class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 uppercase tracking-wider mb-2">
+            ¡Pago Aprobado con Éxito!
+          </span>
+          <h3 class="text-2xl font-black text-white"><%= overlay.name %></h3>
+          <p class="text-xs text-on-surface-variant mt-1">Gracias por tu compra. Tu overlay ya está listo para ser utilizado en tu transmisión.</p>
+        </div>
+
+        <!-- Receipt Box -->
+        <div class="rounded-2xl bg-black/40 border border-white/10 p-4 text-xs space-y-2 text-left font-mono">
+          <div class="flex justify-between text-white/60">
+            <span>ID de Operación:</span>
+            <span id="receipt-id" class="text-white font-bold">MP-SIM-48291029</span>
+          </div>
+          <div class="flex justify-between text-white/60">
+            <span>Fecha y Hora:</span>
+            <span id="receipt-date" class="text-white">Hoy</span>
+          </div>
+          <div class="flex justify-between text-white/60">
+            <span>Medio de Pago:</span>
+            <span id="receipt-method" class="text-secondary font-bold">Mercado Pago Checkout Pro</span>
+          </div>
+          <div class="flex justify-between text-white/60 pt-2 border-t border-white/10">
+            <span>Monto Total:</span>
+            <span class="text-base font-bold text-emerald-400">$<span id="receipt-amount"><%= parseFloat(overlay.price).toFixed(2) %></span> <%= overlay.currency || 'ARS' %></span>
+          </div>
+        </div>
+
+        <!-- Action CTAs -->
+        <div class="space-y-3">
+          <a id="btn-download-token" href="/download/sample"
+             class="w-full py-4 px-6 rounded-xl font-bold text-white text-base shadow-xl flex items-center justify-center gap-2 transition-all hover:scale-[1.02] shadow-cyan-500/25"
+             style="background: linear-gradient(135deg, #06b6d4 0%, #009ee3 100%);">
+            <span class="material-symbols-outlined text-[22px]">download</span>
+            <span>Descargar Paquete Overlay (.ZIP)</span>
+          </a>
+
+          <div class="grid grid-cols-2 gap-3">
+            <a href="/dashboard/library" class="py-3 px-4 rounded-xl text-xs font-bold text-white bg-white/10 hover:bg-white/15 border border-white/10 transition-all flex items-center justify-center gap-1.5">
+              <span class="material-symbols-outlined text-[16px]">library_music</span>
+              <span>Mi Biblioteca</span>
+            </a>
+            <button type="button" onclick="openOBSInstructions()" class="py-3 px-4 rounded-xl text-xs font-bold text-secondary bg-secondary/10 hover:bg-secondary/20 border border-secondary/20 transition-all flex items-center justify-center gap-1.5">
+              <span class="material-symbols-outlined text-[16px]">help</span>
+              <span>¿Cómo instalar en OBS?</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ESTADO RECHAZADO -->
+      <div id="rejected-state" class="hidden space-y-6">
+        <div class="w-20 h-20 mx-auto rounded-full bg-red-500/20 border-2 border-red-500 flex items-center justify-center text-red-400 shadow-lg shadow-red-500/20">
+          <span class="material-symbols-outlined text-4xl">error</span>
+        </div>
+
+        <div>
+          <span class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-red-500/15 text-red-400 border border-red-500/30 uppercase tracking-wider mb-2">
+            Operación No Autorizada
+          </span>
+          <h3 class="text-xl font-bold text-white">El pago no pudo procesarse</h3>
+          <p id="rejection-reason" class="text-xs text-on-surface-variant mt-2 leading-relaxed">
+            Tu tarjeta fue rechazada por la entidad bancaria emisora (Fondos insuficientes o límite de compras por internet excedido).
+          </p>
+        </div>
+
+        <div class="space-y-3">
+          <button type="button" onclick="closePaymentResultModal()"
+                  class="w-full py-3.5 px-6 rounded-xl font-bold text-white text-sm bg-white/10 hover:bg-white/15 border border-white/10 transition-all flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">refresh</span>
+            <span>Reintentar con otro medio de pago</span>
+          </button>
+          <a href="/overlay/<%= overlay.slug || overlay.id %>" class="block text-xs text-on-surface-variant hover:text-white transition-colors">
+            Volver a la página del overlay
+          </a>
+        </div>
+      </div>
+
+      <!-- ESTADO PENDIENTE -->
+      <div id="pending-state" class="hidden space-y-6">
+        <div class="w-20 h-20 mx-auto rounded-full bg-amber-500/20 border-2 border-amber-500 flex items-center justify-center text-amber-400 shadow-lg shadow-amber-500/20">
+          <span class="material-symbols-outlined text-4xl">hourglass_top</span>
+        </div>
+
+        <div>
+          <span class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30 uppercase tracking-wider mb-2">
+            Pago Pendiente de Acreditación
+          </span>
+          <h3 class="text-xl font-bold text-white">Cupón de Pago Generado</h3>
+          <p class="text-xs text-on-surface-variant mt-1 leading-relaxed">
+            Puedes abonar tu cupón en cualquier sucursal de Rapipago o Pago Fácil. La descarga se activará apenas se acredite el pago.
+          </p>
+        </div>
+
+        <div class="rounded-xl bg-black/40 border border-white/10 p-4 text-xs font-mono text-left space-y-1">
+          <p class="text-white/60">Código de Pago:</p>
+          <p id="pending-code" class="text-base text-amber-300 font-bold tracking-wider">2700 8492 0192 8472</p>
+        </div>
+
+        <button type="button" onclick="closePaymentResultModal()"
+                class="w-full py-3.5 px-6 rounded-xl font-bold text-white text-sm bg-amber-500 hover:bg-amber-600 transition-all flex items-center justify-center gap-2">
+          <span>Entendido</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <%- include('partials/footer') %>
+
+  <!-- ── SCRIPTS DE CONTROL Y LÓGICA DE CHECKOUT ───────────────────────────── -->
+  <script>
+    // Variables de Estado
+    const OVERLAY_ID = "<%= overlay.id %>";
+    const BASE_PRICE = <%= parseFloat(overlay.price) %>;
+    const MP_PUBLIC_KEY = "<%= mpPublicKey %>";
+    const IS_MP_CONFIGURED = <%= mpConfigured ? 'true' : 'false' %>;
+
+    let currentDiscountPercent = 0;
+    let selectedOutcome = 'approved';
+
+    // ── Cambio de Métodos de Pago ───────────────────────────────────────────
+    function switchMethod(method) {
+      document.querySelectorAll('.method-tab').forEach(el => {
+        el.classList.remove('bg-[#009ee3]/10', 'border-[#009ee3]', 'text-white', 'active');
+        el.classList.add('bg-white/[0.03]', 'border-white/10', 'text-on-surface-variant');
+      });
+      document.querySelectorAll('.method-content').forEach(el => el.classList.add('hidden'));
+
+      const activeTab = document.getElementById(`tab-btn-${method}`);
+      const activeContent = document.getElementById(`content-${method}`);
+
+      if (activeTab) {
+        activeTab.classList.remove('bg-white/[0.03]', 'border-white/10', 'text-on-surface-variant');
+        activeTab.classList.add('bg-[#009ee3]/10', 'border-[#009ee3]', 'text-white', 'active');
+      }
+      if (activeContent) {
+        activeContent.classList.remove('hidden');
+      }
+    }
+
+    // ── Cupones de Descuento ────────────────────────────────────────────────
+    function applyCoupon() {
+      const code = document.getElementById('coupon-input').value.trim().toUpperCase();
+      const feedback = document.getElementById('coupon-feedback');
+      feedback.classList.remove('hidden', 'text-emerald-400', 'text-red-400');
+
+      if (!code) {
+        feedback.innerText = 'Ingresa un código de cupón';
+        feedback.classList.add('text-red-400');
+        return;
+      }
+
+      if (code === 'DEMO50') {
+        currentDiscountPercent = 50;
+        feedback.innerText = '✓ Cupón DEMO50 aplicado: 50% de descuento';
+        feedback.classList.add('text-emerald-400');
+      } else if (code === 'STREAMER100') {
+        currentDiscountPercent = 100;
+        feedback.innerText = '✓ Cupón STREAMER100 aplicado: 100% GRATIS';
+        feedback.classList.add('text-emerald-400');
+      } else if (code === 'LAUNCH20') {
+        currentDiscountPercent = 20;
+        feedback.innerText = '✓ Cupón LAUNCH20 aplicado: 20% de descuento';
+        feedback.classList.add('text-emerald-400');
+      } else {
+        feedback.innerText = '✕ Cupón no válido o expirado';
+        feedback.classList.add('text-red-400');
+        currentDiscountPercent = 0;
+      }
+      recalculateTotals();
+    }
+
+    function applyDemoCoupon(code) {
+      document.getElementById('coupon-input').value = code;
+      applyCoupon();
+    }
+
+    function recalculateTotals() {
+      const discountRow = document.getElementById('discount-row');
+      const discountAmountEl = document.getElementById('discount-amount');
+      const totalAmountEl = document.getElementById('total-amount');
+
+      const discountValue = BASE_PRICE * (currentDiscountPercent / 100);
+      const finalPrice = Math.max(0, BASE_PRICE - discountValue);
+
+      if (currentDiscountPercent > 0) {
+        discountRow.classList.remove('hidden');
+        discountAmountEl.innerText = discountValue.toFixed(2);
+      } else {
+        discountRow.classList.add('hidden');
+      }
+
+      totalAmountEl.innerText = finalPrice.toFixed(2);
+      document.querySelectorAll('.unit-price-display').forEach(el => el.innerText = finalPrice.toFixed(2));
+      document.querySelectorAll('.installment-3-display').forEach(el => el.innerText = (finalPrice / 3).toFixed(2));
+      document.querySelectorAll('.installment-6-display').forEach(el => el.innerText = (finalPrice / 6).toFixed(2));
+
+      // Actualizar modal MP si está abierto
+      const mpModalPrice = document.getElementById('mp-modal-price');
+      const mpModalBtnPrice = document.getElementById('mp-modal-btn-price');
+      if (mpModalPrice) mpModalPrice.innerText = finalPrice.toFixed(2);
+      if (mpModalBtnPrice) mpModalBtnPrice.innerText = finalPrice.toFixed(2);
+    }
+
+    // ── Formato de Tarjetas Interactivas ────────────────────────────────────
+    function onCardNumberInput(input) {
+      let val = input.value.replace(/\D/g, '').substring(0, 16);
+      let formatted = val.match(/.{1,4}/g)?.join(' ') || val;
+      input.value = formatted;
+
+      const display = document.getElementById('card-number-display');
+      display.innerText = formatted || '•••• •••• •••• 4242';
+
+      // Detectar Marca
+      const brandDisplay = document.getElementById('card-brand-display');
+      if (val.startsWith('4')) brandDisplay.innerText = 'VISA';
+      else if (val.startsWith('5')) brandDisplay.innerText = 'MASTERCARD';
+      else if (val.startsWith('3')) brandDisplay.innerText = 'AMEX';
+      else brandDisplay.innerText = 'CARD';
+    }
+
+    function onExpInput(input) {
+      let val = input.value.replace(/\D/g, '').substring(0, 4);
+      if (val.length >= 2) {
+        val = val.substring(0, 2) + '/' + val.substring(2);
+      }
+      input.value = val;
+      document.getElementById('card-exp-display').innerText = val || '12/28';
+    }
+
+    function fillTestCard(type) {
+      const numInput = document.getElementById('cc-number');
+      const nameInput = document.getElementById('cc-name');
+      const expInput = document.getElementById('cc-exp');
+      const cscInput = document.getElementById('cc-csc');
+
+      switch (type) {
+        case 'visa_ok':
+          numInput.value = '4242 4242 4242 4242';
+          expInput.value = '12/28';
+          cscInput.value = '123';
+          selectedOutcome = 'approved';
+          break;
+        case 'mc_ok':
+          numInput.value = '5555 5555 5555 5555';
+          expInput.value = '10/27';
+          cscInput.value = '456';
+          selectedOutcome = 'approved';
+          break;
+        case 'insufficient':
+          numInput.value = '4012 8888 8888 1881';
+          expInput.value = '08/26';
+          cscInput.value = '789';
+          selectedOutcome = 'rejected';
+          break;
+        case 'declined':
+          numInput.value = '4111 1111 1111 1111';
+          expInput.value = '05/25';
+          cscInput.value = '000';
+          selectedOutcome = 'rejected';
+          break;
+      }
+      onCardNumberInput(numInput);
+      onExpInput(expInput);
+    }
+
+    // ── Activación de Mercado Pago Checkout Pro ─────────────────────────────
+    async function triggerMPCheckoutPro() {
+      // 1. Si MP está configurado con credenciales reales en producción:
+      if (IS_MP_CONFIGURED && MP_PUBLIC_KEY && typeof MercadoPago !== 'undefined') {
+        try {
+          const res = await fetch('/api/checkout/preference', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              overlayId: OVERLAY_ID,
+              couponCode: document.getElementById('coupon-input').value
+            })
+          });
+          const data = await res.json();
+          if (data.ok && data.preferenceId) {
+            if (data.isDemo) {
+              // Abrir simulación interactiva
+              openMPModal();
+              return;
+            }
+            // Inicializar Checkout Pro oficial
+            const mp = new MercadoPago(MP_PUBLIC_KEY, { locale: 'es-AR' });
+            mp.checkout({
+              preference: { id: data.preferenceId },
+              autoOpen: true
+            });
+            return;
+          }
+        } catch (err) {
+          console.warn('[Checkout Pro]', err);
+        }
+      }
+
+      // 2. Si estamos en Modo Demostración (default):
+      openMPModal();
+    }
+
+    // ── Control Modal Mercado Pago Simulator ────────────────────────────────
+    function openMPModal() {
+      recalculateTotals();
+      document.getElementById('mp-modal-simulator').classList.remove('hidden');
+    }
+
+    function closeMPModal() {
+      document.getElementById('mp-modal-simulator').classList.add('hidden');
+    }
+
+    function setModalOutcome(outcome) {
+      selectedOutcome = outcome;
+      ['approved', 'rejected', 'pending'].forEach(o => {
+        const btn = document.getElementById(`btn-out-${o}`);
+        if (o === outcome) {
+          btn.className = `py-1 px-2 rounded-lg font-bold text-center border ${
+            o === 'approved' ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300' :
+            o === 'rejected' ? 'border-red-500 bg-red-500/20 text-red-300' :
+            'border-amber-500 bg-amber-500/20 text-amber-300'
+          }`;
+        } else {
+          btn.className = 'py-1 px-2 rounded-lg font-bold text-center border border-white/10 bg-white/5 text-white/70 hover:text-white';
+        }
+      });
+    }
+
+    function confirmMPSimulatedPayment() {
+      closeMPModal();
+      simulatePaymentFlow('mercadopago_checkout_pro');
+    }
+
+    // ── Ejecución de la Simulación de Pago ──────────────────────────────────
+    async function simulatePaymentFlow(method = 'mercadopago_checkout_pro') {
+      const modal = document.getElementById('payment-result-modal');
+      const processing = document.getElementById('processing-state');
+      const success = document.getElementById('success-state');
+      const rejected = document.getElementById('rejected-state');
+      const pending = document.getElementById('pending-state');
+      const stepText = document.getElementById('processing-step');
+
+      // Reset vistas
+      modal.classList.remove('hidden');
+      processing.classList.remove('hidden');
+      success.classList.add('hidden');
+      rejected.classList.add('hidden');
+      pending.classList.add('hidden');
+
+      stepText.innerText = '1. Conectando de forma segura con Mercado Pago...';
+
+      await new Promise(r => setTimeout(r, 600));
+      stepText.innerText = '2. Verificando fondos y token de pago seguro...';
+
+      await new Promise(r => setTimeout(r, 700));
+      stepText.innerText = '3. Generando token criptográfico de descarga...';
+
+      try {
+        const res = await fetch('/api/checkout/simulate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            overlayId: OVERLAY_ID,
+            outcome: selectedOutcome,
+            paymentMethod: method,
+            discount: currentDiscountPercent,
+            buyerEmail: document.getElementById('buyer-email').value,
+            buyerName: document.getElementById('buyer-name').value,
+            cardLast4: document.getElementById('cc-number').value.replace(/\s/g, '').slice(-4) || '4242',
+            installments: document.getElementById('cc-installments')?.value || 1
+          })
+        });
+
+        const data = await res.json();
+        processing.classList.add('hidden');
+
+        if (data.ok && data.status === 'approved') {
+          // Éxito
+          success.classList.remove('hidden');
+          document.getElementById('receipt-id').innerText = data.mpPaymentId || 'MP-SIM-9482019';
+          document.getElementById('receipt-amount').innerText = data.overlay?.price || '499.00';
+          document.getElementById('receipt-method').innerText =
+            method === 'transfer' ? 'Transferencia Bancaria / CVU' :
+            method === 'card' ? 'Tarjeta Débito / Crédito' : 'Mercado Pago Checkout Pro';
+
+          // Asignar token al botón de descarga
+          const downloadBtn = document.getElementById('btn-download-token');
+          if (data.downloadToken) {
+            downloadBtn.href = `/download/${data.downloadToken}`;
+          }
+
+          // Tirar confetti
+          if (typeof confetti === 'function') {
+            confetti({
+              particleCount: 80,
+              spread: 70,
+              origin: { y: 0.6 }
+            });
+          }
+        } else if (data.status === 'pending') {
+          // Pendiente
+          pending.classList.remove('hidden');
+          if (data.barcode) document.getElementById('pending-code').innerText = data.barcode;
+        } else {
+          // Rechazado
+          rejected.classList.remove('hidden');
+          if (data.reason) document.getElementById('rejection-reason').innerText = data.reason;
+        }
+
+      } catch (err) {
+        console.error(err);
+        processing.classList.add('hidden');
+        rejected.classList.remove('hidden');
+        document.getElementById('rejection-reason').innerText = 'Error de conexión con el servidor al procesar el pago.';
+      }
+    }
+
+    function submitCardPayment(e) {
+      e.preventDefault();
+      simulatePaymentFlow('card');
+    }
+
+    function quickSimulate(outcome) {
+      selectedOutcome = outcome;
+      simulatePaymentFlow('mercadopago_checkout_pro');
+    }
+
+    function closePaymentResultModal() {
+      document.getElementById('payment-result-modal').classList.add('hidden');
+    }
+
+    // ── Guía Modal Mercado Pago ─────────────────────────────────────────────
+    function openMPGuideModal() {
+      document.getElementById('mp-guide-modal').classList.remove('hidden');
+    }
+    function closeMPGuideModal() {
+      document.getElementById('mp-guide-modal').classList.add('hidden');
+    }
+
+    function openOBSInstructions() {
+      alert("Instrucciones para OBS Studio:\n\n1. Descarga el paquete .ZIP y descomprímelo.\n2. Abre OBS Studio y ve al panel 'Colección de escenas' -> 'Importar'.\n3. Selecciona el archivo scene_collection.json o agrega las fuentes BrowserSource con index.html.");
+    }
+
+    function copyToClipboard(text, btn) {
+      navigator.clipboard.writeText(text);
+      const original = btn.innerHTML;
+      btn.innerHTML = `<span class="material-symbols-outlined text-[14px] text-emerald-400">check</span> Copiado`;
+      setTimeout(() => { btn.innerHTML = original; }, 2000);
+    }
+  </script>
+</body>
+</html>

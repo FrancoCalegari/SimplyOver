@@ -221,12 +221,22 @@
                         <% } %>
                       <% } else { %>
                         <!-- Overlay de pago -->
-                        <button class="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-white text-lg transition-all hover:scale-[1.02] shadow-lg"
-                                style="background: linear-gradient(45deg, #7c3aed, #ddb7ff); box-shadow: 0 0 20px rgba(124,58,237,0.25);"
-                                onclick="alert('Payment system coming soon!')">
-                          <span class="material-symbols-outlined text-[22px]">shopping_cart</span>
-                          Buy Now
-                        </button>
+                        <div class="space-y-2">
+                          <a href="/checkout/<%= _ov.id %>"
+                             class="w-full flex items-center justify-center gap-2.5 py-4 rounded-xl font-bold text-white text-lg transition-all hover:scale-[1.02] shadow-xl group"
+                             style="background: linear-gradient(135deg, #009ee3 0%, #7c3aed 100%); box-shadow: 0 0 25px rgba(0, 158, 227, 0.35);">
+                            <img src="https://http2.mlstatic.com/frontend-assets/ui-navigation/5.18.9/mercadopago/favicon.ico" class="w-5 h-5 rounded-full" alt="MP" />
+                            <span>Comprar con Mercado Pago</span>
+                            <span class="material-symbols-outlined text-[20px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                          </a>
+                          <div class="flex items-center justify-center gap-3 text-[11px] text-white/50">
+                            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[13px] text-emerald-400">verified</span> Checkout Pro</span>
+                            <span>•</span>
+                            <span>Hasta 12 cuotas</span>
+                            <span>•</span>
+                            <span>Débito / DEBIN / Efectivo</span>
+                          </div>
+                        </div>
                       <% } %>
 
                       <!-- Favorito + Board -->

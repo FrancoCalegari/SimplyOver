@@ -80,6 +80,7 @@ import profileRouter   from './routes/profile.js';
 import studioRouter    from './routes/studio.js';
 import downloadRouter  from './routes/download.js';
 import friendsRouter   from './routes/friends.js';
+import checkoutRouter  from './routes/checkout.js';
 
 app.use('/auth',          authRouter);
 app.use('/category',      categoriesRouter);
@@ -94,6 +95,8 @@ app.use('/admin',         adminRouter);
 app.use('/profile',       profileRouter);
 app.use('/studio',        studioRouter);
 app.use('/download',      downloadRouter);
+app.use('/checkout',      checkoutRouter);
+app.use('/api/checkout',  checkoutRouter);
 
 // /studio/ai handled by aiRouter's GET /studio/ai route
 app.get('/studio/ai', async (req, res, next) => {
