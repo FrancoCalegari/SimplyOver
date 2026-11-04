@@ -31,10 +31,13 @@
                     <span class="material-symbols-outlined">folder_special</span>
                     <span class="font-semibold">My Projects</span>
                 </a>
+                <% /* Studio temporalmente oculto (en desarrollo) */ %>
+                <% if (false) { %>
                 <a class="flex items-center gap-4 px-8 py-4 text-on-surface-variant hover:bg-white/5 transition-all duration-300" href="/studio">
                     <span class="material-symbols-outlined">draw</span>
                     <span class="font-semibold">Studio</span>
                 </a>
+                <% } %>
             </nav>
             <div class="px-8">
                 <a href="/auth/logout" class="flex items-center gap-3 text-on-surface-variant hover:text-red-400 transition-colors text-sm">

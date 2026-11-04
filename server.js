@@ -43,6 +43,10 @@ app.get('/api/files/:id', async (req, res) => {
       return res.redirect('/images/placeholder.svg');
     }
 
+    if (fileId.startsWith('http://') || fileId.startsWith('https://')) {
+      return res.redirect(fileId);
+    }
+
     const fetchRes = await fetch(`${process.env.SPIDERWEBURL}/storage/files/${fileId}`, {
       headers: { 'X-API-KEY': process.env.SPIDERWEBAPIKEY }
     });

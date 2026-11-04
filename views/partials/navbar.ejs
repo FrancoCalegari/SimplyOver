@@ -69,6 +69,8 @@
             <a href="/messages" class="flex items-center gap-3 px-4 py-2.5 text-sm text-on-surface-variant hover:text-white hover:bg-white/5 transition-all">
               <span class="material-symbols-outlined text-[18px]">mail</span> Messages
             </a>
+            <% /* Studio temporalmente oculto (en desarrollo) */ %>
+            <% if (false) { %>
             <a href="/studio/ai" class="flex items-center gap-3 px-4 py-2.5 text-sm text-on-surface-variant hover:text-white hover:bg-white/5 transition-all">
               <span class="material-symbols-outlined text-[18px]">auto_awesome</span> AI Studio
             </a>
@@ -76,6 +78,7 @@
             <a href="/studio" class="flex items-center gap-3 px-4 py-2.5 text-sm text-secondary hover:text-white hover:bg-white/5 transition-all">
               <span class="material-symbols-outlined text-[18px]">add_circle</span> Publish Overlay
             </a>
+            <% } %>
             <% } %>
             <% if (user.role === 'admin') { %>
             <a href="/admin/settings" class="flex items-center gap-3 px-4 py-2.5 text-sm text-primary hover:text-white hover:bg-white/5 transition-all">
