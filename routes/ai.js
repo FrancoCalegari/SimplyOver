@@ -1,12 +1,13 @@
 /**
  * routes/ai.js
- * IA Chat flotante + Generador de plantillas con IA (SpiderIA).
+ * IA Chat flotante + Generador de plantillas con IA (SimplyOver AI).
  */
 
 import { Router } from 'express'
 import { optionalAuth, requireAuth } from '../lib/authExpress.js'
 import { query, queryOne, generateUUID } from '../lib/db.js'
 import { spiderWeb } from '../lib/SpiderWebService.js'
+import { getAIChatReply, getAITemplateGeneration } from '../lib/aiService.js'
 
 const router = Router()
 
@@ -109,64 +110,47 @@ IMPORTANTE: Usa los tags exactamente así (ej. [BTN:PUBLISH], [BTN:WEB_EDITOR]),
   }
 
 
-  const messages = [
-    { role: 'system', content: systemPrompt },
-    ...history.slice(-10), // últimos 10 mensajes del historial
-    { role: 'user', content: message }
-  ]
-
   try {
-    const modelsData = await spiderWeb.getIAModels()
-    const fallbackModelId = modelsData?.models?.[0]?.id || 1
+    let fallbackModelId = 1;
+    try {
+      const settingRow = await queryOne(`SELECT setting_value FROM site_settings WHERE setting_key = 'ai_model_id'`);
+      const adminModelId = settingRow ? JSON.parse(settingRow.setting_value) : null;
+      if (adminModelId) fallbackModelId = Number(adminModelId);
+    } catch {}
 
-    const settingRow = await queryOne(`SELECT setting_value FROM site_settings WHERE setting_key = 'ai_model_id'`);
-    const adminModelId = settingRow ? JSON.parse(settingRow.setting_value) : null;
-    const modelId = Number(adminModelId || fallbackModelId);
-
-    if (isDebug) {
-      console.log('\n--- [DEBUG: AI/Chat] ---');
-      console.log('1. User message received:', message);
-      console.log(`2. Sending prompt to SpiderIA (Model ID: ${modelId}):`);
-      console.dir(messages, { depth: null, colors: true });
-    }
-
-    const result = await spiderWeb.iaChat(modelId, messages)
-    const reply = result?.choices?.[0]?.message?.content
-      ?? result?.message?.content
-      ?? result?.content
-      ?? '¡Hola! Estoy aquí para ayudarte en SimplyOver. ¿Qué estás buscando?'
-
-    if (isDebug) {
-      console.log('3. Response from SpiderIA:');
-      console.log(reply);
-      console.log('------------------------\n');
-    }
+    const { reply } = await getAIChatReply({
+      message,
+      history,
+      systemPrompt,
+      fallbackModelId,
+    });
 
     // Guardar sesión si hay usuario autenticado
     if (req.user) {
-      const sessionId = generateUUID()
+      const sessionId = generateUUID();
       try {
+        const sessionHistory = [
+          ...history.slice(-10),
+          { role: 'user', content: message },
+          { role: 'assistant', content: reply }
+        ];
         await query(
           `INSERT INTO ia_sessions (id, user_id, model_id, messages, created_at, updated_at)
            VALUES (?, ?, ?, ?, NOW(), NOW())`,
-          [sessionId, req.user.id, String(modelId), JSON.stringify([...messages, { role: 'assistant', content: reply }])]
-        )
+          [sessionId, req.user.id, 'simplyover-ai', JSON.stringify(sessionHistory)]
+        );
       } catch (saveErr) {
-        console.warn('[AI/Chat] Could not save session:', saveErr.message)
+        console.warn('[AI/Chat] Could not save session:', saveErr.message);
       }
     }
 
-    res.json({ reply })
+    res.json({ reply });
   } catch (err) {
-    console.warn('[AI/Chat] Error de la API (usando respuestas estáticas de respaldo):', err.message)
-    // Fallback con respuestas estáticas si SpiderIA no está disponible
-    const fallbackReplies = [
-      '¡Hola! Soy el asistente de SimplyOver. ¿Buscas overlays de algún estilo en particular?',
-      'Puedo ayudarte a encontrar el overlay perfecto. ¿Prefieres algo gratuito o premium?',
-      'En SimplyOver tenemos miles de overlays. Prueba a buscar por categoría en el navbar.',
-    ]
-    const fallback = fallbackReplies[Math.floor(Math.random() * fallbackReplies.length)]
-    res.json({ reply: fallback, fallback: true })
+    console.warn('[AI/Chat] Error general:', err.message);
+    res.json({
+      reply: '¡Hola! Soy tu asistente de SimplyOver. ¿En qué puedo ayudarte a mejorar tu stream hoy?',
+      fallback: true
+    });
   }
 })
 
@@ -194,45 +178,35 @@ Cuando el usuario te dé una descripción, debes:
 5. Listar los componentes necesarios (alertbox, webcam frame, panels, etc.)
 Responde en JSON con la estructura: { title, description, colorScheme: { primary, secondary, accent, background }, fonts: [], elements: [], animations: [], suggestedCategories: [] }`
 
-  const messages = [
-    { role: 'system', content: systemPrompt },
-    { role: 'user', content: `Crea un overlay ${style} para ${format}. Descripción: ${prompt}. Colores sugeridos: ${colors.join(', ') || 'elige tú'}` }
-  ]
-
   try {
-    const modelsData = await spiderWeb.getIAModels()
-    const fallbackModelId = modelsData?.models?.[0]?.id || 1
-
-    const settingRow = await queryOne(`SELECT setting_value FROM site_settings WHERE setting_key = 'ai_model_id'`);
-    const adminModelId = settingRow ? JSON.parse(settingRow.setting_value) : null;
-    const modelId = Number(adminModelId || fallbackModelId);
-
-    const result = await spiderWeb.iaChat(modelId, messages)
-    let content = result?.choices?.[0]?.message?.content ?? result?.message?.content ?? result?.content ?? '{}'
-
-    // Intentar parsear como JSON
-    let parsed
+    let fallbackModelId = 1;
     try {
-      // Extraer JSON del bloque de código si está envuelto
-      const jsonMatch = content.match(/```(?:json)?\s*([\s\S]+?)```/)
-      if (jsonMatch) content = jsonMatch[1]
-      parsed = JSON.parse(content)
-    } catch {
-      parsed = { title: 'Custom Overlay', description: content, colorScheme: {}, fonts: [], elements: [], animations: [] }
-    }
+      const settingRow = await queryOne(`SELECT setting_value FROM site_settings WHERE setting_key = 'ai_model_id'`);
+      const adminModelId = settingRow ? JSON.parse(settingRow.setting_value) : null;
+      if (adminModelId) fallbackModelId = Number(adminModelId);
+    } catch {}
+
+    const parsed = await getAITemplateGeneration({
+      prompt,
+      style,
+      colors,
+      format,
+      systemPrompt,
+      fallbackModelId,
+    });
 
     // Guardar el draft en canvas_drafts
-    const draftId = generateUUID()
+    const draftId = generateUUID();
     await query(
       `INSERT INTO canvas_drafts (id, creator_id, name, canvas_data, status, created_at, updated_at)
        VALUES (?, ?, ?, ?, 'DRAFT', NOW(), NOW())`,
       [draftId, req.user.id, parsed.title || 'AI Generated Overlay', JSON.stringify(parsed)]
-    )
+    );
 
-    res.json({ success: true, draftId, template: parsed })
+    res.json({ success: true, draftId, template: parsed });
   } catch (err) {
-    console.error('[AI/Generate] Error:', err.message)
-    res.status(500).json({ error: 'Generation failed. Please try again.' })
+    console.error('[AI/Generate] Error:', err.message);
+    res.status(500).json({ error: 'Generation failed. Please try again.' });
   }
 })
 

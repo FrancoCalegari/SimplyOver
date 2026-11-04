@@ -1,0 +1,315 @@
+{
+  "name": "SimplyOver AI - Orquestador y Failover de Acciones",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "simplyover-ai",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "node-webhook-in",
+      "name": "Webhook Recibir Consulta",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [180, 300],
+      "webhookId": "simplyover-ai-webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.body.message.toLowerCase() }}",
+              "operation": "contains",
+              "value2": "gratis"
+            },
+            {
+              "value1": "={{ $json.body.message.toLowerCase() }}",
+              "operation": "contains",
+              "value2": "como funciona"
+            },
+            {
+              "value1": "={{ $json.body.message.toLowerCase() }}",
+              "operation": "contains",
+              "value2": "cyberpunk"
+            }
+          ]
+        },
+        "combineOperation": "any"
+      },
+      "id": "node-check-static",
+      "name": "¿Es Consulta Frecuente?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [440, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const msg = ($input.item.json.body.message || '').toLowerCase();\nlet reply = '';\nlet carousel = [];\n\nif (msg.includes('gratis')) {\n  reply = '¡Por supuesto! En **SimplyOver** contamos con múltiples overlays gratuitos optimizados para OBS Studio. Aquí tienes algunos populares para descargar de inmediato:';\n  carousel = [\n    { name: 'Minimalist Dark Bar', price: 'Gratis', url: '/overlay/minimalist-dark' },\n    { name: 'Neon Cyber Alerts', price: 'Gratis', url: '/overlay/neon-cyber-alerts' },\n    { name: 'Clean Webcam Border', price: 'Gratis', url: '/overlay/clean-webcam-border' }\n  ];\n} else if (msg.includes('cyberpunk')) {\n  reply = '¡El estilo Cyberpunk es espectacular! ⚡ Aquí tienes overlays futuristas de neón listos para tu transmisión:';\n  carousel = [\n    { name: 'Night City Full HUD', price: '$1500', url: '/overlay/night-city-hud' },\n    { name: 'Glitch Synth Alerts', price: 'Gratis', url: '/overlay/glitch-synth-alerts' }\n  ];\n} else {\n  reply = 'SimplyOver es el marketplace especializado para streamers de OBS Studio. Puedes descargar overlays, publicar tus diseños [BTN:PUBLISH], diseñarlos en el editor web [BTN:WEB_EDITOR] o generarlos con IA [BTN:AI_STUDIO]. ¿Qué te gustaría hacer?';\n}\n\nreturn {\n  json: {\n    reply,\n    carousel,\n    source: 'static_cache',\n    assistant: 'SimplyOver AI'\n  }\n};"
+      },
+      "id": "node-static-response",
+      "name": "Respuesta Caché Rápida (Ahorro Tokens)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [720, 160]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.item.json.body || {};\nconst message = body.message || '';\nconst history = body.history || [];\n\nconst systemPrompt = `Eres el Asistente Oficial de SimplyOver, la plataforma de recursos y overlays para streaming y OBS Studio.\\n` +\n`REGLAS ESTRICTAS DE IDENTIDAD Y MARCA BLANCA:\\n` +\n`1. Tu nombre es 'SimplyOver AI' y eres la Inteligencia Artificial nativa y propia de SimplyOver.\\n` +\n`2. NUNCA menciones a Google, Gemini, SpiderWeb ni OpenAI.\\n` +\n`3. Si te preguntan quién eres o qué modelo usas, responde que eres la IA oficial de SimplyOver.\\n` +\n`4. Ayuda a encontrar overlays, explicar cómo instalarlos en OBS y guiar en el marketplace.\\n` +\n`5. Formato: Markdown conciso, amigable y estructurado.`;\n\nreturn {\n  json: {\n    message,\n    history,\n    systemPrompt,\n    timestamp: new Date().toISOString()\n  }\n};"
+      },
+      "id": "node-prep-prompt",
+      "name": "Preparar Contexto & Marca Blanca",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [720, 440]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={{ $env.GEMINI_API_KEY || 'AIzaSyCASLJiDU27OZFHG4BVrOG2yeRqz52RdaU' }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"systemInstruction\": {\n    \"parts\": [{ \"text\": $json.systemPrompt }]\n  },\n  \"contents\": [\n    {\n      \"role\": \"user\",\n      \"parts\": [{ \"text\": $json.message }]\n    }\n  ],\n  \"generationConfig\": {\n    \"temperature\": 0.7,\n    \"maxOutputTokens\": 800\n  }\n}",
+        "options": {
+          "timeout": 8000
+        }
+      },
+      "id": "node-gemini-primary",
+      "name": "Motor Primario (Gemini REST)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1000, 440],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ !!$json.candidates?.[0]?.content?.parts?.[0]?.text }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "node-check-primary-success",
+      "name": "¿Primario Exitoso?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1260, 440]
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawReply = $input.item.json.candidates[0].content.parts[0].text;\nreturn {\n  json: {\n    rawReply,\n    engine: 'primary_fast'\n  }\n};"
+      },
+      "id": "node-extract-primary",
+      "name": "Extraer Texto de Primario",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1520, 360]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SPIDERWEBURL || 'https://spiderwebargapi.com.ar/api/v1' }}/ia/chat",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-API-KEY",
+              "value": "={{ $env.SPIDERWEBAPIKEY || '' }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model_id\": 1,\n  \"messages\": [\n    { \"role\": \"system\", \"content\": $(\"Preparar Contexto & Marca Blanca\").item.json.systemPrompt },\n    { \"role\": \"user\", \"content\": $(\"Preparar Contexto & Marca Blanca\").item.json.message }\n  ]\n}",
+        "options": {
+          "timeout": 8000
+        }
+      },
+      "id": "node-spiderweb-fallback",
+      "name": "Motor Respaldo (SpiderWeb IA)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1520, 560],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.item.json;\nlet rawReply = data?.choices?.[0]?.message?.content || data?.message?.content || data?.content || '¡Hola! Soy tu asistente de SimplyOver. ¿Qué estilo de overlay te gustaría agregar a tu stream?';\n\nreturn {\n  json: {\n    rawReply,\n    engine: 'fallback_spider'\n  }\n};"
+      },
+      "id": "node-extract-fallback",
+      "name": "Extraer Texto de Respaldo",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1780, 560]
+    },
+    {
+      "parameters": {
+        "jsCode": "let text = $input.item.json.rawReply || '';\n\n// 1. Sanitización de nombres de proveedores (Marca Blanca Estricta)\ntext = text.replace(/\\b(google\\s+gemini|gemini|spideria|spiderweb|chatgpt|openai)\\b/gi, 'SimplyOver AI');\n\n// 2. Inyección de botones de acción interactivos de SimplyOver\nconst lower = text.toLowerCase();\nif ((lower.includes('crear') || lower.includes('diseñar') || lower.includes('editor')) && !text.includes('[BTN:WEB_EDITOR]')) {\n  text += '\\n\\n[BTN:WEB_EDITOR]';\n}\nif ((lower.includes('publicar') || lower.includes('vender') || lower.includes('subir')) && !text.includes('[BTN:PUBLISH]')) {\n  text += '\\n\\n[BTN:PUBLISH]';\n}\nif ((lower.includes('inteligencia artificial') || lower.includes('generar')) && !text.includes('[BTN:AI_STUDIO]')) {\n  text += '\\n\\n[BTN:AI_STUDIO]';\n}\n\nreturn {\n  json: {\n    reply: text,\n    carousel: [],\n    assistant: 'SimplyOver AI',\n    status: 'success'\n  }\n};"
+      },
+      "id": "node-sanitize-brand",
+      "name": "Sanitizador Marca Blanca & Acciones",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2060, 440]
+    },
+    {
+      "parameters": {
+        "options": {},
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true,\n  \"reply\": $json.reply,\n  \"carousel\": $json.carousel || [],\n  \"assistant\": \"SimplyOver AI\",\n  \"timestamp\": new Date().toISOString()\n}"
+      },
+      "id": "node-respond-user",
+      "name": "Responder a SimplyOver Web",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [2340, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Recibir Consulta": {
+      "main": [
+        [
+          {
+            "node": "¿Es Consulta Frecuente?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Es Consulta Frecuente?": {
+      "main": [
+        [
+          {
+            "node": "Respuesta Caché Rápida (Ahorro Tokens)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Preparar Contexto & Marca Blanca",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respuesta Caché Rápida (Ahorro Tokens)": {
+      "main": [
+        [
+          {
+            "node": "Responder a SimplyOver Web",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Contexto & Marca Blanca": {
+      "main": [
+        [
+          {
+            "node": "Motor Primario (Gemini REST)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Motor Primario (Gemini REST)": {
+      "main": [
+        [
+          {
+            "node": "¿Primario Exitoso?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Primario Exitoso?": {
+      "main": [
+        [
+          {
+            "node": "Extraer Texto de Primario",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Motor Respaldo (SpiderWeb IA)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer Texto de Primario": {
+      "main": [
+        [
+          {
+            "node": "Sanitizador Marca Blanca & Acciones",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Motor Respaldo (SpiderWeb IA)": {
+      "main": [
+        [
+          {
+            "node": "Extraer Texto de Respaldo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer Texto de Respaldo": {
+      "main": [
+        [
+          {
+            "node": "Sanitizador Marca Blanca & Acciones",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sanitizador Marca Blanca & Acciones": {
+      "main": [
+        [
+          {
+            "node": "Responder a SimplyOver Web",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
